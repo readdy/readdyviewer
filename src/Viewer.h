@@ -23,45 +23,24 @@
 /**
  *
  *
- * @file common.h
+ * @file Viewer.h
  * @brief 
  * @author clonker
  * @date 2/12/17
  */
-#ifndef PROJECT_COMMON_H
-#define PROJECT_COMMON_H
-
-#include <glbinding/gl43/gl.h>
-#include <GLFW/glfw3.h>
-
-#include <spdlog/spdlog.h>
+#ifndef PROJECT_VIEWER_H
+#define PROJECT_VIEWER_H
 
 namespace rv {
+class Viewer {
+public:
+    Viewer();
 
-extern GLFWwindow *window;
+    ~Viewer();
 
-namespace log {
-template<typename... Args>
-void debug(Args &&... args) {
-    auto consoleLog = spdlog::get("console");
-    if (!consoleLog) {
-        spdlog::set_sync_mode();
-        consoleLog = spdlog::stdout_color_mt("console");
-    }
-    consoleLog->debug(std::forward<Args>(args)...);
-}
 
-template<typename... Args>
-void error(Args &&... args) {
-    auto consoleLog = spdlog::get("console");
-    if (!consoleLog) {
-        spdlog::set_sync_mode();
-        consoleLog = spdlog::stdout_color_mt("console");
-    }
-    consoleLog->error(std::forward<Args>(args)...);
-}
-}
+};
 }
 
 
-#endif //PROJECT_COMMON_H
+#endif //PROJECT_VIEWER_H
