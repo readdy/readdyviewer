@@ -56,6 +56,7 @@ void debug(Args &&... args) {
     if (!consoleLog) {
         spdlog::set_sync_mode();
         consoleLog = spdlog::stdout_color_mt("console");
+        consoleLog->set_level(spdlog::level::debug);
     }
     consoleLog->debug(std::forward<Args>(args)...);
 }
@@ -66,6 +67,7 @@ void error(Args &&... args) {
     if (!consoleLog) {
         spdlog::set_sync_mode();
         consoleLog = spdlog::stdout_color_mt("console");
+        consoleLog->set_level(spdlog::level::debug);
     }
     consoleLog->error(std::forward<Args>(args)...);
 }

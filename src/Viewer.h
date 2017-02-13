@@ -33,6 +33,7 @@
 
 #include "common.h"
 #include "Camera.h"
+#include "ShaderProgram.h"
 
 namespace rv {
 class Viewer {
@@ -40,6 +41,15 @@ public:
     Viewer();
 
     ~Viewer();
+
+    void onMouseMove(double x, double y);
+    void onMouseDown(int button);
+    void onMouseUp(int button);
+    void onKeyUp(int key);
+    void onKeyDown(int key);
+    void resize(unsigned int width, unsigned int height);
+
+    bool frame();
 
 private:
     using transformation_buffer_t = struct transformation_buffer {
@@ -59,18 +69,28 @@ private:
 
     void updateViewMatrix();
 
-    transformation_buffer_t transformationBuffer;
+    union {
+        struct {
+            GLuint transformationBuffer;
+            GLuint lightingBuffer;
+        };
+        GLuint buffers[2];
+    };
+
+    GLuint renderingQuery;
+
     Camera camera;
     bool running;
-    GLuint renderingquery;
     glm::mat4 projmat;
     unsigned int width;
     unsigned int height;
-    float last_time;
-    float last_fps_time;
+    double last_time;
+    double last_fps_time;
     float guitimer;
     unsigned int framecount;
     unsigned int fps;
+
+    ShaderProgram particleProgram;
 
 };
 }

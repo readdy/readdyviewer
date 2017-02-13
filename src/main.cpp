@@ -20,10 +20,13 @@
  ********************************************************************/
 
 #include "common.h"
+#include "Viewer.h"
 
 namespace rv {
 
 GLFWwindow *window = NULL;
+std::unique_ptr<Viewer> viewer;
+glm::dvec2 cursor;
 
 void glfwErrorCallback(int error, const char *msg) {
     rv::log::error("GLFW error {}: {}", error, msg);
@@ -33,6 +36,13 @@ void glDebugCallback(gl::GLenum source, gl::GLenum type, gl::GLuint id, gl::GLen
                      const gl::GLchar *message,
                      const void *userParam) {
     log::debug("OpenGL debug message: {}", std::string(message, static_cast<std::size_t>(length)));
+}
+
+void onMouseMove(GLFWwindow *window, double x, double y) {
+    Viewer* viewer = reinterpret_cast<Viewer*>(glfwGetWindowUserPointer(window));
+    viewer->onMouseMove(x - cursor.x, y - cursor.y);
+    cursor.x = x;
+    cursor.y = y;
 }
 
 void initialize(bool debugContext) {
@@ -67,7 +77,23 @@ void initialize(bool debugContext) {
         glEnable(GL_DEBUG_OUTPUT);
     }
 
+    viewer = std::make_unique<Viewer>();
+    glfwSetWindowUserPointer(window, viewer.get());
+    glfwGetCursorPos(window, &cursor.x, &cursor.y);
+    glfwSetCursorPosCallback(window, onMouseMove);
+
+    {
+        int w,h;
+        glfwGetFramebufferSize(window, &w, &h);
+        viewer->resize(static_cast<unsigned int>(w), static_cast<unsigned int>(h));
+    }
+
     while (!glfwWindowShouldClose(window)) {
+
+        if(!viewer->frame()) {
+            break;
+        }
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

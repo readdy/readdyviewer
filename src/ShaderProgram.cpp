@@ -55,7 +55,7 @@ void ShaderProgram::compileShader(GLenum type, const std::string &fname, const s
     data.assign(header.begin(), header.end());
 
     // fix line count
-    const std::string linedef = "\n#line 1\n";
+    const std::string linedef = "";
     data.insert(data.end(), linedef.begin(), linedef.end());
 
     // load shader source
@@ -95,12 +95,37 @@ void ShaderProgram::compileShader(GLenum type, const std::string &fname, const s
         throw std::runtime_error(std::string("Cannot compile shader \"") + fname + "\":"
                                  + std::string(&data[0], static_cast<std::size_t>(length)));
     }
-
     // attach the shader object to the program
     glAttachShader(program, shader);
     // delete the shader object (it is internally stored as long as the program is not deleted)
     glDeleteShader(shader);
 
+}
+
+void ShaderProgram::link() {
+    // attempt to link the program
+    glLinkProgram(program);
+
+    // check for errors and throw the error log as exception on failure
+    GLint status;
+    glGetProgramiv(program, GL_LINK_STATUS, &status);
+    if (status == GL_FALSE.m_value) {
+        GLint length;
+        std::vector<char> log;
+        glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length);
+        log.resize(static_cast<std::size_t>(length));
+        glGetProgramInfoLog(program, length, NULL, &log[0]);
+        throw std::runtime_error(std::string("Failed to link shader program: ") +
+                                 std::string(&log[0], static_cast<std::size_t>(length)));
+    }
+}
+
+void ShaderProgram::use() {
+    glUseProgram(program);
+}
+
+GLint ShaderProgram::getUniformLocation(const char *name) const {
+    return glGetUniformLocation(program, name);
 }
 }
 
