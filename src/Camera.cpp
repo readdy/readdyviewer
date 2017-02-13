@@ -1,5 +1,5 @@
 /********************************************************************
- * Copyright © 2016 Computational Molecular Biology Group,          *
+ * Copyright © 2016 Computational Molecular Biology Group,          * 
  *                  Freie Universität Berlin (GER)                  *
  *                                                                  *
  * This file is part of ReaDDy.                                     *
@@ -21,56 +21,59 @@
 
 
 /**
+ * << detailed description >>
  *
- *
- * @file common.h
- * @brief 
+ * @file Camera.cpp
+ * @brief << brief description >>
  * @author clonker
- * @date 2/12/17
+ * @date 13.02.17
+ * @copyright GNU Lesser General Public License v3.0
  */
-#ifndef PROJECT_COMMON_H
-#define PROJECT_COMMON_H
 
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-
-#include <glbinding/Binding.h>
-#include <glbinding/gl/gl.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/quaternion.hpp>
-
-#include <spdlog/spdlog.h>
-
-using namespace gl;
+#include "Camera.h"
+#include <cmath>
 
 namespace rv {
-
-extern GLFWwindow *window;
-
-namespace log {
-template<typename... Args>
-void debug(Args &&... args) {
-    auto consoleLog = spdlog::get("console");
-    if (!consoleLog) {
-        spdlog::set_sync_mode();
-        consoleLog = spdlog::stdout_color_mt("console");
-    }
-    consoleLog->debug(std::forward<Args>(args)...);
+Camera::Camera() : _xangle(0), _yangle(0){
 }
 
-template<typename... Args>
-void error(Args &&... args) {
-    auto consoleLog = spdlog::get("console");
-    if (!consoleLog) {
-        spdlog::set_sync_mode();
-        consoleLog = spdlog::stdout_color_mt("console");
-    }
-    consoleLog->error(std::forward<Args>(args)...);
-}
-}
+glm::mat4 Camera::getViewMatrix() const {
+    const auto direction = _rot * glm::vec3(0, 0, 1);
+    const auto up = _rot * glm::vec3(0, 1, 0);
+    return glm::lookAt(_pos, _pos + direction, up);
 }
 
+const glm::vec3 &Camera::position() const {
+    return _pos;
+}
 
-#endif //PROJECT_COMMON_H
+void Camera::rotate(const float xangle, const float yangle) {
+    _xangle += xangle;
+    _yangle += yangle;
+    _rot = glm::rotate (glm::quat (), yangle * float (M_PI / 180.0f), glm::vec3 (0.0f, 1.0f, 0.0f));
+    _rot = glm::rotate (_rot, xangle * float (M_PI / 180.0f), glm::vec3 (1.0f, 0.0f, 0.0f));
+}
+
+void Camera::zoom(const float value) {
+    _pos += 0.1f * value * (_rot * glm::vec3 (0, 0, 1));
+}
+
+void Camera::movex(const float value) {
+    _pos += 0.05f * value * (_rot * glm::vec3 (1, 0, 0));
+}
+
+void Camera::movey(const float value) {
+    _pos += 0.05f * value * (_rot * glm::vec3 (0, 1, 0));
+}
+
+void Camera::setPosition(const glm::vec3 &pos) {
+    _pos = pos;
+}
+
+Camera::~Camera() = default;
+
+
+
+
+}
+

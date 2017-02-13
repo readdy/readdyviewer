@@ -1,5 +1,5 @@
 /********************************************************************
- * Copyright © 2016 Computational Molecular Biology Group,          *
+ * Copyright © 2016 Computational Molecular Biology Group,          * 
  *                  Freie Universität Berlin (GER)                  *
  *                                                                  *
  * This file is part of ReaDDy.                                     *
@@ -21,56 +21,36 @@
 
 
 /**
+ * << detailed description >>
  *
- *
- * @file common.h
- * @brief 
+ * @file ShaderProgram.h
+ * @brief << brief description >>
  * @author clonker
- * @date 2/12/17
+ * @date 13.02.17
+ * @copyright GNU Lesser General Public License v3.0
  */
-#ifndef PROJECT_COMMON_H
-#define PROJECT_COMMON_H
 
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
+#ifndef PROJECT_SHADERPROGRAM_H
+#define PROJECT_SHADERPROGRAM_H
 
-#include <glbinding/Binding.h>
-#include <glbinding/gl/gl.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/quaternion.hpp>
-
-#include <spdlog/spdlog.h>
-
-using namespace gl;
+#include "common.h"
 
 namespace rv {
+class ShaderProgram {
+public:
+    ShaderProgram();
+    ~ShaderProgram();
 
-extern GLFWwindow *window;
+    void compileShader(GLenum type, const std::string& fname, const std::string &header = {});
+    void link();
+    void use();
 
-namespace log {
-template<typename... Args>
-void debug(Args &&... args) {
-    auto consoleLog = spdlog::get("console");
-    if (!consoleLog) {
-        spdlog::set_sync_mode();
-        consoleLog = spdlog::stdout_color_mt("console");
-    }
-    consoleLog->debug(std::forward<Args>(args)...);
-}
-
-template<typename... Args>
-void error(Args &&... args) {
-    auto consoleLog = spdlog::get("console");
-    if (!consoleLog) {
-        spdlog::set_sync_mode();
-        consoleLog = spdlog::stdout_color_mt("console");
-    }
-    consoleLog->error(std::forward<Args>(args)...);
-}
-}
+    GLint getUniformLocation(const char* name) const;
+    const gl::GLuint &get() const;
+private:
+    gl::GLuint program;
+};
 }
 
 
-#endif //PROJECT_COMMON_H
+#endif //PROJECT_SHADERPROGRAM_H

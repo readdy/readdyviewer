@@ -31,6 +31,9 @@
 #ifndef PROJECT_VIEWER_H
 #define PROJECT_VIEWER_H
 
+#include "common.h"
+#include "Camera.h"
+
 namespace rv {
 class Viewer {
 public:
@@ -38,6 +41,36 @@ public:
 
     ~Viewer();
 
+private:
+    using transformation_buffer_t = struct transformation_buffer {
+        glm::mat4 viewmat;
+        glm::mat4 projmat;
+        glm::mat4 invviewmat;
+    };
+    using lightparams_t = struct lightparams {
+        glm::vec3 lightpos;
+        float padding;
+        glm::vec3 spotdir;
+        float padding2;
+        glm::vec3 eyepos;
+        float spotexponent;
+        float lightintensity;
+    };
+
+    void updateViewMatrix();
+
+    transformation_buffer_t transformationBuffer;
+    Camera camera;
+    bool running;
+    GLuint renderingquery;
+    glm::mat4 projmat;
+    unsigned int width;
+    unsigned int height;
+    float last_time;
+    float last_fps_time;
+    float guitimer;
+    unsigned int framecount;
+    unsigned int fps;
 
 };
 }

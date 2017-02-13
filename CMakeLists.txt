@@ -21,4 +21,10 @@ download_project(PROJ glfw
         )
 add_subdirectory(${glfw_SOURCE_DIR} ${glfw_BINARY_DIR})
 
+download_project(PROJ glm
+        GIT_REPOSITORY https://github.com/g-truc/glm.git
+        GIT_TAG 0.9.8.4
+        ${UPDATE_DISCONNECTED_IF_AVAILABLE}
+        )
+
 add_subdirectory(src)

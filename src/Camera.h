@@ -1,5 +1,5 @@
 /********************************************************************
- * Copyright © 2016 Computational Molecular Biology Group,          *
+ * Copyright © 2016 Computational Molecular Biology Group,          * 
  *                  Freie Universität Berlin (GER)                  *
  *                                                                  *
  * This file is part of ReaDDy.                                     *
@@ -21,56 +21,49 @@
 
 
 /**
+ * << detailed description >>
  *
- *
- * @file common.h
- * @brief 
+ * @file Camera.h
+ * @brief << brief description >>
  * @author clonker
- * @date 2/12/17
+ * @date 13.02.17
+ * @copyright GNU Lesser General Public License v3.0
  */
-#ifndef PROJECT_COMMON_H
-#define PROJECT_COMMON_H
 
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
+#ifndef PROJECT_CAMERA_H
+#define PROJECT_CAMERA_H
 
-#include <glbinding/Binding.h>
-#include <glbinding/gl/gl.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/quaternion.hpp>
-
-#include <spdlog/spdlog.h>
-
-using namespace gl;
+#include "common.h"
 
 namespace rv {
+class Camera {
+public:
+    Camera();
 
-extern GLFWwindow *window;
+    ~Camera();
 
-namespace log {
-template<typename... Args>
-void debug(Args &&... args) {
-    auto consoleLog = spdlog::get("console");
-    if (!consoleLog) {
-        spdlog::set_sync_mode();
-        consoleLog = spdlog::stdout_color_mt("console");
-    }
-    consoleLog->debug(std::forward<Args>(args)...);
+    glm::mat4 getViewMatrix() const;
+
+    const glm::vec3 &position() const;
+
+    void rotate(const float xangle, const float yangle);
+
+    void zoom(const float value);
+
+    void movex(const float value);
+
+    void movey(const float value);
+
+    void setPosition(const glm::vec3 &pos);
+
+private:
+    glm::vec3 _pos;
+    glm::quat _rot;
+    float _xangle;
+    float _yangle;
+};
+
 }
 
-template<typename... Args>
-void error(Args &&... args) {
-    auto consoleLog = spdlog::get("console");
-    if (!consoleLog) {
-        spdlog::set_sync_mode();
-        consoleLog = spdlog::stdout_color_mt("console");
-    }
-    consoleLog->error(std::forward<Args>(args)...);
-}
-}
-}
 
-
-#endif //PROJECT_COMMON_H
+#endif //PROJECT_CAMERA_H

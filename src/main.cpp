@@ -19,7 +19,6 @@
  * <http://www.gnu.org/licenses/>.                                  *
  ********************************************************************/
 
-#include <glbinding/Binding.h>
 #include "common.h"
 
 namespace rv {
@@ -45,9 +44,9 @@ void initialize(bool debugContext) {
     glfwSetErrorCallback(glfwErrorCallback);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE.m_value);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, debugContext ? GL_TRUE : GL_FALSE);
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, debugContext ? GL_TRUE.m_value: GL_FALSE.m_value);
 
     window = glfwCreateWindow(1280, 720, "ReaDDy viewer", NULL, NULL);
     if (window == NULL) {
@@ -59,7 +58,7 @@ void initialize(bool debugContext) {
     glbinding::setAfterCallback([](const glbinding::FunctionCall &) {
         const auto err = glGetError();
         if (err != GL_NO_ERROR) {
-            log::error("GL error {}", err);
+            log::error("GL error {}", int(err));
         }
     });
 
