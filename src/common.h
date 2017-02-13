@@ -50,6 +50,18 @@ namespace rv {
 extern GLFWwindow *window;
 
 namespace log {
+
+template<typename... Args>
+void trace(Args &&... args) {
+    auto consoleLog = spdlog::get("console");
+    if (!consoleLog) {
+        spdlog::set_sync_mode();
+        consoleLog = spdlog::stdout_color_mt("console");
+        consoleLog->set_level(spdlog::level::debug);
+    }
+    consoleLog->trace(std::forward<Args>(args)...);
+}
+
 template<typename... Args>
 void debug(Args &&... args) {
     auto consoleLog = spdlog::get("console");

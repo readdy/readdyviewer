@@ -9,7 +9,8 @@ set(SOURCE_FILES main.cpp common.h
         Viewer.cpp Viewer.h
         Camera.cpp Camera.h
         ShaderProgram.cpp ShaderProgram.h
-        PointSprite.cpp PointSprite.h)
+        PointSprite.cpp PointSprite.h
+        Trajectory.cpp Trajectory.h)
 
 add_executable(readdyviewer ${SOURCE_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC

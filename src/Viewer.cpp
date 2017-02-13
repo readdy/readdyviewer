@@ -133,26 +133,33 @@ void Viewer::resize(unsigned int width, unsigned int height) {
 
 bool Viewer::frame() {
     last_time += glfwGetTime() - last_time;
-    GLenum err = glGetError ();
-    if (err != GL_NO_ERROR)
-    {
+    GLenum err = glGetError();
+    if (err != GL_NO_ERROR) {
         std::stringstream ss;
         ss << "OpenGL error detected at frame begin: 0x" << std::hex << err << std::endl;
         log::error(ss.str());
         return false;
     }
     // specify the viewport size
-    glViewport (0, 0, width, height);
+    glViewport(0, 0, width, height);
     // clear the color and depth buffer
-    glClear (GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    if(running) {
+
+    }
+
+    particleProgram.use();
 
     // determine the framerate every second
     framecount++;
-    if (glfwGetTime () >= last_fps_time + 1)
-    {
+    if (glfwGetTime() >= last_fps_time + 1) {
         fps = framecount;
         framecount = 0;
-        last_fps_time = glfwGetTime ();
+        last_fps_time = glfwGetTime();
+    }
+    {
+        log::trace("FPS: {}", fps);
     }
     return true;
 }
