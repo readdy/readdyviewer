@@ -34,7 +34,8 @@
 namespace rv {
 
 Viewer::Viewer() : width(0), height(0), last_fps_time(glfwGetTime()), framecount(0), fps(0), running(false),
-                   guitimer(0.0f), trajectory({{{0, 0, 0, 0}, {32, 0, 0, 0}, {0, 32, 0, 0}, {0, 0, 32, 0}}}) {
+                   guitimer(0.0f), trajectory({{{10, 0, 0, 0}, {10, 0, 0, 0}, {0, 10, 0, 0}, {0, 0, 10, 0}}}),
+                   camera() {
 
     last_time = glfwGetTime();
 
@@ -46,7 +47,7 @@ Viewer::Viewer() : width(0), height(0), last_fps_time(glfwGetTime()), framecount
 
     // camera
     {
-        camera.setPosition(glm::vec3(20, 10, 10));
+        camera.setPosition(glm::vec3(30, 30, 30));
         camera.rotate(30, 240);
         glBindBuffer(GL_UNIFORM_BUFFER, transformationBuffer);
         glBufferData(GL_UNIFORM_BUFFER, sizeof(transformation_buffer_t), NULL, GL_DYNAMIC_DRAW);
@@ -69,11 +70,11 @@ Viewer::Viewer() : width(0), height(0), last_fps_time(glfwGetTime()), framecount
     glEnable(GL_CULL_FACE);
     glFrontFace(GL_CCW);
 
-    glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClearDepth(1.0f);
 
     trajectory.show(0);
-    pointSprite.setPositionBuffer(trajectory.getPositionBuffer(), 4*sizeof(float), 0);
+    pointSprite.setPositionBuffer(trajectory.getPositionBuffer(), 4 * sizeof(float), 0);
 
     updateViewMatrix();
 
@@ -103,7 +104,7 @@ void Viewer::onMouseMove(double x, double y) {
             camera.movex(static_cast<float>(x));
             camera.movey(static_cast<float>(y));
         } else {
-            camera.rotate(static_cast<float>(y), static_cast<float>(-x));
+            camera.rotate(y, -x);
         }
         updateViewMatrix();
     }
@@ -122,7 +123,7 @@ void Viewer::onKeyUp(int key) {
 }
 
 void Viewer::onKeyDown(int key) {
-    switch(key) {
+    switch (key) {
         case GLFW_KEY_SPACE:
             running = !running;
             break;
@@ -155,7 +156,8 @@ bool Viewer::frame() {
     // clear the color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if(running) {
+    framing.render();
+    if (running) {
         trajectory.show(0);
     }
 

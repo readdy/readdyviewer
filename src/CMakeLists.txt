@@ -10,7 +10,9 @@ set(SOURCE_FILES main.cpp common.h
         Camera.cpp Camera.h
         ShaderProgram.cpp ShaderProgram.h
         PointSprite.cpp PointSprite.h
-        Trajectory.cpp Trajectory.h)
+        Trajectory.cpp Trajectory.h
+        Framing.cpp Framing.h
+        Texture.cpp Texture.h)
 
 add_executable(readdyviewer ${SOURCE_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC
@@ -26,3 +28,5 @@ foreach (shader ${shaders})
     file(RELATIVE_PATH relative_shader ${CMAKE_CURRENT_SOURCE_DIR} ${shader})
     configure_file(${shader} "${CMAKE_CURRENT_BINARY_DIR}/${relative_shader}")
 endforeach ()
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/textures DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

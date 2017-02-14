@@ -1,5 +1,5 @@
 /********************************************************************
- * Copyright © 2016 Computational Molecular Biology Group,          *
+ * Copyright © 2016 Computational Molecular Biology Group,          * 
  *                  Freie Universität Berlin (GER)                  *
  *                                                                  *
  * This file is part of ReaDDy.                                     *
@@ -21,84 +21,47 @@
 
 
 /**
+ * << detailed description >>
  *
- *
- * @file Viewer.h
- * @brief 
+ * @file Framing.h
+ * @brief << brief description >>
  * @author clonker
- * @date 2/12/17
+ * @date 14.02.17
+ * @copyright GNU Lesser General Public License v3.0
  */
-#ifndef PROJECT_VIEWER_H
-#define PROJECT_VIEWER_H
+
+#ifndef PROJECT_FRAMING_H
+#define PROJECT_FRAMING_H
 
 #include "common.h"
-#include "Camera.h"
+#include "Texture.h"
 #include "ShaderProgram.h"
-#include "Trajectory.h"
-#include "PointSprite.h"
-#include "Framing.h"
 
 namespace rv {
-class Viewer {
+class Framing {
 public:
-    Viewer();
-
-    ~Viewer();
-
-    void onMouseMove(double x, double y);
-    void onMouseDown(int button);
-    void onMouseUp(int button);
-    void onKeyUp(int key);
-    void onKeyDown(int key);
-    void resize(unsigned int width, unsigned int height);
-
-    bool frame();
-
+    Framing();
+    ~Framing();
+    void render();
 private:
-    using transformation_buffer_t = struct transformation_buffer {
-        glm::mat4 viewmat;
-        glm::mat4 projmat;
-        glm::mat4 invviewmat;
-    };
-    using lightparams_t = struct lightparams {
-        glm::vec3 lightpos;
-        float padding;
-        glm::vec3 spotdir;
-        float padding2;
-        glm::vec3 eyepos;
-        float spotexponent;
-        float lightintensity;
-    };
 
-    void updateViewMatrix();
+    ShaderProgram program;
 
     union {
         struct {
-            GLuint transformationBuffer;
-            GLuint lightingBuffer;
+            GLuint vertexBuffer;
+            GLuint normalBuffer;
+            GLuint texCoordBuffer;
+            GLuint indexBuffer;
         };
-        GLuint buffers[2];
+        GLuint buffers[4];
     };
-
-    Framing framing;
-    Trajectory trajectory;
-    PointSprite pointSprite;
-    ShaderProgram particleProgram;
-    Camera camera;
-
-    bool running;
-    glm::mat4 projmat;
-    unsigned int width;
-    unsigned int height;
-    double last_time;
-    double last_fps_time;
-    float guitimer;
-    unsigned int framecount;
-    unsigned int fps;
-
+    GLuint vao;
+    Texture texture;
 
 };
+
 }
 
 
-#endif //PROJECT_VIEWER_H
+#endif //PROJECT_FRAMING_H
