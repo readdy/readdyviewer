@@ -38,7 +38,7 @@
 namespace rv {
 
 struct TrajectoryEntry {
-    double x, y, z;
+    float x, y, z;
     unsigned int type;
 };
 
@@ -50,12 +50,14 @@ public:
     GLuint getPositionBuffer() const;
     GLuint getDeactivatedBuffer() const;
 
-    void show(unsigned long step);
+    void frame();
+    std::size_t nTimeSteps() const;
+    std::size_t currentTimeStep() const;
 
     GLuint getCurrentNParticles() const;
 
 private:
-    unsigned long t;
+    std::size_t t;
     union {
         struct {
             GLuint positionBuffer;

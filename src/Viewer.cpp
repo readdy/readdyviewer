@@ -47,7 +47,7 @@ Viewer::Viewer() : width(0), height(0), last_fps_time(glfwGetTime()), framecount
 
     // camera
     {
-        camera.setPosition(glm::vec3(30, 30, 30));
+        camera.setPosition(glm::vec3(20, 20, 20));
         camera.rotate(30, 240);
         glBindBuffer(GL_UNIFORM_BUFFER, transformationBuffer);
         glBufferData(GL_UNIFORM_BUFFER, sizeof(transformation_buffer_t), NULL, GL_DYNAMIC_DRAW);
@@ -73,7 +73,7 @@ Viewer::Viewer() : width(0), height(0), last_fps_time(glfwGetTime()), framecount
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClearDepth(1.0f);
 
-    trajectory.show(0);
+    trajectory.frame();
     pointSprite.setPositionBuffer(trajectory.getPositionBuffer(), 4 * sizeof(float), 0);
 
     updateViewMatrix();
@@ -97,6 +97,7 @@ void Viewer::updateViewMatrix() {
 }
 
 void Viewer::onMouseMove(double x, double y) {
+    static float dampening = .1;
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT)) {
         if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL)) {
             camera.zoom(static_cast<float>(x + y));
@@ -104,7 +105,7 @@ void Viewer::onMouseMove(double x, double y) {
             camera.movex(static_cast<float>(x));
             camera.movey(static_cast<float>(y));
         } else {
-            camera.rotate(static_cast<float>(y), static_cast<float>(-x));
+            camera.rotate(dampening*static_cast<float>(y), dampening*static_cast<float>(-x));
         }
         updateViewMatrix();
     }
@@ -158,7 +159,11 @@ bool Viewer::frame() {
 
     framing.render();
     if (running) {
-        trajectory.show(0);
+        if(trajectory.currentTimeStep() < trajectory.nTimeSteps()) {
+            trajectory.frame();
+        } else {
+            running = false;
+        }
     }
 
     particleProgram.use();

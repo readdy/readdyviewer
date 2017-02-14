@@ -33,7 +33,29 @@
 #include "Trajectory.h"
 
 namespace rv {
-Trajectory::Trajectory(const std::vector<std::vector<rv::TrajectoryEntry>> &entries) : t(0), entries(entries){
+Trajectory::Trajectory(const std::vector<std::vector<rv::TrajectoryEntry>> &entries) : t(0){
+
+    Trajectory::entries.reserve(entries.size());
+    glm::vec3 max, min;
+    {
+        max = min = {entries[0][0].x, entries[0][0].y, entries[0][0].z};
+        for(const auto& frame : entries) {
+            for(const auto& entry : frame) {
+                if(entry.x < min.x) min.x = entry.x;
+                if(entry.y < min.y) min.y = entry.y;
+                if(entry.z < min.z) min.z = entry.z;
+
+                if(entry.x > max.x) max.x = entry.x;
+                if(entry.y > max.y) max.y = entry.y;
+                if(entry.z > max.z) max.z = entry.z;
+            }
+        }
+    }
+    {
+        // todo project into [-10, 10]**3
+    }
+    Trajectory::entries = entries;
+
     maxNParticles = 0;
     for(auto it = entries.begin(); it != entries.end(); ++it) {
         maxNParticles = std::max(maxNParticles, it->size());
@@ -62,30 +84,40 @@ GLuint Trajectory::getDeactivatedBuffer() const {
     return deactivatedBuffer;
 }
 
-void Trajectory::show(unsigned long step) {
-    t = step;
-    std::vector<glm::vec4> positionTypes;
-    for(const auto& entry : entries[t]) {
-        glm::vec4 posType {entry.x, entry.y, entry.z, entry.type};
-        positionTypes.push_back(posType);
-    }
+void Trajectory::frame() {
+    if(++t <= entries.size()) {
+        std::vector<glm::vec4> positionTypes;
+        for (const auto &entry : entries[t-1]) {
+            glm::vec4 posType{entry.x, entry.y, entry.z, entry.type};
+            positionTypes.push_back(posType);
+        }
 
-    {
-        GLuint tmpBuffer;
-        glGenBuffers(1, &tmpBuffer);
+        {
+            GLuint tmpBuffer;
+            glGenBuffers(1, &tmpBuffer);
 
-        glBindBuffer(GL_COPY_READ_BUFFER, tmpBuffer);
-        glBufferData(GL_COPY_READ_BUFFER, 4 * sizeof(float) * positionTypes.size(), positionTypes.data(),
-                     GL_STREAM_COPY);
+            glBindBuffer(GL_COPY_READ_BUFFER, tmpBuffer);
+            glBufferData(GL_COPY_READ_BUFFER, 4 * sizeof(float) * positionTypes.size(), positionTypes.data(),
+                         GL_STREAM_COPY);
 
-        glBindBuffer(GL_COPY_WRITE_BUFFER, positionBuffer);
-        glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, 4 * sizeof(float) * positionTypes.size());
+            glBindBuffer(GL_COPY_WRITE_BUFFER, positionBuffer);
+            glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0,
+                                4 * sizeof(float) * positionTypes.size());
 
-        glDeleteBuffers(1, &tmpBuffer);
+            glDeleteBuffers(1, &tmpBuffer);
+        }
     }
 }
 
 GLuint Trajectory::getCurrentNParticles() const {
-    return static_cast<GLuint>(entries.at(t).size());
+    return static_cast<GLuint>(entries.at(t-1).size());
+}
+
+std::size_t Trajectory::nTimeSteps() const {
+    return entries.size();
+}
+
+std::size_t Trajectory::currentTimeStep() const {
+    return t;
 }
 }
