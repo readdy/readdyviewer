@@ -19,6 +19,9 @@
  * <http://www.gnu.org/licenses/>.                                  *
  ********************************************************************/
 
+#include <pybind11/pybind11.h>
+#include <pybind11/numpy.h>
+
 #include "common.h"
 #include "Viewer.h"
 
@@ -121,14 +124,20 @@ void cleanup() {
 
 }
 
-int main() {
-    try {
-        rv::initialize(false);
-        rv::cleanup();
-    } catch (const std::exception &e) {
-        rv::log::error("Encountered exception: {}", e.what());
-        rv::cleanup();
-        return -1;
-    }
-    return 0;
+PYBIND11_PLUGIN(readdyviewer) {
+    pybind11::module m("readdyviewer");
+
+    m.def("watch", []() {
+        try {
+            rv::initialize(false);
+            rv::cleanup();
+        } catch (const std::exception &e) {
+            rv::log::error("Encountered exception: {}", e.what());
+            rv::cleanup();
+            return -1;
+        }
+        return 0;
+    });
+
+    return m.ptr();
 }

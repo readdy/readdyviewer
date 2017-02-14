@@ -30,3 +30,6 @@
 
 cmake-build-*
 .idea
+
+build
+*.egg-info

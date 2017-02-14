@@ -14,18 +14,23 @@ set(SOURCE_FILES main.cpp common.h
         Framing.cpp Framing.h
         Texture.cpp Texture.h)
 
-add_executable(readdyviewer ${SOURCE_FILES})
+if (BUILD_PYTHON_LIBRARY)
+    pybind11_add_module(${PROJECT_NAME} ${SOURCE_FILES})
+else ()
+    add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+endif ()
+
 target_include_directories(${PROJECT_NAME} PUBLIC
         ${spdlog_SOURCE_DIR}/include ${glfw_SOURCE_DIR}/include ${PNG_INCLUDE_DIRS} ${glm_SOURCE_DIR}
         )
 
 target_link_libraries(${PROJECT_NAME} PUBLIC glfw ${GLFW_LIBRARIES} ${PNG_LIBRARIES} ${OPENGL_LIBRARIES} glbinding::glbinding)
 
-if(HIDDEN_FRANK_MODE)
+if (HIDDEN_FRANK_MODE)
     target_compile_definitions(${PROJECT_NAME} PRIVATE GLFW_INCLUDE_NONE HIDDEN_FRANK_MODE=1)
-else()
+else ()
     target_compile_definitions(${PROJECT_NAME} PRIVATE GLFW_INCLUDE_NONE HIDDEN_FRANK_MODE=0)
-endif()
+endif ()
 
 file(GLOB_RECURSE shaders shaders FOLLOW_SYMLINKS *.glsl)
 foreach (shader ${shaders})
