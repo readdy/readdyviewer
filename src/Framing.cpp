@@ -93,7 +93,11 @@ Framing::Framing() {
 
     // load the texture
     texture.bind(GL_TEXTURE_2D);
-    Texture::load(GL_TEXTURE_2D, "textures/framing.png", GL_COMPRESSED_RGB);
+    if(HIDDEN_FRANK_MODE == 1) {
+        Texture::load(GL_TEXTURE_2D, "textures/Frank_Noe.png", GL_COMPRESSED_RGB);
+    } else {
+        Texture::load(GL_TEXTURE_2D, "textures/framing.png", GL_COMPRESSED_RGB);
+    }
     // generate a mipmap and enable trilinear filtering
     glGenerateMipmap(GL_TEXTURE_2D);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);

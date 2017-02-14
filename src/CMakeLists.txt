@@ -21,7 +21,11 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 
 target_link_libraries(${PROJECT_NAME} PUBLIC glfw ${GLFW_LIBRARIES} ${PNG_LIBRARIES} ${OPENGL_LIBRARIES} glbinding::glbinding)
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE GLFW_INCLUDE_NONE)
+if(HIDDEN_FRANK_MODE)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE GLFW_INCLUDE_NONE HIDDEN_FRANK_MODE=1)
+else()
+    target_compile_definitions(${PROJECT_NAME} PRIVATE GLFW_INCLUDE_NONE HIDDEN_FRANK_MODE=0)
+endif()
 
 file(GLOB_RECURSE shaders shaders FOLLOW_SYMLINKS *.glsl)
 foreach (shader ${shaders})

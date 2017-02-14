@@ -34,7 +34,7 @@
 namespace rv {
 
 Viewer::Viewer() : width(0), height(0), last_fps_time(glfwGetTime()), framecount(0), fps(0), running(false),
-                   guitimer(0.0f), trajectory({{{10, 0, 0, 0}, {10, 0, 0, 0}, {0, 10, 0, 0}, {0, 0, 10, 0}}}),
+                   guitimer(0.0f), trajectory({{{-10, 0, 0, 0}, {20, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, -10, 0}}}),
                    camera() {
 
     last_time = glfwGetTime();
@@ -104,7 +104,7 @@ void Viewer::onMouseMove(double x, double y) {
             camera.movex(static_cast<float>(x));
             camera.movey(static_cast<float>(y));
         } else {
-            camera.rotate(y, -x);
+            camera.rotate(static_cast<float>(y), static_cast<float>(-x));
         }
         updateViewMatrix();
     }

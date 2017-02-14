@@ -50,8 +50,8 @@ const glm::vec3 &Camera::position() const {
 void Camera::rotate(const float xangle, const float yangle) {
     _xangle += xangle;
     _yangle += yangle;
-    _rot = glm::rotate (glm::quat (), yangle * float (M_PI / 180.0f), glm::vec3 (0.0f, 1.0f, 0.0f));
-    _rot = glm::rotate (_rot, xangle * float (M_PI / 180.0f), glm::vec3 (1.0f, 0.0f, 0.0f));
+    _rot = glm::rotate (glm::quat (), _yangle * float (M_PI / 180.0f), glm::vec3 (0.0f, 1.0f, 0.0f));
+    _rot = glm::rotate (_rot, _xangle * float (M_PI / 180.0f), glm::vec3 (1.0f, 0.0f, 0.0f));
 }
 
 void Camera::zoom(const float value) {

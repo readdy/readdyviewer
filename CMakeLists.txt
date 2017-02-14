@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.6)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
 
+set(HIDDEN_FRANK_MODE OFF CACHE BOOL "hidden frank mode!")
+
 include(cmake/scripts/DownloadProject.cmake)
 if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/glfw-src)
     download_project(PROJ glfw
