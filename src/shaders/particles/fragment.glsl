@@ -62,5 +62,5 @@ void main (void)
 	intensity += 0.25;
 
 	// fetch texture value and output resulting color
-	color = vec4(fColor, 1); //clamp (intensity, 0, 1) * vec4 (fColor, 1);
+	color = clamp (intensity, 0, 1) * vec4 (fColor, 1);
 }

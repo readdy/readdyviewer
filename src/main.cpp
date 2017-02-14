@@ -44,6 +44,14 @@ void onMouseMove(GLFWwindow *window, double x, double y) {
     cursor.x = x;
     cursor.y = y;
 }
+void onKeyEvent (GLFWwindow *window, int key, int /*scancode*/, int action, int /*mods*/) {
+    Viewer* viewer = reinterpret_cast<Viewer*>(glfwGetWindowUserPointer(window));
+    if(action == GLFW_RELEASE) {
+        viewer->onKeyUp(key);
+    } else if(action == GLFW_PRESS) {
+        viewer->onKeyDown(key);
+    }
+}
 
 void initialize(bool debugContext) {
     glbinding::Binding::initialize();
@@ -81,6 +89,7 @@ void initialize(bool debugContext) {
     glfwSetWindowUserPointer(window, viewer.get());
     glfwGetCursorPos(window, &cursor.x, &cursor.y);
     glfwSetCursorPosCallback(window, onMouseMove);
+    glfwSetKeyCallback(window, onKeyEvent);
 
     {
         int w,h;

@@ -52,6 +52,8 @@ public:
 
     void show(unsigned long step);
 
+    GLuint getCurrentNParticles() const;
+
 private:
     unsigned long t;
     union {

@@ -84,4 +84,8 @@ void Trajectory::show(unsigned long step) {
         glDeleteBuffers(1, &tmpBuffer);
     }
 }
+
+GLuint Trajectory::getCurrentNParticles() const {
+    return static_cast<GLuint>(entries.at(t).size());
+}
 }

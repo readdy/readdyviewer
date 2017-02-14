@@ -20,7 +20,7 @@ out float fRadius;
 void main (void)
 {
 	// pass data to the fragment shader
-	vec4 pos = viewmat * vec4 (0.2 * particlePosition + 0.2 * vec3 (-64, 1, -64), 1.0);
+	vec4 pos = viewmat * vec4 (particlePosition, 1.0);
 	pos.xy += vPosition * 0.1;
 	fPosition = pos.xyz;
 	fTexcoord = vPosition;

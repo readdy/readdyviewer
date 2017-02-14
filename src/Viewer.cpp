@@ -122,7 +122,14 @@ void Viewer::onKeyUp(int key) {
 }
 
 void Viewer::onKeyDown(int key) {
-
+    switch(key) {
+        case GLFW_KEY_SPACE:
+            running = !running;
+            break;
+        default:
+            log::debug("key {} was not recognized", key);
+            break;
+    }
 }
 
 void Viewer::resize(unsigned int width, unsigned int height) {
@@ -153,6 +160,8 @@ bool Viewer::frame() {
     }
 
     particleProgram.use();
+    pointSprite.setPositionBuffer(trajectory.getPositionBuffer());
+    pointSprite.render(trajectory.getCurrentNParticles());
 
     // determine the framerate every second
     framecount++;
