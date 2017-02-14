@@ -34,7 +34,7 @@
 namespace rv {
 
 Viewer::Viewer() : width(0), height(0), last_fps_time(glfwGetTime()), framecount(0), fps(0), running(false),
-                   guitimer(0.0f) {
+                   guitimer(0.0f), trajectory({{{0, 0, 0, 0}, {32, 0, 0, 0}, {0, 32, 0, 0}, {0, 0, 32, 0}}}) {
 
     last_time = glfwGetTime();
 
@@ -43,7 +43,6 @@ Viewer::Viewer() : width(0), height(0), last_fps_time(glfwGetTime()), framecount
     particleProgram.link();
 
     glGenBuffers(2, buffers);
-    glGenQueries(1, &renderingQuery);
 
     // camera
     {
@@ -73,11 +72,15 @@ Viewer::Viewer() : width(0), height(0), last_fps_time(glfwGetTime()), framecount
     glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
     glClearDepth(1.0f);
 
+    trajectory.show(0);
+    pointSprite.setPositionBuffer(trajectory.getPositionBuffer(), 4*sizeof(float), 0);
+
+    updateViewMatrix();
+
 }
 
 Viewer::~Viewer() {
-    glDeleteQueries(1, &renderingQuery);
-    glDeleteBuffers(2, buffers);
+    glDeleteBuffers(2, &buffers[0]);
 }
 
 void Viewer::updateViewMatrix() {
@@ -146,7 +149,7 @@ bool Viewer::frame() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     if(running) {
-
+        trajectory.show(0);
     }
 
     particleProgram.use();

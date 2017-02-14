@@ -100,6 +100,9 @@ void initialize(bool debugContext) {
 }
 
 void cleanup() {
+    if(viewer) {
+        viewer.reset();
+    }
     if (window != NULL) {
         glfwDestroyWindow(window);
     }

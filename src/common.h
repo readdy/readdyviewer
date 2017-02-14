@@ -31,11 +31,11 @@
 #ifndef PROJECT_COMMON_H
 #define PROJECT_COMMON_H
 
-#define GLFW_INCLUDE_NONE
+#include <glbinding/gl/gl.h>
+
 #include <GLFW/glfw3.h>
 
 #include <glbinding/Binding.h>
-#include <glbinding/gl/gl.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>

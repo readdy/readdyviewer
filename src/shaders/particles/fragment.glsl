@@ -7,6 +7,7 @@ layout (location = 0) out vec4 color;
 in vec3 fPosition;
 in vec3 fColor;
 in vec2 fTexcoord;
+in float fRadius;
 
 // lighting parameters
 layout (binding = 1, std140) uniform LightingBuffer
@@ -28,7 +29,7 @@ layout (binding = 0, std140) uniform TransformationBlock {
 void main (void)
 {
 	float r = dot (fTexcoord, fTexcoord);
-	if (r > 0.6)
+	if (r > fRadius)
 		discard;
 
 	vec3 normal = vec3 (fTexcoord, -sqrt (1 - r));
@@ -61,5 +62,5 @@ void main (void)
 	intensity += 0.25;
 
 	// fetch texture value and output resulting color
-	color = clamp (intensity, 0, 1) * vec4 (fColor, 1);
+	color = vec4(fColor, 1); //clamp (intensity, 0, 1) * vec4 (fColor, 1);
 }

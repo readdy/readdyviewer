@@ -34,6 +34,8 @@
 #include "common.h"
 #include "Camera.h"
 #include "ShaderProgram.h"
+#include "Trajectory.h"
+#include "PointSprite.h"
 
 namespace rv {
 class Viewer {
@@ -77,9 +79,11 @@ private:
         GLuint buffers[2];
     };
 
-    GLuint renderingQuery;
-
+    Trajectory trajectory;
+    PointSprite pointSprite;
+    ShaderProgram particleProgram;
     Camera camera;
+
     bool running;
     glm::mat4 projmat;
     unsigned int width;
@@ -90,7 +94,6 @@ private:
     unsigned int framecount;
     unsigned int fps;
 
-    ShaderProgram particleProgram;
 
 };
 }

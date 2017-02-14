@@ -19,6 +19,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 
 target_link_libraries(${PROJECT_NAME} PUBLIC glfw ${GLFW_LIBRARIES} ${PNG_LIBRARIES} ${OPENGL_LIBRARIES} glbinding::glbinding)
 
+target_compile_definitions(${PROJECT_NAME} PRIVATE GLFW_INCLUDE_NONE)
+
 file(GLOB_RECURSE shaders shaders FOLLOW_SYMLINKS *.glsl)
 foreach (shader ${shaders})
     file(RELATIVE_PATH relative_shader ${CMAKE_CURRENT_SOURCE_DIR} ${shader})

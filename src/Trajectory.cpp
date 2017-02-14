@@ -33,7 +33,7 @@
 #include "Trajectory.h"
 
 namespace rv {
-Trajectory::Trajectory(const std::vector<std::vector<rv::TrajectoryEntry>> &entries) {
+Trajectory::Trajectory(const std::vector<std::vector<rv::TrajectoryEntry>> &entries) : t(0), entries(entries){
     maxNParticles = 0;
     for(auto it = entries.begin(); it != entries.end(); ++it) {
         maxNParticles = std::max(maxNParticles, it->size());
@@ -47,5 +47,41 @@ Trajectory::Trajectory(const std::vector<std::vector<rv::TrajectoryEntry>> &entr
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, deactivatedBuffer);
     glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(bool) * maxNParticles, NULL, GL_DYNAMIC_COPY);
 
+
+}
+
+Trajectory::~Trajectory() {
+    glDeleteBuffers(2, buffers);
+}
+
+GLuint Trajectory::getPositionBuffer() const {
+    return positionBuffer;
+}
+
+GLuint Trajectory::getDeactivatedBuffer() const {
+    return deactivatedBuffer;
+}
+
+void Trajectory::show(unsigned long step) {
+    t = step;
+    std::vector<glm::vec4> positionTypes;
+    for(const auto& entry : entries[t]) {
+        glm::vec4 posType {entry.x, entry.y, entry.z, entry.type};
+        positionTypes.push_back(posType);
+    }
+
+    {
+        GLuint tmpBuffer;
+        glGenBuffers(1, &tmpBuffer);
+
+        glBindBuffer(GL_COPY_READ_BUFFER, tmpBuffer);
+        glBufferData(GL_COPY_READ_BUFFER, 4 * sizeof(float) * positionTypes.size(), positionTypes.data(),
+                     GL_STREAM_COPY);
+
+        glBindBuffer(GL_COPY_WRITE_BUFFER, positionBuffer);
+        glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, 4 * sizeof(float) * positionTypes.size());
+
+        glDeleteBuffers(1, &tmpBuffer);
+    }
 }
 }

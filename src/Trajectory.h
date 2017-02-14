@@ -39,6 +39,7 @@ namespace rv {
 
 struct TrajectoryEntry {
     double x, y, z;
+    unsigned int type;
 };
 
 class Trajectory {
@@ -46,7 +47,13 @@ public:
     Trajectory(const std::vector<std::vector<TrajectoryEntry>> &entries);
     ~Trajectory();
 
+    GLuint getPositionBuffer() const;
+    GLuint getDeactivatedBuffer() const;
+
+    void show(unsigned long step);
+
 private:
+    unsigned long t;
     union {
         struct {
             GLuint positionBuffer;
@@ -55,7 +62,7 @@ private:
         GLuint buffers[2];
     };
     std::size_t maxNParticles;
-
+    std::vector<std::vector<TrajectoryEntry>> entries;
 };
 }
 
