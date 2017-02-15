@@ -9,6 +9,7 @@ layout (location = 2) in vec3 vNormal;
 layout (binding = 0, std140) uniform TransformationBlock {
 	mat4 viewmat;
 	mat4 projmat;
+	mat4 invviewmat;
 };
 
 // output to the fragment shader
@@ -21,8 +22,9 @@ void main (void)
 	// pass data to the fragment shader
 	fTexcoord = vTexcoord;
 	fNormal = vNormal;
-	fPosition = vPosition;
+	vec4 pos = viewmat * vec4(vPosition, 1);
+	fPosition = pos.xyz;
 	// compute and output the vertex position
 	// after view transformation and projection
-	gl_Position = projmat * viewmat * vec4 (vPosition, 1);
+	gl_Position = projmat * pos;
 }

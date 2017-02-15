@@ -43,6 +43,7 @@
 
 #include <spdlog/spdlog.h>
 
+#include <sstream>
 #include <random>
 
 using namespace gl;
@@ -50,6 +51,15 @@ using namespace gl;
 namespace rv {
 
 extern GLFWwindow *window;
+
+#define GL_CHECK_ERROR() { \
+GLenum err = glGetError(); \
+if (err != GL_NO_ERROR) { \
+std::stringstream ss; \
+ss << "OpenGL error detected at " << __FILE__ << " (line: " << __LINE__ << ") 0x" << std::hex << err << std::endl; \
+throw std::runtime_error(ss.str()); \
+} \
+} \
 
 namespace log {
 

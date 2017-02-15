@@ -19,6 +19,7 @@
  * <http://www.gnu.org/licenses/>.                                  *
  ********************************************************************/
 
+#include <sstream>
 #include "common.h"
 #include "Viewer.h"
 
@@ -72,14 +73,6 @@ void initialize(bool debugContext) {
     }
     glfwMakeContextCurrent(window);
 
-    glbinding::setCallbackMaskExcept(glbinding::CallbackMask::After, {"glGetError"});
-    glbinding::setAfterCallback([](const glbinding::FunctionCall &) {
-        const auto err = glGetError();
-        if (err != GL_NO_ERROR) {
-            log::error("GL error {}", int(err));
-        }
-    });
-
     if (debugContext) {
         glDebugMessageCallback(glDebugCallback, NULL);
         glEnable(GL_DEBUG_OUTPUT);
@@ -107,6 +100,14 @@ void initialize(bool debugContext) {
             entries.push_back(std::move(frame));
         }
         viewer = std::make_unique<Viewer>(entries);
+        {
+            GLenum err = glGetError();
+            if (err != GL_NO_ERROR) {
+                std::stringstream ss;
+                ss << "OpenGL error detected : 0x" << std::hex << err << std::endl;
+                log::error(ss.str());
+            }
+        }
     }
     glfwSetWindowUserPointer(window, viewer.get());
     glfwGetCursorPos(window, &cursor.x, &cursor.y);
@@ -114,9 +115,26 @@ void initialize(bool debugContext) {
     glfwSetKeyCallback(window, onKeyEvent);
 
     {
+        GLenum err = glGetError();
+        if (err != GL_NO_ERROR) {
+            std::stringstream ss;
+            ss << "OpenGL error detected at at: 0x" << std::hex << err << std::endl;
+            log::error(ss.str());
+        }
+    }
+
+    {
         int w,h;
         glfwGetFramebufferSize(window, &w, &h);
         viewer->resize(static_cast<unsigned int>(w), static_cast<unsigned int>(h));
+        {
+            GLenum err = glGetError();
+            if (err != GL_NO_ERROR) {
+                std::stringstream ss;
+                ss << "OpenGL error resize: 0x" << std::hex << err << std::endl;
+                log::error(ss.str());
+            }
+        }
     }
 
     while (!glfwWindowShouldClose(window)) {

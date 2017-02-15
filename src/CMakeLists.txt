@@ -12,7 +12,8 @@ set(SOURCE_FILES main.cpp common.h
         PointSprite.cpp PointSprite.h
         Trajectory.cpp Trajectory.h
         Framing.cpp Framing.h
-        Texture.cpp Texture.h Light.h)
+        Texture.cpp Texture.h
+        LightArrangement.cpp LightArrangement.h)
 
 if (BUILD_PYTHON_LIBRARY)
     pybind11_add_module(${PROJECT_NAME} ${SOURCE_FILES})

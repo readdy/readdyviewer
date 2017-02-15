@@ -33,19 +33,49 @@
 
 namespace rv {
 
+std::vector<Light> getLights() {
+    std::vector<Light> lights;
+    {
+        Light directionLight {glm::vec3(20, 20, 20), glm::normalize(glm::vec3(-1, -1, -1)), glm::vec3(.5, .5, .5), .8f, LightType::AMBIENT};
+        lights.push_back(directionLight);
+        Light light2 {glm::vec3(40, 40, 40), glm::normalize(glm::vec3(1, 1, 1)), glm::vec3(.5, .5, .5), .4f, LightType::DIRECTION};
+        // lights.push_back(light2);
+        Light light3 {glm::vec3(40, 40, 40), glm::normalize(glm::vec3(1, 1, 1)), glm::vec3(.0, 1., .0), .9f, LightType::HEAD};
+        lights.push_back(light3);
+    }
+    return lights;
+}
+
 Viewer::Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries)
         : width(0), height(0), last_fps_time(glfwGetTime()), framecount(0), fps(0), running(false),
           guitimer(0.0f), trajectory(entries),
-          interrupt(false), currentLightType(LightType::AMBIENT) {
+          interrupt(false), lights(getLights()) {
+    {
+        GLenum err = glGetError();
+        if (err != GL_NO_ERROR) {
+            std::stringstream ss;
+            ss << "OpenGL error detected at constructor: 0x" << std::hex << err << std::endl;
+            log::error(ss.str());
+        }
+    }
 
     last_time = glfwGetTime();
 
     particleProgram.compileShader(GL_VERTEX_SHADER, "shaders/particles/vertex.glsl");
     particleProgram.compileShader(GL_FRAGMENT_SHADER, "shaders/particles/fragment.glsl");
-    particleProgram.compileShader(GL_FRAGMENT_SHADER, "shaders/light/light.glsl", "");
+    particleProgram.compileShader(GL_FRAGMENT_SHADER, "shaders/light/light.glsl");
     particleProgram.link();
 
-    glGenBuffers(2, buffers);
+    {
+        GLenum err = glGetError();
+        if (err != GL_NO_ERROR) {
+            std::stringstream ss;
+            ss << "OpenGL error detected at constructor2: 0x" << std::hex << err << std::endl;
+            log::error(ss.str());
+        }
+    }
+
+    glGenBuffers(sizeof(buffers)/sizeof(buffers[0]), buffers);
 
     // camera
     {
@@ -54,20 +84,33 @@ Viewer::Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries)
         glBindBuffer(GL_UNIFORM_BUFFER, transformationBuffer);
         glBufferData(GL_UNIFORM_BUFFER, sizeof(transformation_buffer_t), NULL, GL_DYNAMIC_DRAW);
     }
-    // light
     {
-        light_params params;
-        params.color = glm::vec4(1.0, .7, .7, 1);
-        params.direction = glm::vec4(glm::normalize(glm::vec3(-1, -1, -1)), 1);
-        params.position = glm::vec4(20, 20, 20, 1); // -20, 80, -2
-        params.intensity = .6f;
-        params.type = static_cast<unsigned int>(currentLightType);
-        glBindBuffer(GL_UNIFORM_BUFFER, lightingBuffer);
-        glBufferData(GL_UNIFORM_BUFFER, sizeof(params), &params, GL_STATIC_DRAW);
+        GLenum err = glGetError();
+        if (err != GL_NO_ERROR) {
+            std::stringstream ss;
+            ss << "OpenGL error detected at constructor3: 0x" << std::hex << err << std::endl;
+            log::error(ss.str());
+        }
     }
 
     glBindBufferBase(GL_UNIFORM_BUFFER, 0, transformationBuffer);
-    glBindBufferBase(GL_UNIFORM_BUFFER, 1, lightingBuffer);
+    {
+        GLenum err = glGetError();
+        if (err != GL_NO_ERROR) {
+            std::stringstream ss;
+            ss << "OpenGL error detected at constructor4: 0x" << std::hex << err << std::endl;
+            log::error(ss.str());
+        }
+    }
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, lights.getLightsBuffer());
+    {
+        GLenum err = glGetError();
+        if (err != GL_NO_ERROR) {
+            std::stringstream ss;
+            ss << "OpenGL error detected at constructor5: 0x" << std::hex << err << std::endl;
+            log::error(ss.str());
+        }
+    }
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -81,18 +124,43 @@ Viewer::Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries)
 
     updateViewMatrix();
 
+    {
+        GLenum err = glGetError();
+        if (err != GL_NO_ERROR) {
+            std::stringstream ss;
+            ss << "OpenGL error detected at constructor6: 0x" << std::hex << err << std::endl;
+            log::error(ss.str());
+        }
+    }
+
 }
 
 Viewer::~Viewer() {
-    glDeleteBuffers(2, &buffers[0]);
+    glDeleteBuffers(sizeof(buffers)/sizeof(buffers[0]), &buffers[0]);
 }
 
 void Viewer::updateViewMatrix() {
+    {
+        GLenum err = glGetError();
+        if (err != GL_NO_ERROR) {
+            std::stringstream ss;
+            ss << "OpenGL error detected at update view matrix: 0x" << std::hex << err << std::endl;
+            log::error(ss.str());
+        }
+    }
     glBindBuffer(GL_UNIFORM_BUFFER, transformationBuffer);
     glBufferSubData(GL_UNIFORM_BUFFER, offsetof (transformation_buffer_t, viewmat),
                     sizeof(glm::mat4), glm::value_ptr(camera.getViewMatrix()));
     glBufferSubData(GL_UNIFORM_BUFFER, offsetof (transformation_buffer_t, invviewmat),
                     sizeof(glm::mat4), glm::value_ptr(glm::inverse(camera.getViewMatrix())));
+    {
+        GLenum err = glGetError();
+        if (err != GL_NO_ERROR) {
+            std::stringstream ss;
+            ss << "OpenGL error detected after update view matrix: 0x" << std::hex << err << std::endl;
+            log::error(ss.str());
+        }
+    }
 }
 
 void Viewer::onMouseMove(double x, double y) {
@@ -136,20 +204,6 @@ void Viewer::onKeyDown(int key) {
         case GLFW_KEY_SPACE:
             running = !running;
             break;
-        case GLFW_KEY_L: {
-            currentLightType = LightType((static_cast<int>(currentLightType) + 1) % 6);
-            std::string typeName = [this]() {
-                switch (currentLightType) {
-                    case LightType::AMBIENT: return "ambient";
-                    case LightType::DIRECTION: return "direction";
-                    case LightType::POINT: return "point";
-                    case LightType::HEAD: return "head";
-                }
-            }();
-            updateLightParams();
-            log::debug("Now using: {} light", typeName);
-            break;
-        }
         default:
             log::trace("key {} was not recognized", key);
             break;
@@ -157,12 +211,28 @@ void Viewer::onKeyDown(int key) {
 }
 
 void Viewer::resize(unsigned int width, unsigned int height) {
+    {
+        GLenum err = glGetError();
+        if (err != GL_NO_ERROR) {
+            std::stringstream ss;
+            ss << "OpenGL error detected at resize: 0x" << std::hex << err << std::endl;
+            log::error(ss.str());
+        }
+    }
     Viewer::width = width;
     Viewer::height = height;
     projmat = glm::perspective(45.f * float(M_PI / 180.), float(width) / float(height), 1.0f, 200.0f);
     glBindBuffer(GL_UNIFORM_BUFFER, transformationBuffer);
     glBufferSubData(GL_UNIFORM_BUFFER, offsetof(transformation_buffer_t, projmat), sizeof(glm::mat4),
                     glm::value_ptr(projmat));
+    {
+        GLenum err = glGetError();
+        if (err != GL_NO_ERROR) {
+            std::stringstream ss;
+            ss << "OpenGL error detected after resize: 0x" << std::hex << err << std::endl;
+            log::error(ss.str());
+        }
+    }
 }
 
 bool Viewer::frame() {
@@ -179,7 +249,6 @@ bool Viewer::frame() {
     // clear the color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    framing.render();
     if (running) {
         if (trajectory.currentTimeStep() < trajectory.nTimeSteps()) {
             trajectory.frame();
@@ -187,10 +256,17 @@ bool Viewer::frame() {
             running = false;
         }
     }
-
+    GL_CHECK_ERROR()
     particleProgram.use();
+    GL_CHECK_ERROR()
     pointSprite.setPositionBuffer(trajectory.getPositionBuffer());
+    GL_CHECK_ERROR()
     pointSprite.render(trajectory.getCurrentNParticles());
+    GL_CHECK_ERROR()
+
+    GL_CHECK_ERROR()
+    framing.render();
+    GL_CHECK_ERROR()
 
     // determine the framerate every second
     framecount++;
@@ -203,12 +279,6 @@ bool Viewer::frame() {
         log::trace("FPS: {}", fps);
     }
     return !interrupt;
-}
-
-void Viewer::updateLightParams() {
-    unsigned int type = static_cast<unsigned int>(currentLightType);
-    glBindBuffer(GL_UNIFORM_BUFFER, lightingBuffer);
-    glBufferSubData(GL_UNIFORM_BUFFER, offsetof (light_params, type), sizeof(type), &type);
 }
 
 }

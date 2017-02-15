@@ -37,7 +37,7 @@
 #include "Trajectory.h"
 #include "PointSprite.h"
 #include "Framing.h"
-#include "Light.h"
+#include "LightArrangement.h"
 
 namespace rv {
 class Viewer {
@@ -63,14 +63,12 @@ private:
     };
 
     void updateViewMatrix();
-    void updateLightParams();
 
     union {
         struct {
             GLuint transformationBuffer;
-            GLuint lightingBuffer;
         };
-        GLuint buffers[2];
+        GLuint buffers[1];
     };
 
     Framing framing;
@@ -78,7 +76,7 @@ private:
     PointSprite pointSprite;
     ShaderProgram particleProgram;
     Camera camera;
-    LightType currentLightType;
+    LightArrangement lights;
 
     bool running, interrupt;
     glm::mat4 projmat;

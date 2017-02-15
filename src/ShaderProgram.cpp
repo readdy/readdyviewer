@@ -41,7 +41,7 @@ ShaderProgram::~ShaderProgram() {
     glDeleteProgram(program);
 };
 
-const GLuint &ShaderProgram::get() const {
+GLuint ShaderProgram::get() const {
     return program;
 }
 
@@ -82,7 +82,9 @@ void ShaderProgram::compileShader(GLenum type, const std::string &fname, const s
     shader = glCreateShader(type);
     const GLchar *src = (const GLchar *) &data[0];
     glShaderSource(shader, 1, &src, &length);
+    GL_CHECK_ERROR()
     glCompileShader(shader);
+    GL_CHECK_ERROR()
 
     // check the compilation status and throw the error log as exception on failure
     GLint status;
@@ -96,10 +98,12 @@ void ShaderProgram::compileShader(GLenum type, const std::string &fname, const s
                                  + std::string(&data[0], static_cast<std::size_t>(length)));
     }
     // attach the shader object to the program
+    GL_CHECK_ERROR()
     glAttachShader(program, shader);
+    GL_CHECK_ERROR()
     // delete the shader object (it is internally stored as long as the program is not deleted)
     glDeleteShader(shader);
-
+    GL_CHECK_ERROR()
 }
 
 void ShaderProgram::link() {
@@ -118,6 +122,7 @@ void ShaderProgram::link() {
         throw std::runtime_error(std::string("Failed to link shader program: ") +
                                  std::string(&log[0], static_cast<std::size_t>(length)));
     }
+    GL_CHECK_ERROR()
 }
 
 void ShaderProgram::use() {

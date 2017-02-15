@@ -37,8 +37,11 @@ namespace rv {
 Framing::Framing() {
     program.compileShader(GL_VERTEX_SHADER, "shaders/framing/vertex.glsl");
     program.compileShader(GL_FRAGMENT_SHADER, "shaders/framing/fragment.glsl");
+    program.compileShader(GL_FRAGMENT_SHADER, "shaders/light/light.glsl");
     program.link();
-
+    GL_CHECK_ERROR()
+    program.use();
+    GL_CHECK_ERROR()
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
@@ -111,12 +114,18 @@ Framing::~Framing() {
 
 void Framing::render() {
     // activate shader program
+    GL_CHECK_ERROR()
     program.use();
+    GL_CHECK_ERROR()
     // bind texture, vertex array and index buffer
     texture.bind(GL_TEXTURE_2D);
+    GL_CHECK_ERROR()
     glBindVertexArray(vao);
+    GL_CHECK_ERROR()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+    GL_CHECK_ERROR()
     // render the framing
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0);
+    GL_CHECK_ERROR()
 }
 }

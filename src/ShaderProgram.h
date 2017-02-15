@@ -50,7 +50,7 @@ public:
 
     GLint getUniformLocation(const char *name) const;
 
-    const gl::GLuint &get() const;
+    gl::GLuint get() const;
 
 private:
     gl::GLuint program;
