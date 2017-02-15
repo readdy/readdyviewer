@@ -33,91 +33,100 @@
 #include "Trajectory.h"
 
 namespace rv {
-Trajectory::Trajectory(const std::vector<std::vector<rv::TrajectoryEntry>> &entries) : t(0){
+Trajectory::Trajectory(const std::vector<std::vector<rv::TrajectoryEntry>> &entries) : t(0) {
 
-    Trajectory::entries.reserve(entries.size());
+    T = entries.size();
+    currentNParticles.reserve(T);
+
+    glm::vec3 bbox_min{1, 1, 1};
+    glm::vec3 bbox_max{11, 11, 11};
     glm::vec3 max, min;
     {
-        max = min = {entries[0][0].x, entries[0][0].y, entries[0][0].z};
-        for(const auto& frame : entries) {
-            for(const auto& entry : frame) {
-                if(entry.x < min.x) min.x = entry.x;
-                if(entry.y < min.y) min.y = entry.y;
-                if(entry.z < min.z) min.z = entry.z;
+        max = min = {entries[0][0].pos.x, entries[0][0].pos.y, entries[0][0].pos.z};
+        for (const auto &frame : entries) {
+            currentNParticles.push_back(frame.size());
+            for (const auto &entry : frame) {
+                if (entry.pos.x < min.x) min.x = entry.pos.x;
+                if (entry.pos.y < min.y) min.y = entry.pos.y;
+                if (entry.pos.z < min.z) min.z = entry.pos.z;
 
-                if(entry.x > max.x) max.x = entry.x;
-                if(entry.y > max.y) max.y = entry.y;
-                if(entry.z > max.z) max.z = entry.z;
+                if (entry.pos.x > max.x) max.x = entry.pos.x;
+                if (entry.pos.y > max.y) max.y = entry.pos.y;
+                if (entry.pos.z > max.z) max.z = entry.pos.z;
             }
         }
     }
-    {
-        // todo project into [-10, 10]**3
+    // translate s.t. min is at bbox_min
+    glm::vec3 posTranslation = bbox_min - min;
+    // scale s.t. max is inside (10, 10, 10)
+    float scale = 1.0f;
+    if(max.x > max.y && max.x > max.z) {
+        // x largest
+        scale = 11.f / (max.x + posTranslation.x);
+    } else if(max.y > max.x && max.y > max.z) {
+        // y largest
+        scale = 11.f / (max.y + posTranslation.y);
+    } else {
+        // z largest
+        scale = 11.f / (max.z + posTranslation.z);
     }
-    Trajectory::entries = entries;
 
     maxNParticles = 0;
-    for(auto it = entries.begin(); it != entries.end(); ++it) {
+    for (auto it = entries.begin(); it != entries.end(); ++it) {
         maxNParticles = std::max(maxNParticles, it->size());
     }
 
-    glGenBuffers(2, buffers);
+    posTypes.resize(maxNParticles * T);
+    {
+        for (std::size_t i = 0; i < entries.size(); ++i) {
+            const auto &frame = entries.at(i);
+            std::size_t j = 0;
+            auto it_pt = posTypes.begin();
+            auto it_frame = frame.begin();
+            for (; it_pt != posTypes.end(); ++it_pt, ++j, ++it_frame) {
+                // project into [0, 10]**3
+                if(j < frame.size()) {
+                    *it_pt = glm::vec4(scale * (it_frame->pos + posTranslation), it_frame->type);
+                }
+            }
+        }
+    }
+
+    glGenBuffers(sizeof(buffers) / sizeof(buffers[0]), buffers);
 
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, positionBuffer);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, 4 * sizeof(float) * maxNParticles, NULL, GL_DYNAMIC_COPY);
-
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, deactivatedBuffer);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(bool) * maxNParticles, NULL, GL_DYNAMIC_COPY);
-
-
+    glBufferData(GL_SHADER_STORAGE_BUFFER, 4 * sizeof(float) * maxNParticles, nullptr, GL_DYNAMIC_COPY);
 }
 
 Trajectory::~Trajectory() {
-    glDeleteBuffers(2, buffers);
+    glDeleteBuffers(3, buffers);
 }
 
 GLuint Trajectory::getPositionBuffer() const {
     return positionBuffer;
 }
 
-GLuint Trajectory::getDeactivatedBuffer() const {
-    return deactivatedBuffer;
-}
-
 void Trajectory::frame() {
-    if(++t <= entries.size()) {
-        std::vector<glm::vec4> positionTypes;
-        for (const auto &entry : entries[t-1]) {
-            glm::vec4 posType{entry.x, entry.y, entry.z, entry.type};
-            positionTypes.push_back(posType);
-        }
-
-        {
-            GLuint tmpBuffer;
-            glGenBuffers(1, &tmpBuffer);
-
-            glBindBuffer(GL_COPY_READ_BUFFER, tmpBuffer);
-            glBufferData(GL_COPY_READ_BUFFER, 4 * sizeof(float) * positionTypes.size(), positionTypes.data(),
-                         GL_STREAM_COPY);
-
-            glBindBuffer(GL_COPY_WRITE_BUFFER, positionBuffer);
-            glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0,
-                                4 * sizeof(float) * positionTypes.size());
-
-            glDeleteBuffers(1, &tmpBuffer);
-        }
+    if (++t <= T) {
+        GLuint tmpBuffer;
+        glGenBuffers(1, &tmpBuffer);
+        glBindBuffer(GL_COPY_READ_BUFFER, tmpBuffer);
+        glBufferData(GL_COPY_READ_BUFFER, 4 * sizeof(float) * getCurrentNParticles(), posTypes.data(), GL_STREAM_COPY);
+        glBindBuffer(GL_COPY_WRITE_BUFFER, positionBuffer);
+        glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, 4 * sizeof(float) * getCurrentNParticles());
+        glDeleteBuffers(1, &tmpBuffer);
     }
 }
 
-GLuint Trajectory::getCurrentNParticles() const {
-    return static_cast<GLuint>(entries.at(t-1).size());
-}
-
 std::size_t Trajectory::nTimeSteps() const {
-    return entries.size();
+    return T;
 }
 
 std::size_t Trajectory::currentTimeStep() const {
     return t;
+}
+
+std::size_t Trajectory::getCurrentNParticles() const {
+    return currentNParticles.at(t-1);
 }
 }

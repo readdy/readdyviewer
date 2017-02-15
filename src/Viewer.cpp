@@ -29,7 +29,6 @@
  * @date 2/12/17
  */
 #include "Viewer.h"
-#include <sstream>
 
 namespace rv {
 
@@ -44,14 +43,7 @@ Viewer::Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries)
         : width(0), height(0), last_fps_time(glfwGetTime()), framecount(0), fps(0), running(false),
           guitimer(0.0f), trajectory(entries),
           interrupt(false), lights(getLights()) {
-    {
-        GLenum err = glGetError();
-        if (err != GL_NO_ERROR) {
-            std::stringstream ss;
-            ss << "OpenGL error detected at constructor: 0x" << std::hex << err << std::endl;
-            log::error(ss.str());
-        }
-    }
+    GL_CHECK_ERROR()
 
     last_time = glfwGetTime();
 
@@ -60,14 +52,7 @@ Viewer::Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries)
     particleProgram.compileShader(GL_FRAGMENT_SHADER, "shaders/light/light.glsl");
     particleProgram.link();
 
-    {
-        GLenum err = glGetError();
-        if (err != GL_NO_ERROR) {
-            std::stringstream ss;
-            ss << "OpenGL error detected at constructor2: 0x" << std::hex << err << std::endl;
-            log::error(ss.str());
-        }
-    }
+    GL_CHECK_ERROR()
 
     glGenBuffers(sizeof(buffers)/sizeof(buffers[0]), buffers);
 
@@ -78,33 +63,11 @@ Viewer::Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries)
         glBindBuffer(GL_UNIFORM_BUFFER, transformationBuffer);
         glBufferData(GL_UNIFORM_BUFFER, sizeof(transformation_buffer_t), NULL, GL_DYNAMIC_DRAW);
     }
-    {
-        GLenum err = glGetError();
-        if (err != GL_NO_ERROR) {
-            std::stringstream ss;
-            ss << "OpenGL error detected at constructor3: 0x" << std::hex << err << std::endl;
-            log::error(ss.str());
-        }
-    }
-
+    GL_CHECK_ERROR()
     glBindBufferBase(GL_UNIFORM_BUFFER, 0, transformationBuffer);
-    {
-        GLenum err = glGetError();
-        if (err != GL_NO_ERROR) {
-            std::stringstream ss;
-            ss << "OpenGL error detected at constructor4: 0x" << std::hex << err << std::endl;
-            log::error(ss.str());
-        }
-    }
+    GL_CHECK_ERROR()
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, lights.getLightsBuffer());
-    {
-        GLenum err = glGetError();
-        if (err != GL_NO_ERROR) {
-            std::stringstream ss;
-            ss << "OpenGL error detected at constructor5: 0x" << std::hex << err << std::endl;
-            log::error(ss.str());
-        }
-    }
+    GL_CHECK_ERROR()
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
@@ -118,14 +81,7 @@ Viewer::Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries)
 
     updateViewMatrix();
 
-    {
-        GLenum err = glGetError();
-        if (err != GL_NO_ERROR) {
-            std::stringstream ss;
-            ss << "OpenGL error detected at constructor6: 0x" << std::hex << err << std::endl;
-            log::error(ss.str());
-        }
-    }
+    GL_CHECK_ERROR()
 
 }
 
@@ -134,27 +90,13 @@ Viewer::~Viewer() {
 }
 
 void Viewer::updateViewMatrix() {
-    {
-        GLenum err = glGetError();
-        if (err != GL_NO_ERROR) {
-            std::stringstream ss;
-            ss << "OpenGL error detected at update view matrix: 0x" << std::hex << err << std::endl;
-            log::error(ss.str());
-        }
-    }
+    GL_CHECK_ERROR()
     glBindBuffer(GL_UNIFORM_BUFFER, transformationBuffer);
     glBufferSubData(GL_UNIFORM_BUFFER, offsetof (transformation_buffer_t, viewmat),
                     sizeof(glm::mat4), glm::value_ptr(camera.getViewMatrix()));
     glBufferSubData(GL_UNIFORM_BUFFER, offsetof (transformation_buffer_t, invviewmat),
                     sizeof(glm::mat4), glm::value_ptr(glm::inverse(camera.getViewMatrix())));
-    {
-        GLenum err = glGetError();
-        if (err != GL_NO_ERROR) {
-            std::stringstream ss;
-            ss << "OpenGL error detected after update view matrix: 0x" << std::hex << err << std::endl;
-            log::error(ss.str());
-        }
-    }
+    GL_CHECK_ERROR()
 }
 
 void Viewer::onMouseMove(double x, double y) {
@@ -205,40 +147,18 @@ void Viewer::onKeyDown(int key) {
 }
 
 void Viewer::resize(unsigned int width, unsigned int height) {
-    {
-        GLenum err = glGetError();
-        if (err != GL_NO_ERROR) {
-            std::stringstream ss;
-            ss << "OpenGL error detected at resize: 0x" << std::hex << err << std::endl;
-            log::error(ss.str());
-        }
-    }
-    Viewer::width = width;
+    GL_CHECK_ERROR()Viewer::width = width;
     Viewer::height = height;
-//    projmat = glm::perspective(45.f * float(M_PI / 180.), float(width) / float(height), 1.0f, 200.0f);
     projmat = glm::infinitePerspective(45.f * float(M_PI / 180.), float(width) / float(height), 1.0f);
     glBindBuffer(GL_UNIFORM_BUFFER, transformationBuffer);
     glBufferSubData(GL_UNIFORM_BUFFER, offsetof(transformation_buffer_t, projmat), sizeof(glm::mat4),
                     glm::value_ptr(projmat));
-    {
-        GLenum err = glGetError();
-        if (err != GL_NO_ERROR) {
-            std::stringstream ss;
-            ss << "OpenGL error detected after resize: 0x" << std::hex << err << std::endl;
-            log::error(ss.str());
-        }
-    }
+    GL_CHECK_ERROR()
 }
 
 bool Viewer::frame() {
     last_time += glfwGetTime() - last_time;
-    GLenum err = glGetError();
-    if (err != GL_NO_ERROR) {
-        std::stringstream ss;
-        ss << "OpenGL error detected at frame begin: 0x" << std::hex << err << std::endl;
-        log::error(ss.str());
-        return false;
-    }
+    GL_CHECK_ERROR()
     // specify the viewport size
     glViewport(0, 0, width, height);
     // clear the color and depth buffer
@@ -256,7 +176,7 @@ bool Viewer::frame() {
     GL_CHECK_ERROR()
     pointSprite.setPositionBuffer(trajectory.getPositionBuffer());
     GL_CHECK_ERROR()
-    pointSprite.render(trajectory.getCurrentNParticles());
+    pointSprite.render(static_cast<GLuint>(trajectory.getCurrentNParticles()));
     GL_CHECK_ERROR()
 
     GL_CHECK_ERROR()

@@ -41,12 +41,7 @@ LightArrangement::LightArrangement(const std::vector<Light> &lights) : lights(li
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, lightsBuffer);
     glBufferData(GL_SHADER_STORAGE_BUFFER, lights.size() * Light::stride(), nullptr, GL_DYNAMIC_COPY);
 
-    GLenum err = glGetError();
-    if (err != GL_NO_ERROR) {
-        std::stringstream ss;
-        ss << "OpenGL error detected at light arrangement alloc: 0x" << std::hex << err << std::endl;
-        log::error(ss.str());
-    }
+    GL_CHECK_ERROR()
 
     GLuint offset = 0;
     for(const auto& light : lights) {
@@ -54,12 +49,7 @@ LightArrangement::LightArrangement(const std::vector<Light> &lights) : lights(li
         offset += Light::stride();
     }
 
-    err = glGetError();
-    if (err != GL_NO_ERROR) {
-        std::stringstream ss;
-        ss << "OpenGL error detected after light arrangement alloc: 0x" << std::hex << err << std::endl;
-        log::error(ss.str());
-    }
+    GL_CHECK_ERROR()
 }
 
 LightArrangement::~LightArrangement() {

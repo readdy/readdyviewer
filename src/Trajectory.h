@@ -38,8 +38,10 @@
 namespace rv {
 
 struct TrajectoryEntry {
-    float x, y, z;
+    glm::vec3 pos;
     unsigned int type;
+    bool deactivated;
+    unsigned long id;
 };
 
 class Trajectory {
@@ -48,25 +50,25 @@ public:
     ~Trajectory();
 
     GLuint getPositionBuffer() const;
-    GLuint getDeactivatedBuffer() const;
 
     void frame();
     std::size_t nTimeSteps() const;
     std::size_t currentTimeStep() const;
 
-    GLuint getCurrentNParticles() const;
+    std::size_t getCurrentNParticles() const;
 
 private:
     std::size_t t;
     union {
         struct {
             GLuint positionBuffer;
-            GLuint deactivatedBuffer;
         };
-        GLuint buffers[2];
+        GLuint buffers[1];
     };
     std::size_t maxNParticles;
-    std::vector<std::vector<TrajectoryEntry>> entries;
+    std::vector<glm::vec4> posTypes;
+    std::vector<std::size_t> currentNParticles;
+    std::size_t T;
 };
 }
 

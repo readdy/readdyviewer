@@ -86,54 +86,34 @@ void initialize(bool debugContext) {
         auto nFrames = rnd::uniform_int(300, 500);
         entries.reserve((unsigned long) nFrames);
         for(auto i = 0; i < nFrames; ++i) {
-            auto nParticles = rnd::uniform_int(30, 100);
+            auto nParticles = i+5;
             std::vector<TrajectoryEntry> frame;
             frame.reserve((unsigned long) nParticles);
             for(auto k = 0; k < nParticles; ++k) {
                 TrajectoryEntry e;
-                e.x = rnd::uniform_real(-10.f, 10.f);
-                e.y = rnd::uniform_real(-10.f, 10.f);
-                e.z = rnd::uniform_real(-10.f, 10.f);
+                e.pos = glm::vec3(rnd::uniform_real(-10.f, 10.f), rnd::uniform_real(-10.f, 10.f), rnd::uniform_real(-10.f, 10.f));
                 e.type = 0;
+                e.id = (unsigned long) k;
                 frame.push_back(e);
             }
             entries.push_back(std::move(frame));
         }
         viewer = std::make_unique<Viewer>(entries);
-        {
-            GLenum err = glGetError();
-            if (err != GL_NO_ERROR) {
-                std::stringstream ss;
-                ss << "OpenGL error detected : 0x" << std::hex << err << std::endl;
-                log::error(ss.str());
-            }
-        }
+        GL_CHECK_ERROR()
     }
     glfwSetWindowUserPointer(window, viewer.get());
     glfwGetCursorPos(window, &cursor.x, &cursor.y);
     glfwSetCursorPosCallback(window, onMouseMove);
     glfwSetKeyCallback(window, onKeyEvent);
 
-    {
-        GLenum err = glGetError();
-        if (err != GL_NO_ERROR) {
-            std::stringstream ss;
-            ss << "OpenGL error detected at at: 0x" << std::hex << err << std::endl;
-            log::error(ss.str());
-        }
-    }
+    GL_CHECK_ERROR()
 
     {
         int w,h;
         glfwGetFramebufferSize(window, &w, &h);
         viewer->resize(static_cast<unsigned int>(w), static_cast<unsigned int>(h));
         {
-            GLenum err = glGetError();
-            if (err != GL_NO_ERROR) {
-                std::stringstream ss;
-                ss << "OpenGL error resize: 0x" << std::hex << err << std::endl;
-                log::error(ss.str());
-            }
+            GL_CHECK_ERROR()
         }
     }
 
