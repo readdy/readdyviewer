@@ -33,14 +33,16 @@
 
 namespace rv {
 
-Viewer::Viewer() : width(0), height(0), last_fps_time(glfwGetTime()), framecount(0), fps(0), running(false),
-                   guitimer(0.0f), trajectory({{{-10, 0, 0, 0}, {20, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, -10, 0}}}),
-                   camera() {
+Viewer::Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries)
+        : width(0), height(0), last_fps_time(glfwGetTime()), framecount(0), fps(0), running(false),
+          guitimer(0.0f), trajectory(entries),
+          interrupt(false), currentLightType(LightType::AMBIENT) {
 
     last_time = glfwGetTime();
 
     particleProgram.compileShader(GL_VERTEX_SHADER, "shaders/particles/vertex.glsl");
     particleProgram.compileShader(GL_FRAGMENT_SHADER, "shaders/particles/fragment.glsl");
+    particleProgram.compileShader(GL_FRAGMENT_SHADER, "shaders/light/light.glsl", "");
     particleProgram.link();
 
     glGenBuffers(2, buffers);
@@ -54,13 +56,14 @@ Viewer::Viewer() : width(0), height(0), last_fps_time(glfwGetTime()), framecount
     }
     // light
     {
-        lightparams_t params;
-        params.lightpos = glm::vec3(-20, 80, -2);
-        params.spotdir = glm::normalize(glm::vec3(.25, -1, .25));
-        params.spotexponent = 8;
-        params.lightintensity = 10000;
+        light_params params;
+        params.color = glm::vec4(1.0, .7, .7, 1);
+        params.direction = glm::vec4(glm::normalize(glm::vec3(-1, -1, -1)), 1);
+        params.position = glm::vec4(20, 20, 20, 1); // -20, 80, -2
+        params.intensity = .6f;
+        params.type = static_cast<unsigned int>(currentLightType);
         glBindBuffer(GL_UNIFORM_BUFFER, lightingBuffer);
-        glBufferData(GL_UNIFORM_BUFFER, sizeof(lightparams), &params, GL_STATIC_DRAW);
+        glBufferData(GL_UNIFORM_BUFFER, sizeof(params), &params, GL_STATIC_DRAW);
     }
 
     glBindBufferBase(GL_UNIFORM_BUFFER, 0, transformationBuffer);
@@ -90,10 +93,6 @@ void Viewer::updateViewMatrix() {
                     sizeof(glm::mat4), glm::value_ptr(camera.getViewMatrix()));
     glBufferSubData(GL_UNIFORM_BUFFER, offsetof (transformation_buffer_t, invviewmat),
                     sizeof(glm::mat4), glm::value_ptr(glm::inverse(camera.getViewMatrix())));
-
-    glm::vec3 eyepos = camera.position();
-    glBindBuffer(GL_UNIFORM_BUFFER, lightingBuffer);
-    glBufferSubData(GL_UNIFORM_BUFFER, offsetof (lightparams_t, eyepos), sizeof(eyepos), glm::value_ptr(eyepos));
 }
 
 void Viewer::onMouseMove(double x, double y) {
@@ -105,9 +104,11 @@ void Viewer::onMouseMove(double x, double y) {
             camera.movex(static_cast<float>(x));
             camera.movey(static_cast<float>(y));
         } else {
-            camera.rotate(dampening*static_cast<float>(y), dampening*static_cast<float>(-x));
+            camera.rotate(dampening * static_cast<float>(y), dampening * static_cast<float>(-x));
         }
         updateViewMatrix();
+    } else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT)) {
+        camera.zoom(static_cast<float>(x + y));
     }
 }
 
@@ -120,7 +121,14 @@ void Viewer::onMouseUp(int button) {
 }
 
 void Viewer::onKeyUp(int key) {
-
+    switch (key) {
+        case GLFW_KEY_ESCAPE:
+            interrupt = true;
+            break;
+        default:
+            log::trace("key {} was not recognized", key);
+            break;
+    }
 }
 
 void Viewer::onKeyDown(int key) {
@@ -128,8 +136,22 @@ void Viewer::onKeyDown(int key) {
         case GLFW_KEY_SPACE:
             running = !running;
             break;
+        case GLFW_KEY_L: {
+            currentLightType = LightType((static_cast<int>(currentLightType) + 1) % 6);
+            std::string typeName = [this]() {
+                switch (currentLightType) {
+                    case LightType::AMBIENT: return "ambient";
+                    case LightType::DIRECTION: return "direction";
+                    case LightType::POINT: return "point";
+                    case LightType::HEAD: return "head";
+                }
+            }();
+            updateLightParams();
+            log::debug("Now using: {} light", typeName);
+            break;
+        }
         default:
-            log::debug("key {} was not recognized", key);
+            log::trace("key {} was not recognized", key);
             break;
     }
 }
@@ -159,7 +181,7 @@ bool Viewer::frame() {
 
     framing.render();
     if (running) {
-        if(trajectory.currentTimeStep() < trajectory.nTimeSteps()) {
+        if (trajectory.currentTimeStep() < trajectory.nTimeSteps()) {
             trajectory.frame();
         } else {
             running = false;
@@ -180,7 +202,13 @@ bool Viewer::frame() {
     {
         log::trace("FPS: {}", fps);
     }
-    return true;
+    return !interrupt;
+}
+
+void Viewer::updateLightParams() {
+    unsigned int type = static_cast<unsigned int>(currentLightType);
+    glBindBuffer(GL_UNIFORM_BUFFER, lightingBuffer);
+    glBufferSubData(GL_UNIFORM_BUFFER, offsetof (light_params, type), sizeof(type), &type);
 }
 
 }

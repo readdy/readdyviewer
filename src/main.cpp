@@ -85,7 +85,29 @@ void initialize(bool debugContext) {
         glEnable(GL_DEBUG_OUTPUT);
     }
 
-    viewer = std::make_unique<Viewer>();
+
+    {
+        //         {{{-10, 0, 0, 0}, {20, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, -10, 0}}};
+
+        std::vector<std::vector<TrajectoryEntry>> entries;
+        auto nFrames = rnd::uniform_int(300, 500);
+        entries.reserve((unsigned long) nFrames);
+        for(auto i = 0; i < nFrames; ++i) {
+            auto nParticles = rnd::uniform_int(30, 100);
+            std::vector<TrajectoryEntry> frame;
+            frame.reserve((unsigned long) nParticles);
+            for(auto k = 0; k < nParticles; ++k) {
+                TrajectoryEntry e;
+                e.x = rnd::uniform_real(-10.f, 10.f);
+                e.y = rnd::uniform_real(-10.f, 10.f);
+                e.z = rnd::uniform_real(-10.f, 10.f);
+                e.type = 0;
+                frame.push_back(e);
+            }
+            entries.push_back(std::move(frame));
+        }
+        viewer = std::make_unique<Viewer>(entries);
+    }
     glfwSetWindowUserPointer(window, viewer.get());
     glfwGetCursorPos(window, &cursor.x, &cursor.y);
     glfwSetCursorPosCallback(window, onMouseMove);

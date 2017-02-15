@@ -37,11 +37,12 @@
 #include "Trajectory.h"
 #include "PointSprite.h"
 #include "Framing.h"
+#include "Light.h"
 
 namespace rv {
 class Viewer {
 public:
-    Viewer();
+    Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries);
 
     ~Viewer();
 
@@ -60,17 +61,9 @@ private:
         glm::mat4 projmat;
         glm::mat4 invviewmat;
     };
-    using lightparams_t = struct lightparams {
-        glm::vec3 lightpos;
-        float padding;
-        glm::vec3 spotdir;
-        float padding2;
-        glm::vec3 eyepos;
-        float spotexponent;
-        float lightintensity;
-    };
 
     void updateViewMatrix();
+    void updateLightParams();
 
     union {
         struct {
@@ -85,8 +78,9 @@ private:
     PointSprite pointSprite;
     ShaderProgram particleProgram;
     Camera camera;
+    LightType currentLightType;
 
-    bool running;
+    bool running, interrupt;
     glm::mat4 projmat;
     unsigned int width;
     unsigned int height;
