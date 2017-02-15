@@ -35,9 +35,9 @@
 namespace rv {
 
 Framing::Framing() {
-    program.compileShader(GL_VERTEX_SHADER, "shaders/framing/vertex.glsl");
-    program.compileShader(GL_FRAGMENT_SHADER, "shaders/framing/fragment.glsl");
-    program.compileShader(GL_FRAGMENT_SHADER, "shaders/light/light.glsl");
+    program.compileShader(GL_VERTEX_SHADER, "shaders/gl43/framing/vertex.glsl");
+    program.compileShader(GL_FRAGMENT_SHADER, "shaders/gl43/framing/fragment.glsl");
+    program.compileShader(GL_FRAGMENT_SHADER, "shaders/gl43/light/light.glsl");
     program.link();
     GL_CHECK_ERROR()
     program.use();

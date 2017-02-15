@@ -26,12 +26,10 @@
  * @file common.h
  * @brief 
  * @author clonker
- * @date 2/12/17
+ * @date 2/15/17
  */
 #ifndef PROJECT_COMMON_H
 #define PROJECT_COMMON_H
-
-#include <glbinding/gl/gl.h>
 
 #include <GLFW/glfw3.h>
 
@@ -51,6 +49,7 @@ using namespace gl;
 namespace rv {
 
 extern GLFWwindow *window;
+
 
 #define GL_CHECK_ERROR() { \
 GLenum err = glGetError(); \
@@ -140,8 +139,5 @@ Iter random_element(Iter start, const Iter end) {
     return start;
 }
 }
-
 }
-
-
 #endif //PROJECT_COMMON_H

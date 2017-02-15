@@ -33,7 +33,7 @@
 #ifndef PROJECT_TEXTURE_H
 #define PROJECT_TEXTURE_H
 
-#include "common.h"
+#include "common43.h"
 
 namespace rv {
 class Texture {

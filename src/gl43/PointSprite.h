@@ -1,5 +1,5 @@
 /********************************************************************
- * Copyright © 2016 Computational Molecular Biology Group,          *
+ * Copyright © 2016 Computational Molecular Biology Group,          * 
  *                  Freie Universität Berlin (GER)                  *
  *                                                                  *
  * This file is part of ReaDDy.                                     *
@@ -21,76 +21,42 @@
 
 
 /**
+ * << detailed description >>
  *
- *
- * @file Viewer.h
- * @brief 
+ * @file PointSprites.h
+ * @brief << brief description >>
  * @author clonker
- * @date 2/12/17
+ * @date 13.02.17
+ * @copyright GNU Lesser General Public License v3.0
  */
-#ifndef PROJECT_VIEWER_H
-#define PROJECT_VIEWER_H
 
-#include "common.h"
-#include "Camera.h"
-#include "ShaderProgram.h"
-#include "Trajectory.h"
-#include "PointSprite.h"
-#include "Framing.h"
-#include "LightArrangement.h"
+#ifndef PROJECT_POINTSPRITES_H
+#define PROJECT_POINTSPRITES_H
+
+#include "common43.h"
 
 namespace rv {
-class Viewer {
+class PointSprite {
 public:
-    Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries);
+    PointSprite();
+    ~PointSprite();
 
-    ~Viewer();
-
-    void onMouseMove(double x, double y);
-    void onMouseDown(int button);
-    void onMouseUp(int button);
-    void onKeyUp(int key);
-    void onKeyDown(int key);
-    void resize(unsigned int width, unsigned int height);
-
-    bool frame();
+    void setPositionBuffer(GLuint buffer, GLsizei stride = 0, GLintptr offset = 0);
+    void setHighlightBuffer(GLuint buffer, GLsizei stride = 0, GLintptr offset = 0);
+    void render(GLuint instances) const;
 
 private:
-    using transformation_buffer_t = struct transformation_buffer {
-        glm::mat4 viewmat;
-        glm::mat4 projmat;
-        glm::mat4 invviewmat;
-    };
-
-    void updateViewMatrix();
-
     union {
         struct {
-            GLuint transformationBuffer;
+            GLuint vertexBuffer;
+            GLuint indexBuffer;
         };
-        GLuint buffers[1];
+        GLuint buffers[2];
     };
-
-    Framing framing;
-    Trajectory trajectory;
-    PointSprite pointSprite;
-    ShaderProgram particleProgram;
-    Camera camera;
-    LightArrangement lights;
-
-    bool running, interrupt;
-    glm::mat4 projmat;
-    unsigned int width;
-    unsigned int height;
-    double last_time;
-    double last_fps_time;
-    float guitimer;
-    unsigned int framecount;
-    unsigned int fps;
-
-
+    GLuint vertexArray;
 };
+
 }
 
 
-#endif //PROJECT_VIEWER_H
+#endif //PROJECT_POINTSPRITES_H

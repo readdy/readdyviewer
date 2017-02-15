@@ -1,5 +1,5 @@
 /********************************************************************
- * Copyright © 2016 Computational Molecular Biology Group,          * 
+ * Copyright © 2016 Computational Molecular Biology Group,          *
  *                  Freie Universität Berlin (GER)                  *
  *                                                                  *
  * This file is part of ReaDDy.                                     *
@@ -21,41 +21,22 @@
 
 
 /**
- * << detailed description >>
  *
- * @file ShaderProgram.h
- * @brief << brief description >>
+ *
+ * @file common30.h
+ * @brief 
  * @author clonker
- * @date 13.02.17
- * @copyright GNU Lesser General Public License v3.0
+ * @date 2/15/17
  */
+#ifndef PROJECT_COMMON30_H
+#define PROJECT_COMMON30_H
 
-#ifndef PROJECT_SHADERPROGRAM_H
-#define PROJECT_SHADERPROGRAM_H
-
-#include "common.h"
+#include <glbinding/gl30/gl.h>
+#include "../common.h"
 
 namespace rv {
-class ShaderProgram {
-public:
-    ShaderProgram();
+namespace gl30 {
 
-    ~ShaderProgram();
-
-    void compileShader(GLenum type, const std::string &fname, const std::string &header = {});
-
-    void link();
-
-    void use();
-
-    GLint getUniformLocation(const char *name) const;
-
-    gl::GLuint get() const;
-
-private:
-    gl::GLuint program;
-};
 }
-
-
-#endif //PROJECT_SHADERPROGRAM_H
+}
+#endif //PROJECT_COMMON30_H

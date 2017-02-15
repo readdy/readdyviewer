@@ -23,40 +23,39 @@
 /**
  * << detailed description >>
  *
- * @file PointSprites.h
+ * @file ShaderProgram.h
  * @brief << brief description >>
  * @author clonker
  * @date 13.02.17
  * @copyright GNU Lesser General Public License v3.0
  */
 
-#ifndef PROJECT_POINTSPRITES_H
-#define PROJECT_POINTSPRITES_H
+#ifndef PROJECT_SHADERPROGRAM_H
+#define PROJECT_SHADERPROGRAM_H
 
-#include "common.h"
+#include "common43.h"
 
 namespace rv {
-class PointSprite {
+class ShaderProgram {
 public:
-    PointSprite();
-    ~PointSprite();
+    ShaderProgram();
 
-    void setPositionBuffer(GLuint buffer, GLsizei stride = 0, GLintptr offset = 0);
-    void setHighlightBuffer(GLuint buffer, GLsizei stride = 0, GLintptr offset = 0);
-    void render(GLuint instances) const;
+    ~ShaderProgram();
+
+    void compileShader(GLenum type, const std::string &fname, const std::string &header = {});
+
+    void link();
+
+    void use();
+
+    GLint getUniformLocation(const char *name) const;
+
+    gl::GLuint get() const;
 
 private:
-    union {
-        struct {
-            GLuint vertexBuffer;
-            GLuint indexBuffer;
-        };
-        GLuint buffers[2];
-    };
-    GLuint vertexArray;
+    gl::GLuint program;
 };
-
 }
 
 
-#endif //PROJECT_POINTSPRITES_H
+#endif //PROJECT_SHADERPROGRAM_H

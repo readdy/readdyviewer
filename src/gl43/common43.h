@@ -1,5 +1,5 @@
 /********************************************************************
- * Copyright © 2016 Computational Molecular Biology Group,          * 
+ * Copyright © 2016 Computational Molecular Biology Group,          *
  *                  Freie Universität Berlin (GER)                  *
  *                                                                  *
  * This file is part of ReaDDy.                                     *
@@ -21,57 +21,25 @@
 
 
 /**
- * << detailed description >>
  *
- * @file Trajectory.h
- * @brief << brief description >>
+ *
+ * @file common.h
+ * @brief 
  * @author clonker
- * @date 13.02.17
- * @copyright GNU Lesser General Public License v3.0
+ * @date 2/12/17
  */
+#ifndef PROJECT_COMMON43_H
+#define PROJECT_COMMON43_H
 
-#ifndef PROJECT_TRAJECTORY_H
-#define PROJECT_TRAJECTORY_H
-
-#include "common.h"
+#include <glbinding/gl43/gl.h>
+#include "../common.h"
 
 namespace rv {
 
-struct TrajectoryEntry {
-    glm::vec3 pos;
-    unsigned int type;
-    bool deactivated;
-    unsigned long id;
-};
 
-class Trajectory {
-public:
-    Trajectory(const std::vector<std::vector<TrajectoryEntry>> &entries);
-    ~Trajectory();
 
-    GLuint getPositionBuffer() const;
 
-    void frame();
-    void reset();
-    std::size_t nTimeSteps() const;
-    std::size_t currentTimeStep() const;
-
-    std::size_t getCurrentNParticles() const;
-
-private:
-    std::size_t t;
-    union {
-        struct {
-            GLuint positionBuffer;
-        };
-        GLuint buffers[1];
-    };
-    std::size_t maxNParticles;
-    std::vector<glm::vec4> posTypes;
-    std::vector<std::size_t> currentNParticles;
-    std::size_t T;
-};
 }
 
 
-#endif //PROJECT_TRAJECTORY_H
+#endif //PROJECT_COMMON43_H

@@ -23,67 +23,55 @@
 /**
  * << detailed description >>
  *
- * @file LightArrangement.h
+ * @file Trajectory.h
  * @brief << brief description >>
  * @author clonker
- * @date 15.02.17
+ * @date 13.02.17
  * @copyright GNU Lesser General Public License v3.0
  */
 
-#ifndef PROJECT_LIGHTARRANGEMENT_H
-#define PROJECT_LIGHTARRANGEMENT_H
+#ifndef PROJECT_TRAJECTORY_H
+#define PROJECT_TRAJECTORY_H
 
-#include "common.h"
+#include "common43.h"
 
 namespace rv {
-enum class LightType {
-    AMBIENT, DIRECTION, POINT, HEAD
+
+struct TrajectoryEntry {
+    glm::vec3 pos;
+    unsigned int type;
+    bool deactivated;
+    unsigned long id;
 };
 
-class Light {
+class Trajectory {
 public:
-    Light(const glm::vec3& position, const glm::vec3& direction, const glm::vec3& color, float intensity, LightType type);
-    ~Light();
+    Trajectory(const std::vector<std::vector<TrajectoryEntry>> &entries);
+    ~Trajectory();
 
-    static std::size_t stride();
-    void bindParams(GLuint buffer, GLuint offset) const;
-private:
-    using light_params_t = struct light_params {
-        glm::vec4 position;
-        glm::vec4 direction;
-        glm::vec4 color;
-        float intensity;
-        GLuint type;
-        float padding[2];
-    };
-    light_params_t params;
-    GLuint buffer;
-    GLuint offset;
-};
+    GLuint getPositionBuffer() const;
 
+    void frame();
+    void reset();
+    std::size_t nTimeSteps() const;
+    std::size_t currentTimeStep() const;
 
-class LightArrangement {
-public:
-    explicit LightArrangement(const std::vector<Light> &lights);
-    ~LightArrangement();
-
-    GLuint getLightsBuffer() const;
-
-    const std::vector<Light> &getLights() const;
+    std::size_t getCurrentNParticles() const;
 
 private:
-
-    std::vector<Light> lights;
-
+    std::size_t t;
     union {
         struct {
-            GLuint lightsBuffer;
+            GLuint positionBuffer;
         };
         GLuint buffers[1];
     };
+    std::size_t maxNParticles;
+    std::vector<glm::vec4> posTypes;
+    std::vector<std::size_t> currentNParticles;
+    std::size_t T;
 };
-
 }
 
 
-#endif //PROJECT_LIGHTARRANGEMENT_H
+#endif //PROJECT_TRAJECTORY_H
