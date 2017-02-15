@@ -21,7 +21,7 @@ vec3 compute_light (out vec3 specular, in vec3 inNormal, in vec3 position);
 void main (void)
 {
 	float r = dot (fTexcoord, fTexcoord);
-	if (r > fRadius*fRadius)
+	if (r > 1)
 		discard;
 
 	vec3 normal = vec3 (fTexcoord, sqrt (1 - r));

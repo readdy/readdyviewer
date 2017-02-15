@@ -1,7 +1,7 @@
 #version 430 core
 
 // input vertex attributes
-layout (location = 0) in vec3 vPosition;
+layout (location = 0) in vec4 vPosition;
 layout (location = 1) in vec2 vTexcoord;
 layout (location = 2) in vec3 vNormal;
 
@@ -21,8 +21,8 @@ void main (void)
 {
 	// pass data to the fragment shader
 	fTexcoord = vTexcoord;
-	fNormal = vNormal;
-	vec4 pos = viewmat * vec4(vPosition, 1);
+	fNormal = mat3(viewmat) * vNormal;
+	vec4 pos = viewmat * vec4(vPosition.xyz, 1);
 	fPosition = pos.xyz;
 	// compute and output the vertex position
 	// after view transformation and projection

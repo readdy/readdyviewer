@@ -35,7 +35,6 @@ void main (void)
 
 	// compute and output the vertex position
 	// after view transformation and projection
-	pos = projmat * pos;
-	gl_Position = pos;
+	gl_Position = projmat * pos;
 	fRadius = particleSize;
 }

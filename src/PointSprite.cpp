@@ -69,7 +69,7 @@ PointSprite::~PointSprite() {
 void PointSprite::setPositionBuffer(GLuint buffer, GLsizei stride, GLintptr offset) {
     glBindVertexArray(vertexArray);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (const void *) offset);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride, (const void *) offset);
     glEnableVertexAttribArray(1);
     glVertexAttribDivisor(1,1);
 }

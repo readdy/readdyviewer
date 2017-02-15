@@ -36,10 +36,10 @@ namespace rv {
 std::vector<Light> getLights() {
     std::vector<Light> lights;
     {
-        Light directionLight {glm::vec3(20, 20, 20), glm::normalize(glm::vec3(-1, -1, -1)), glm::vec3(.5, .5, .5), .8f, LightType::AMBIENT};
-        lights.push_back(directionLight);
-        Light light2 {glm::vec3(40, 40, 40), glm::normalize(glm::vec3(1, 1, 1)), glm::vec3(.5, .5, .5), .4f, LightType::DIRECTION};
-        // lights.push_back(light2);
+        //Light directionLight {glm::vec3(20, 20, 20), glm::normalize(glm::vec3(-1, -1, -1)), glm::vec3(.5, .5, .5), .8f, LightType::AMBIENT};
+        //lights.push_back(directionLight);
+        //Light light2 {glm::vec3(40, 40, 40), glm::normalize(glm::vec3(1, 1, 1)), glm::vec3(.5, .5, .5), .4f, LightType::DIRECTION};
+        //lights.push_back(light2);
         Light light3 {glm::vec3(40, 40, 40), glm::normalize(glm::vec3(1, 1, 1)), glm::vec3(.0, 1., .0), .9f, LightType::HEAD};
         lights.push_back(light3);
     }
@@ -221,7 +221,8 @@ void Viewer::resize(unsigned int width, unsigned int height) {
     }
     Viewer::width = width;
     Viewer::height = height;
-    projmat = glm::perspective(45.f * float(M_PI / 180.), float(width) / float(height), 1.0f, 200.0f);
+//    projmat = glm::perspective(45.f * float(M_PI / 180.), float(width) / float(height), 1.0f, 200.0f);
+    projmat = glm::infinitePerspective(45.f * float(M_PI / 180.), float(width) / float(height), 1.0f);
     glBindBuffer(GL_UNIFORM_BUFFER, transformationBuffer);
     glBufferSubData(GL_UNIFORM_BUFFER, offsetof(transformation_buffer_t, projmat), sizeof(glm::mat4),
                     glm::value_ptr(projmat));
