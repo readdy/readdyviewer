@@ -39,7 +39,7 @@ Trajectory::Trajectory(const std::vector<std::vector<rv::TrajectoryEntry>> &entr
     currentNParticles.reserve(T);
 
     glm::vec3 bbox_min{1, 1, 1};
-    glm::vec3 bbox_max{11, 11, 11};
+    glm::vec3 bbox_max{50, 50, 50};
     glm::vec3 max, min;
     {
         max = min = {entries[0][0].pos.x, entries[0][0].pos.y, entries[0][0].pos.z};
@@ -59,7 +59,7 @@ Trajectory::Trajectory(const std::vector<std::vector<rv::TrajectoryEntry>> &entr
     // translate s.t. min is at bbox_min
     glm::vec3 posTranslation = bbox_min - min;
     // scale s.t. max is inside (10, 10, 10)
-    float scale = 1.0f;
+    float scale;
     if(max.x > max.y && max.x > max.z) {
         // x largest
         scale = 11.f / (max.x + posTranslation.x);
@@ -128,5 +128,9 @@ std::size_t Trajectory::currentTimeStep() const {
 
 std::size_t Trajectory::getCurrentNParticles() const {
     return currentNParticles.at(t-1);
+}
+
+void Trajectory::reset() {
+    t = 1;
 }
 }

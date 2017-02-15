@@ -52,6 +52,7 @@ public:
     GLuint getPositionBuffer() const;
 
     void frame();
+    void reset();
     std::size_t nTimeSteps() const;
     std::size_t currentTimeStep() const;
 

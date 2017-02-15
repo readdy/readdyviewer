@@ -35,7 +35,7 @@ namespace rv {
 std::vector<Light> getLights() {
     std::vector<Light> lights;
     lights.emplace_back(glm::vec3(20, 20, 20), glm::normalize(glm::vec3(-1, -1, -1)), glm::vec3(.5, .5, .5), .8f, LightType::AMBIENT);
-    lights.emplace_back(glm::vec3(40, 40, 40), glm::normalize(glm::vec3(1, 1, 1)), glm::vec3(.5, .5, .5), .4f, LightType::DIRECTION);
+    lights.emplace_back(glm::vec3(40, 40, 40), glm::normalize(glm::vec3(1, 1, 1)), glm::vec3(.5, .5, .5), .4f, LightType::HEAD);
     return lights;
 }
 
@@ -111,8 +111,6 @@ void Viewer::onMouseMove(double x, double y) {
             camera.rotate(dampening * static_cast<float>(y), dampening * static_cast<float>(-x));
         }
         updateViewMatrix();
-    } else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT)) {
-        camera.zoom(static_cast<float>(x + y));
     }
 }
 
@@ -140,6 +138,9 @@ void Viewer::onKeyDown(int key) {
         case GLFW_KEY_SPACE:
             running = !running;
             break;
+        case GLFW_KEY_TAB:
+            trajectory.reset();
+            break;
         default:
             log::trace("key {} was not recognized", key);
             break;
@@ -147,7 +148,8 @@ void Viewer::onKeyDown(int key) {
 }
 
 void Viewer::resize(unsigned int width, unsigned int height) {
-    GL_CHECK_ERROR()Viewer::width = width;
+    GL_CHECK_ERROR()
+    Viewer::width = width;
     Viewer::height = height;
     projmat = glm::infinitePerspective(45.f * float(M_PI / 180.), float(width) / float(height), 1.0f);
     glBindBuffer(GL_UNIFORM_BUFFER, transformationBuffer);
