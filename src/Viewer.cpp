@@ -35,14 +35,8 @@ namespace rv {
 
 std::vector<Light> getLights() {
     std::vector<Light> lights;
-    {
-        //Light directionLight {glm::vec3(20, 20, 20), glm::normalize(glm::vec3(-1, -1, -1)), glm::vec3(.5, .5, .5), .8f, LightType::AMBIENT};
-        //lights.push_back(directionLight);
-        //Light light2 {glm::vec3(40, 40, 40), glm::normalize(glm::vec3(1, 1, 1)), glm::vec3(.5, .5, .5), .4f, LightType::DIRECTION};
-        //lights.push_back(light2);
-        Light light3 {glm::vec3(40, 40, 40), glm::normalize(glm::vec3(1, 1, 1)), glm::vec3(.0, 1., .0), .9f, LightType::HEAD};
-        lights.push_back(light3);
-    }
+    lights.emplace_back(glm::vec3(20, 20, 20), glm::normalize(glm::vec3(-1, -1, -1)), glm::vec3(.5, .5, .5), .8f, LightType::AMBIENT);
+    lights.emplace_back(glm::vec3(40, 40, 40), glm::normalize(glm::vec3(1, 1, 1)), glm::vec3(.5, .5, .5), .4f, LightType::DIRECTION);
     return lights;
 }
 
