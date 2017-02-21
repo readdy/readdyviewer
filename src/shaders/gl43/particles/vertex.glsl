@@ -1,9 +1,18 @@
 #version 430 core
 
+struct ParticleConfiguration {
+    vec4 color;
+    float radius;
+};
+
 // input vertex attributes
 layout (location = 0) in vec2 vPosition;
-layout (location = 1) in vec3 particlePosition;
+layout (location = 1) in vec4 particlePosition;
 layout (location = 2) in uint highlight;
+
+layout (std430, binding = 0) readonly buffer ParticleConfigurationBuffer {
+    ParticleConfiguration particleConfigs[];
+};
 
 // projection and view matrix
 layout (binding = 0, std140) uniform TransformationBlock {
@@ -21,12 +30,12 @@ out float fRadius;
 void main (void)
 {
 	// pass data to the fragment shader
-	float particleSize = .6;
-	vec4 pos = viewmat * vec4 (particlePosition, 1.0);
+	float particleSize = particleConfigs[uint(particlePosition.w)].radius;
+	vec4 pos = viewmat * vec4 (particlePosition.xyz, 1.0);
 	pos.xy += vPosition * particleSize;
 	fPosition = pos.xyz;
 	fTexcoord = vPosition;
-	fColor = vec3 (0.25, 0, 1); //particleColor;
+	fColor = particleConfigs[uint(particlePosition.w)].color.xyz;
 	if ((highlight&1) == 1) {
 		fColor = vec3 (1, 0, 0);
 	} else if ((highlight&2) ==2) {

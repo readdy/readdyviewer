@@ -36,7 +36,7 @@
 namespace rv {
 
 LightArrangement::LightArrangement(const std::vector<Light> &lights) : lights(lights) {
-    glGenBuffers(1, buffers);
+    glGenBuffers(sizeof(buffers) / sizeof(buffers[0]), buffers);
 
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, lightsBuffer);
     glBufferData(GL_SHADER_STORAGE_BUFFER, lights.size() * Light::stride(), nullptr, GL_DYNAMIC_COPY);
@@ -53,7 +53,7 @@ LightArrangement::LightArrangement(const std::vector<Light> &lights) : lights(li
 }
 
 LightArrangement::~LightArrangement() {
-    glDeleteBuffers(1, buffers);
+    glDeleteBuffers(sizeof(buffers) / sizeof(buffers[0]), buffers);
 }
 
 GLuint LightArrangement::getLightsBuffer() const {

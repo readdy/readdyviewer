@@ -45,7 +45,7 @@ Framing::Framing() {
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
-    glGenBuffers(4, buffers);
+    glGenBuffers(sizeof(buffers) / sizeof(buffers[0]), buffers);
 
     // store vertices to a buffer object
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
@@ -108,7 +108,7 @@ Framing::Framing() {
 }
 
 Framing::~Framing() {
-    glDeleteBuffers(4, buffers);
+    glDeleteBuffers(sizeof(buffers) / sizeof(buffers[0]), buffers);
     glDeleteVertexArrays(1, &vao);
 }
 

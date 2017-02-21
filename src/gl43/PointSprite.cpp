@@ -37,7 +37,7 @@ namespace rv {
 PointSprite::PointSprite() {
     glGenVertexArrays(1, &vertexArray);
     glBindVertexArray(vertexArray);
-    glGenBuffers(2, buffers);
+    glGenBuffers(sizeof(buffers) / sizeof(buffers[0]), buffers);
     GLshort vertices[] = {
             -32767, 32767,
             32767, 32767,
@@ -62,7 +62,7 @@ PointSprite::PointSprite() {
 }
 
 PointSprite::~PointSprite() {
-    glDeleteBuffers (2, buffers);
+    glDeleteBuffers (sizeof(buffers) / sizeof(buffers[0]), buffers);
     glDeleteVertexArrays (1, &vertexArray);
 }
 
@@ -87,4 +87,5 @@ void PointSprite::render(GLuint instances) const {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
     glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0, instances);
 }
+
 }

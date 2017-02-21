@@ -41,7 +41,7 @@ std::vector<Light> getLights() {
 
 Viewer::Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries)
         : width(0), height(0), last_fps_time(glfwGetTime()), framecount(0), fps(0), running(false),
-          guitimer(0.0f), trajectory(entries),
+          guitimer(0.0f), trajectory(entries, {}),
           interrupt(false), lights(getLights()) {
     GL_CHECK_ERROR()
 
@@ -66,7 +66,9 @@ Viewer::Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries)
     GL_CHECK_ERROR()
     glBindBufferBase(GL_UNIFORM_BUFFER, 0, transformationBuffer);
     GL_CHECK_ERROR()
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, lights.getLightsBuffer());
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, trajectory.getConfigurationBuffer());
+    GL_CHECK_ERROR()
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, lights.getLightsBuffer());
     GL_CHECK_ERROR()
 
     glEnable(GL_DEPTH_TEST);

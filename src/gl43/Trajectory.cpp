@@ -33,7 +33,9 @@
 #include "Trajectory.h"
 
 namespace rv {
-Trajectory::Trajectory(const std::vector<std::vector<rv::TrajectoryEntry>> &entries) : t(0) {
+Trajectory::Trajectory(const std::vector<std::vector<rv::TrajectoryEntry>> &entries,
+                       const TrajectoryConfiguration &config)
+        : t(0), config(config), maxType(0), defaultColor(0.25, 0, 1), defaultRadius(.6) {
 
     T = entries.size();
     currentNParticles.reserve(T);
@@ -53,6 +55,7 @@ Trajectory::Trajectory(const std::vector<std::vector<rv::TrajectoryEntry>> &entr
                 if (entry.pos.x > max.x) max.x = entry.pos.x;
                 if (entry.pos.y > max.y) max.y = entry.pos.y;
                 if (entry.pos.z > max.z) max.z = entry.pos.z;
+                if (entry.type > maxType) maxType = entry.type;
             }
         }
     }
@@ -93,13 +96,54 @@ Trajectory::Trajectory(const std::vector<std::vector<rv::TrajectoryEntry>> &entr
     }
 
     glGenBuffers(sizeof(buffers) / sizeof(buffers[0]), buffers);
+    // positions
+    {
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, positionBuffer);
+        glBufferData(GL_SHADER_STORAGE_BUFFER, 4 * sizeof(float) * maxNParticles, nullptr, GL_DYNAMIC_COPY);
+    }
+    // config
+    {
+        std::vector<particle_config_t> conf;
+        conf.reserve(maxType + 1);
+        for(unsigned int i = 0; i < maxType + 1; ++i) {
+            particle_config_t c;
+            {
+                decltype(config.colors.begin()) it;
+                if ((it = config.colors.find(i)) != config.colors.end()) {
+                    c.color = glm::vec4(it->second, 0);
+                } else {
+                    c.color = glm::vec4(defaultColor, 0);
+                }
+            }
+            {
+                decltype(config.radii.begin()) it;
+                if((it = config.radii.find(i)) != config.radii.end()) {
+                    c.radius = it->second;
+                } else {
+                    c.radius = defaultRadius;
+                }
+            }
+            conf.push_back(std::move(c));
+        }
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, particleConfigurationBuffer);
+        glBufferData(GL_SHADER_STORAGE_BUFFER, conf.size() * sizeof(particle_config_t), nullptr, GL_DYNAMIC_COPY);
+        GL_CHECK_ERROR()
+        // bind data
+        {
+            GLuint offset = 0;
+            for (const auto &c : conf) {
+                glBufferSubData(GL_SHADER_STORAGE_BUFFER, offset + offsetof(particle_config_t, color), sizeof(c.color), glm::value_ptr(c.color));
+                glBufferSubData(GL_SHADER_STORAGE_BUFFER, offset + offsetof(particle_config_t, radius), sizeof(c.radius), &c.radius);
+                offset += sizeof(particle_config_t);
+            }
+        }
+        GL_CHECK_ERROR()
+    }
 
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, positionBuffer);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, 4 * sizeof(float) * maxNParticles, nullptr, GL_DYNAMIC_COPY);
 }
 
 Trajectory::~Trajectory() {
-    glDeleteBuffers(3, buffers);
+    glDeleteBuffers(sizeof(buffers) / sizeof(buffers[0]), buffers);
 }
 
 GLuint Trajectory::getPositionBuffer() const {
@@ -133,4 +177,9 @@ std::size_t Trajectory::getCurrentNParticles() const {
 void Trajectory::reset() {
     t = 1;
 }
+
+GLuint Trajectory::getConfigurationBuffer() const {
+    return particleConfigurationBuffer;
+}
+
 }

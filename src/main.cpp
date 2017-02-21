@@ -83,7 +83,7 @@ void initialize(bool debugContext) {
         //         {{{-10, 0, 0, 0}, {20, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, -10, 0}}};
 
         std::vector<std::vector<TrajectoryEntry>> entries;
-        auto nFrames = rnd::uniform_int(300, 500);
+        auto nFrames = rnd::uniform_int(10, 30);
         entries.reserve((unsigned long) nFrames);
         for(auto i = 0; i < nFrames; ++i) {
             auto nParticles = i+5;
@@ -92,7 +92,7 @@ void initialize(bool debugContext) {
             for(auto k = 0; k < nParticles; ++k) {
                 TrajectoryEntry e;
                 e.pos = glm::vec3(rnd::uniform_real(-10.f, 10.f), rnd::uniform_real(-10.f, 10.f), rnd::uniform_real(-10.f, 10.f));
-                e.type = 0;
+                e.type = 1;
                 e.id = (unsigned long) k;
                 frame.push_back(e);
             }

@@ -38,18 +38,25 @@
 namespace rv {
 
 struct TrajectoryEntry {
-    glm::vec3 pos;
-    unsigned int type;
-    bool deactivated;
+    using pos_t = glm::vec3;
+    using type_t = unsigned int;
+    pos_t pos;
+    type_t type;
     unsigned long id;
+};
+
+struct TrajectoryConfiguration {
+    std::unordered_map<TrajectoryEntry::type_t, glm::vec3> colors {};
+    std::unordered_map<TrajectoryEntry::type_t, float> radii {};
 };
 
 class Trajectory {
 public:
-    Trajectory(const std::vector<std::vector<TrajectoryEntry>> &entries);
+    Trajectory(const std::vector<std::vector<TrajectoryEntry>> &entries, const TrajectoryConfiguration &config);
     ~Trajectory();
 
     GLuint getPositionBuffer() const;
+    GLuint getConfigurationBuffer() const;
 
     void frame();
     void reset();
@@ -60,16 +67,26 @@ public:
 
 private:
     std::size_t t;
+    using particle_config_t = struct particle_config {
+        glm::vec4 color;
+        float radius;
+        float padding[3];
+    };
     union {
         struct {
             GLuint positionBuffer;
+            GLuint particleConfigurationBuffer;
         };
-        GLuint buffers[1];
+        GLuint buffers[2];
     };
     std::size_t maxNParticles;
     std::vector<glm::vec4> posTypes;
     std::vector<std::size_t> currentNParticles;
     std::size_t T;
+    TrajectoryConfiguration config;
+    TrajectoryEntry::type_t maxType;
+    glm::vec3 defaultColor;
+    float defaultRadius;
 };
 }
 
