@@ -61,18 +61,21 @@ Trajectory::Trajectory(const std::vector<std::vector<rv::TrajectoryEntry>> &entr
     }
     // translate s.t. min is at bbox_min
     glm::vec3 posTranslation = bbox_min - min;
+    log::debug("translate every particle by {}, {}, {}", posTranslation.x, posTranslation.y, posTranslation.z);
     // scale s.t. max is inside (10, 10, 10)
     float scale;
     if(max.x > max.y && max.x > max.z) {
         // x largest
-        scale = 11.f / (max.x + posTranslation.x);
+        scale = bbox_max.x / (max.x + posTranslation.x);
     } else if(max.y > max.x && max.y > max.z) {
         // y largest
-        scale = 11.f / (max.y + posTranslation.y);
+        scale = bbox_max.x / (max.y + posTranslation.y);
     } else {
         // z largest
-        scale = 11.f / (max.z + posTranslation.z);
+        scale = bbox_max.x / (max.z + posTranslation.z);
     }
+    scale = 1.0;
+    log::debug("scale every particle by {}", scale);
 
     maxNParticles = 0;
     for (auto it = entries.begin(); it != entries.end(); ++it) {
@@ -84,9 +87,10 @@ Trajectory::Trajectory(const std::vector<std::vector<rv::TrajectoryEntry>> &entr
         for (std::size_t i = 0; i < entries.size(); ++i) {
             const auto &frame = entries.at(i);
             std::size_t j = 0;
-            auto it_pt = posTypes.begin();
+            std::size_t offset = i * maxNParticles;
+            auto it_pt = posTypes.begin() + offset;
             auto it_frame = frame.begin();
-            for (; it_pt != posTypes.end(); ++it_pt, ++j, ++it_frame) {
+            for (; it_pt != posTypes.begin() + offset + frame.size(); ++it_pt, ++j, ++it_frame) {
                 // project into [0, 10]**3
                 if(j < frame.size()) {
                     *it_pt = glm::vec4(scale * (it_frame->pos + posTranslation), it_frame->type);
@@ -151,11 +155,13 @@ GLuint Trajectory::getPositionBuffer() const {
 }
 
 void Trajectory::frame() {
-    if (++t <= T) {
+    t += config.stride;
+    if (t <= T) {
+        log::debug("frame: {} / {}", t, T);
         GLuint tmpBuffer;
         glGenBuffers(1, &tmpBuffer);
         glBindBuffer(GL_COPY_READ_BUFFER, tmpBuffer);
-        glBufferData(GL_COPY_READ_BUFFER, 4 * sizeof(float) * getCurrentNParticles(), posTypes.data(), GL_STREAM_COPY);
+        glBufferData(GL_COPY_READ_BUFFER, 4 * sizeof(float) * getCurrentNParticles(), posTypes.data() + (t-config.stride)*maxNParticles, GL_STREAM_COPY);
         glBindBuffer(GL_COPY_WRITE_BUFFER, positionBuffer);
         glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, 4 * sizeof(float) * getCurrentNParticles());
         glDeleteBuffers(1, &tmpBuffer);
@@ -167,15 +173,23 @@ std::size_t Trajectory::nTimeSteps() const {
 }
 
 std::size_t Trajectory::currentTimeStep() const {
-    return t;
+    return std::min(t, T);
 }
 
 std::size_t Trajectory::getCurrentNParticles() const {
-    return currentNParticles.at(t-1);
+    return currentNParticles.at(currentTimeStep()-config.stride);
 }
 
 void Trajectory::reset() {
-    t = 1;
+    t = config.stride;
+    log::debug("frame: {} / {}", t, T);
+    GLuint tmpBuffer;
+    glGenBuffers(1, &tmpBuffer);
+    glBindBuffer(GL_COPY_READ_BUFFER, tmpBuffer);
+    glBufferData(GL_COPY_READ_BUFFER, 4 * sizeof(float) * getCurrentNParticles(), posTypes.data(), GL_STREAM_COPY);
+    glBindBuffer(GL_COPY_WRITE_BUFFER, positionBuffer);
+    glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, 4 * sizeof(float) * getCurrentNParticles());
+    glDeleteBuffers(1, &tmpBuffer);
 }
 
 GLuint Trajectory::getConfigurationBuffer() const {

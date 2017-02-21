@@ -50,6 +50,7 @@ struct TrajectoryEntry {
 struct TrajectoryConfiguration {
     std::unordered_map<TrajectoryEntry::type_t, glm::vec3> colors {};
     std::unordered_map<TrajectoryEntry::type_t, float> radii {};
+    unsigned int stride = 1;
 };
 
 class Trajectory {

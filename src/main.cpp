@@ -172,7 +172,8 @@ PYBIND11_PLUGIN(readdyviewer) {
     py::class_<rv::TrajectoryConfiguration>(m, "Configuration")
             .def(py::init<>())
             .def_readwrite("colors", &rv::TrajectoryConfiguration::colors)
-            .def_readwrite("radii", &rv::TrajectoryConfiguration::radii);
+            .def_readwrite("radii", &rv::TrajectoryConfiguration::radii)
+            .def_readwrite("stride", &rv::TrajectoryConfiguration::stride);
 
     py::class_<rv::TrajectoryEntry>(m, "TrajectoryEntry")
             .def(py::init < float, float, float, unsigned
@@ -203,11 +204,9 @@ PYBIND11_PLUGIN(readdyviewer) {
                     std::vector<std::vector<rv::TrajectoryEntry>> data;
                     data.reserve(n_frames);
                     for (std::size_t t = 0; t < n_frames; ++t) {
-                        rv::log::debug("converting frame {} ... ", t);
                         std::vector<rv::TrajectoryEntry> frame;
 
                         auto n_particles = data_n_particles[t];
-                        rv::log::debug("\t\t got n_particles={}", n_particles);
                         frame.reserve(n_particles);
                         for (std::size_t p = 0; p < n_particles; ++p) {
                             frame.emplace_back(data_positions[t][p][0], data_positions[t][p][1],
@@ -215,7 +214,6 @@ PYBIND11_PLUGIN(readdyviewer) {
                         }
 
                         data.push_back(std::move(frame));
-                        rv::log::debug(" ... done");
                     }
 
                     try {
