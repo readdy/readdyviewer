@@ -39,16 +39,9 @@ std::vector<Light> getLights() {
     return lights;
 }
 
-TrajectoryConfiguration getTrajectoryConfig() {
-    TrajectoryConfiguration config;
-    config.colors[1] = glm::vec3(1, .25, .25);
-    config.radii[0] = .1;
-    return config;
-}
-
-Viewer::Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries)
+Viewer::Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries, const TrajectoryConfiguration& config)
         : width(0), height(0), last_fps_time(glfwGetTime()), framecount(0), fps(0), running(false),
-          guitimer(0.0f), trajectory(entries, getTrajectoryConfig()),
+          guitimer(0.0f), trajectory(entries, config),
           interrupt(false), lights(getLights()) {
     GL_CHECK_ERROR()
 

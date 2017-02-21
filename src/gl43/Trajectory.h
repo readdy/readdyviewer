@@ -40,6 +40,8 @@ namespace rv {
 struct TrajectoryEntry {
     using pos_t = glm::vec3;
     using type_t = unsigned int;
+    TrajectoryEntry();
+    TrajectoryEntry(float x, float y, float z, type_t type, unsigned long id);
     pos_t pos;
     type_t type;
     unsigned long id;

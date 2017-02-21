@@ -42,7 +42,7 @@
 namespace rv {
 class Viewer {
 public:
-    Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries);
+    Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries, const TrajectoryConfiguration& config);
 
     ~Viewer();
 

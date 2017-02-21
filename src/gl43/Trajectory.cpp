@@ -182,4 +182,10 @@ GLuint Trajectory::getConfigurationBuffer() const {
     return particleConfigurationBuffer;
 }
 
+TrajectoryEntry::TrajectoryEntry(float x, float y, float z, TrajectoryEntry::type_t type, unsigned long id)
+        : pos(x,y,z), type(type), id(id){
+
+}
+
+TrajectoryEntry::TrajectoryEntry() = default;
 }
