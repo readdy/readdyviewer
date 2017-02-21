@@ -92,7 +92,7 @@ void initialize(bool debugContext) {
             for(auto k = 0; k < nParticles; ++k) {
                 TrajectoryEntry e;
                 e.pos = glm::vec3(rnd::uniform_real(-10.f, 10.f), rnd::uniform_real(-10.f, 10.f), rnd::uniform_real(-10.f, 10.f));
-                e.type = 1;
+                e.type = k % 2 == 0 ? 0 : 1;
                 e.id = (unsigned long) k;
                 frame.push_back(e);
             }
