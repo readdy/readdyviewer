@@ -40,6 +40,7 @@
 #include <glm/gtc/quaternion.hpp>
 
 #include <spdlog/spdlog.h>
+#include <spdlog/fmt/ostr.h>
 
 #include <sstream>
 #include <random>

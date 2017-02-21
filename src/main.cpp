@@ -155,7 +155,13 @@ void cleanup() {
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/stl_bind.h>
 #include <pybind11/numpy.h>
+
+using colors_map = decltype(std::declval<rv::TrajectoryConfiguration>().colors);
+using radii_map = decltype(std::declval<rv::TrajectoryConfiguration>().radii);
+PYBIND11_MAKE_OPAQUE(colors_map)
+PYBIND11_MAKE_OPAQUE(radii_map)
 
 namespace py = pybind11;
 
@@ -213,6 +219,10 @@ PYBIND11_PLUGIN(readdyviewer) {
                     }
 
                     try {
+                        rv::log::debug("got config with colors: ");
+                        for(auto it = config.colors.begin(); it != config.colors.end(); ++it) {
+                            rv::log::debug("\t {} -> ({}, {}, {})", it->first, it->second.x, it->second.y, it->second.z);
+                        }
                         rv::initialize(false, data, config);
                         rv::cleanup();
                     } catch (const std::exception &e) {
@@ -259,6 +269,9 @@ PYBIND11_PLUGIN(readdyviewer) {
               }
               return 0;
           });
+
+    py::bind_map<colors_map>(m, "ColorsMap");
+    py::bind_map<radii_map>(m, "RadiiMap");
     return m.ptr();
 }
 
