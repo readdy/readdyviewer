@@ -162,13 +162,16 @@ namespace py = pybind11;
 PYBIND11_PLUGIN(readdyviewer) {
     py::module m("readdyviewer");
 
+    py::class_<glm::vec3>(m, "Color").def(py::init<float, float, float>());
     py::class_<rv::TrajectoryConfiguration>(m, "Configuration")
             .def(py::init<>())
             .def_readwrite("colors", &rv::TrajectoryConfiguration::colors)
             .def_readwrite("radii", &rv::TrajectoryConfiguration::radii);
 
     py::class_<rv::TrajectoryEntry>(m, "TrajectoryEntry")
-            .def(py::init < float, float, float, unsigned int, unsigned long > ());
+            .def(py::init < float, float, float, unsigned
+    int, unsigned
+    long > ());
 
     m.def("watch_npy", [](
             py::array_t<float, py::array::c_style | py::array::forcecast> &positions,
@@ -186,22 +189,23 @@ PYBIND11_PLUGIN(readdyviewer) {
         if (n_frames == info_types.shape[0] && n_frames == info_ids.shape[0] && n_frames == info_n_particles.shape[0]) {
             if (max_n_particles == info_types.shape[1] && max_n_particles == info_ids.shape[1]) {
                 if (info_positions.shape[2] == 3) {
-                    auto data_positions = (float(*)[n_frames][max_n_particles]) positions.data(0);
-                    auto data_types = (unsigned int(*)[n_frames]) types.data(0);
-                    auto data_ids = (unsigned long(*)[n_frames]) ids.data(0);
-                    auto data_n_particles = (unsigned int(*)) n_particles_arr.data(0);
+                    auto data_positions = (float (*)[max_n_particles][3]) positions.data(0);
+                    auto data_types = (unsigned int (*)[max_n_particles]) types.data(0);
+                    auto data_ids = (unsigned long (*)[max_n_particles]) ids.data(0);
+                    auto data_n_particles = (unsigned int (*)) n_particles_arr.data(0);
 
                     std::vector<std::vector<rv::TrajectoryEntry>> data;
                     data.reserve(n_frames);
-                    for(std::size_t t = 0; t < n_frames; ++t) {
+                    for (std::size_t t = 0; t < n_frames; ++t) {
                         rv::log::debug("converting frame {} ... ", t);
                         std::vector<rv::TrajectoryEntry> frame;
 
                         auto n_particles = data_n_particles[t];
                         rv::log::debug("\t\t got n_particles={}", n_particles);
                         frame.reserve(n_particles);
-                        for(std::size_t p = 0; p < n_particles; ++p) {
-                            frame.emplace_back(data_positions[t][p][0], data_positions[t][p][1], data_positions[t][p][2], data_types[t][p], data_ids[t][p]);
+                        for (std::size_t p = 0; p < n_particles; ++p) {
+                            frame.emplace_back(data_positions[t][p][0], data_positions[t][p][1],
+                                               data_positions[t][p][2], data_types[t][p], data_ids[t][p]);
                         }
 
                         data.push_back(std::move(frame));
@@ -231,6 +235,17 @@ PYBIND11_PLUGIN(readdyviewer) {
                     n_frames, info_types.shape[0], info_ids.shape[0], info_n_particles.shape[0]);
         }
         return -1;
+    });
+    m.def("watch_debug", []() {
+        try {
+            rv::initialize(false, rv::generateTestData(), rv::getTrajectoryTestConfig());
+            rv::cleanup();
+        } catch (const std::exception &e) {
+            rv::log::error("Encountered exception: {}", e.what());
+            rv::cleanup();
+            return -1;
+        }
+        return 0;
     });
     m.def("watch",
           [](const std::vector<std::vector<rv::TrajectoryEntry>> &data, const rv::TrajectoryConfiguration &config) {
