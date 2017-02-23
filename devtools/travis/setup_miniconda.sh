@@ -7,7 +7,7 @@ conda config --set always_yes yes --set changeps1 no
 conda update -q conda
 conda install -q conda-build
 echo "creating conda env with python=${CONDA_PY}"
-conda create -q -n test-environment python=${CONDA_PY}
+conda create -q -n test-environment python=${CONDA_PY:0:1}
 echo "available conda envs:"
 conda info --envs
 source activate test-environment
