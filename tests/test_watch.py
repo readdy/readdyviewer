@@ -44,4 +44,5 @@ def test_polymer_chain():
 
 
 if __name__ == '__main__':
+    test_random_frames()
     test_polymer_chain()

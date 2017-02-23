@@ -38,11 +38,3 @@ else ()
         target_compile_definitions(${PROJECT_NAME} PRIVATE GLFW_INCLUDE_NONE HIDDEN_FRANK_MODE=0 PYLIB=0)
     endif()
 endif ()
-
-file(GLOB_RECURSE shaders gl43/shaders FOLLOW_SYMLINKS *.glsl)
-foreach (shader ${shaders})
-    file(RELATIVE_PATH relative_shader ${CMAKE_CURRENT_SOURCE_DIR} ${shader})
-    configure_file(${shader} "${CMAKE_CURRENT_BINARY_DIR}/${relative_shader}")
-endforeach ()
-
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/textures DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
