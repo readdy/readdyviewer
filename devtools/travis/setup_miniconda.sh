@@ -6,5 +6,8 @@ export PATH="$HOME/miniconda/bin:$PATH"
 conda config --set always_yes yes --set changeps1 no
 conda update -q conda
 conda install -q conda-build
-conda create -q -n test-environment python=$CONDA_PY
+echo "creating conda env with python=${CONDA_PY}"
+conda create -q -n test-environment python=${CONDA_PY}
+echo "available conda envs:"
+conda info --envs
 source activate test-environment
