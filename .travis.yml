@@ -48,7 +48,8 @@ before_install:
 install:
 - if [ "$CXX" = "g++" ]; then export CXX="/usr/lib/ccache/g++-5" CC="/usr/lib/ccache/gcc-5"; fi
 - conda build conda.recipe
-- conda install --use-local python_example
+- source activate test-environment
+- conda install --use-local readdyviewer
 
 script:
 - python tests/test.py
