@@ -176,9 +176,7 @@ PYBIND11_PLUGIN(readdyviewer) {
             .def_readwrite("stride", &rv::TrajectoryConfiguration::stride);
 
     py::class_<rv::TrajectoryEntry>(m, "TrajectoryEntry")
-            .def(py::init < float, float, float, unsigned
-    int, unsigned
-    long > ());
+            .def(py::init < float, float, float, unsigned int, unsigned long> ());
 
     m.def("watch_npy", [](
             py::array_t<float, py::array::c_style | py::array::forcecast> &positions,
