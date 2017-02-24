@@ -19,6 +19,8 @@ addons:
     - g++-5
     - gcc-5
     - libxrandr-dev
+    - libxinerama-dev
+    - libxcursor-dev
 
 env:
   global:
