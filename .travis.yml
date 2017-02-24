@@ -18,7 +18,7 @@ addons:
     packages:
     - g++-5
     - gcc-5
-    - xrandr-dev
+    - libxrandr-dev
 
 env:
   global:
