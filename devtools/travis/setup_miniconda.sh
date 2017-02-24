@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 TRUNC_CONDA_VER=${CONDA_PY:0:1}
+echo "got truncated conda version:"
+echo "--------"
+echo ${TRUNC_CONDA_VER}
+echo "--------"
 if [ "$TRAVIS_OS_NAME" = "linux" ]; then OS=Linux-x86_64; else OS=MacOSX-x86_64; fi
 wget -O miniconda.sh https://repo.continuum.io/miniconda/Miniconda${TRUNC_CONDA_VER}-latest-$OS.sh
 bash miniconda.sh -b -p $HOME/miniconda
