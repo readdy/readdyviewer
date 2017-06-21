@@ -1,7 +1,9 @@
+import tables
 import readdyviewer as rv
 import numpy as np
 import h5py
 from readdy.util.trajectory_utils import TrajectoryReader
+import readdy.util.io_utils as ioutils
 
 
 def test_random_frames():
@@ -17,7 +19,14 @@ def test_random_frames():
 
 
 def test_polymer_chain():
-    fname = 'traj_self_avoiding_chain2017_02_18-00_07_56_KBGLLL.h5'
+    fname = '/home/mho/Development/readdy/readdy/wrappers/python/src/python/readdy/examples/out.h5'
+    config = rv.Configuration()
+    p_types = ioutils.get_particle_types(fname)
+    config.colors[p_types['Topology A']] = rv.Color(255./255., 153./255., 0.)
+    config.radii[p_types['Topology A']] = .5
+    config.colors[p_types['B']] = rv.Color(51./255., 153./255., 255./255.)
+    config.radii[p_types['B']] = .5
+    config.stride = 1
     r = TrajectoryReader(fname)
     items = r[:]
     n_frames = len(items)
@@ -25,24 +34,19 @@ def test_polymer_chain():
     n_particles_per_frame = np.zeros((n_frames))
     for idx, item in enumerate(items):
         n_particles_per_frame[idx] = len(item)
-    max_n_particles = np.amax(n_particles_per_frame, 0)
+    max_n_particles = int(np.amax(n_particles_per_frame, 0))
     positions = np.zeros((n_frames, max_n_particles, 3), dtype=np.float64)
     types = np.zeros((n_frames, max_n_particles), dtype=np.uint)
     ids = np.zeros((n_frames, max_n_particles), dtype=np.ulonglong)
     chaintype = -1
-    config = rv.Configuration()
     for t, frame in enumerate(items):
         for p, entry in enumerate(frame):
             positions[t, p, 0:3] = entry.position
             types[t, p] = entry.type_id
             ids[t, p] = entry.id
             chaintype = entry.type_id
-    config.colors[chaintype] = rv.Color(1, 0, 0)
-    config.radii[chaintype] = .5
-    config.stride = 1
     rv.watch_npy(positions, types, ids, n_particles_per_frame, config)
 
 
 if __name__ == '__main__':
-    test_random_frames()
     test_polymer_chain()

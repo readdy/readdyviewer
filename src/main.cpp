@@ -83,6 +83,11 @@ std::vector<std::vector<TrajectoryEntry>> generateTestData() {
     return entries;
 }
 
+void window_size_callback(GLFWwindow* window, int width, int height)  {
+    Viewer *viewer = reinterpret_cast<Viewer *>(glfwGetWindowUserPointer(window));
+    viewer->resize(width, height);
+}
+
 void initialize(bool debugContext, const std::vector<std::vector<TrajectoryEntry>> &data,
                 const TrajectoryConfiguration &config) {
     glbinding::Binding::initialize();
@@ -115,6 +120,7 @@ void initialize(bool debugContext, const std::vector<std::vector<TrajectoryEntry
     glfwGetCursorPos(window, &cursor.x, &cursor.y);
     glfwSetCursorPosCallback(window, onMouseMove);
     glfwSetKeyCallback(window, onKeyEvent);
+    glfwSetWindowSizeCallback(window, window_size_callback);
 
     GL_CHECK_ERROR()
 

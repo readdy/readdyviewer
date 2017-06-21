@@ -4,6 +4,9 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
 set(HIDDEN_FRANK_MODE OFF CACHE BOOL "hidden frank mode!")
 set(BUILD_PYTHON_LIBRARY ON CACHE BOOL "build python library")
 
+set(READDYVIEWER_ROOT ${CMAKE_SOURCE_DIR})
+set(READDYVIEWER_BINARY_ROOT ${CMAKE_BINARY_DIR})
+
 include(cmake/scripts/DownloadProject.cmake)
 if (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/glfw-src)
     download_project(PROJ glfw
@@ -16,6 +19,10 @@ else ()
     add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/glfw-src ${CMAKE_CURRENT_BINARY_DIR}/glfw-build)
 endif ()
 
+set (OPTION_BUILD_EXAMPLES  OFF CACHE BOOL "Don't need the examples")
+set (OPTION_BUILD_TESTS     OFF CACHE BOOL "Don't need to test")
+set (OPTION_BUILD_GPU_TESTS OFF CACHE BOOL "Don't need to test")
+set (OPTION_BUILD_TOOLS     OFF CACHE BOOL "Don't need the tools")
 if (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/glbinding-src)
     download_project(PROJ glbinding
             GIT_REPOSITORY https://github.com/cginternals/glbinding.git
@@ -48,10 +55,16 @@ endif ()
 add_subdirectory(libs/pybind11)
 
 
-file(GLOB_RECURSE shaders resources/gl43/shaders FOLLOW_SYMLINKS *.glsl)
+set(shaders
+        "resources/shaders/gl43/framing/fragment.glsl"
+        "resources/shaders/gl43/framing/vertex.glsl"
+        "resources/shaders/gl43/light/light.glsl"
+        "resources/shaders/gl43/particles/fragment.glsl"
+        "resources/shaders/gl43/particles/vertex.glsl")
+message(STATUS "found shaders ${shaders}")
 foreach (shader ${shaders})
-    file(RELATIVE_PATH relative_shader ${CMAKE_CURRENT_SOURCE_DIR} ${shader})
-    configure_file(${shader} "${CMAKE_CURRENT_BINARY_DIR}/${relative_shader}")
+    message(STATUS "configuring shader ${shader}")
+    configure_file(${shader} "${READDYVIEWER_BINARY_ROOT}/${shader}")
 endforeach ()
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/resources/textures DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
