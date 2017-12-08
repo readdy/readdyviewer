@@ -102,14 +102,14 @@ void initialize(bool debugContext, const std::vector<std::vector<TrajectoryEntry
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, debugContext ? GL_TRUE.m_value : GL_FALSE.m_value);
 
-    window = glfwCreateWindow(1280, 720, "ReaDDy viewer", NULL, NULL);
-    if (window == NULL) {
+    window = glfwCreateWindow(1280, 720, "ReaDDy viewer", nullptr, nullptr);
+    if (window == nullptr) {
         throw std::runtime_error("Cannot open window.");
     }
     glfwMakeContextCurrent(window);
 
     if (debugContext) {
-        glDebugMessageCallback(glDebugCallback, NULL);
+        glDebugMessageCallback(glDebugCallback, nullptr);
         glEnable(GL_DEBUG_OUTPUT);
     }
 
@@ -148,7 +148,7 @@ void cleanup() {
     if (viewer) {
         viewer.reset();
     }
-    if (window != NULL) {
+    if (window != nullptr) {
         glfwDestroyWindow(window);
     }
     glfwTerminate();
@@ -177,6 +177,8 @@ PYBIND11_PLUGIN(readdyviewer) {
     py::class_<glm::vec3>(m, "Color").def(py::init<float, float, float>());
     py::class_<rv::TrajectoryConfiguration>(m, "Configuration")
             .def(py::init<>())
+            .def_property("clearcolor", [](const rv::TrajectoryConfiguration &self) {return self.clearcolor;},
+                          [](rv::TrajectoryConfiguration &self, glm::vec3 clearcolor) {self.clearcolor = clearcolor;})
             .def_readwrite("colors", &rv::TrajectoryConfiguration::colors)
             .def_readwrite("radii", &rv::TrajectoryConfiguration::radii)
             .def_readwrite("stride", &rv::TrajectoryConfiguration::stride);
@@ -222,8 +224,9 @@ PYBIND11_PLUGIN(readdyviewer) {
 
                     try {
                         rv::log::debug("got config with colors: ");
-                        for(auto it = config.colors.begin(); it != config.colors.end(); ++it) {
-                            rv::log::debug("\t {} -> ({}, {}, {})", it->first, it->second.x, it->second.y, it->second.z);
+                        for (auto color : config.colors) {
+                            rv::log::debug("\t {} -> ({}, {}, {})",
+                                           color.first, color.second.x, color.second.y, color.second.z);
                         }
                         rv::initialize(false, data, config);
                         rv::cleanup();

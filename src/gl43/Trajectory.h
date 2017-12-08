@@ -51,6 +51,7 @@ struct TrajectoryConfiguration {
     std::unordered_map<TrajectoryEntry::type_t, glm::vec3> colors {};
     std::unordered_map<TrajectoryEntry::type_t, float> radii {};
     unsigned int stride = 1;
+    glm::vec3 clearcolor;
 };
 
 class Trajectory {
@@ -67,6 +68,10 @@ public:
     std::size_t currentTimeStep() const;
 
     std::size_t getCurrentNParticles() const;
+
+    const glm::vec3 &max() const;
+
+    const glm::vec3 &min() const;
 
 private:
     std::size_t t;
@@ -90,6 +95,7 @@ private:
     TrajectoryEntry::type_t maxType;
     glm::vec3 defaultColor;
     float defaultRadius;
+    glm::vec3 _max, _min;
 };
 }
 

@@ -58,10 +58,10 @@ Viewer::Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries, const T
 
     // camera
     {
-        camera.setPosition(glm::vec3(20, 20, 20));
+        camera.setPosition(trajectory.max() + glm::vec3(20, 20, 20));
         camera.rotate(30, 240);
         glBindBuffer(GL_UNIFORM_BUFFER, transformationBuffer);
-        glBufferData(GL_UNIFORM_BUFFER, sizeof(transformation_buffer_t), NULL, GL_DYNAMIC_DRAW);
+        glBufferData(GL_UNIFORM_BUFFER, sizeof(transformation_buffer_t), nullptr, GL_DYNAMIC_DRAW);
     }
     GL_CHECK_ERROR()
     glBindBufferBase(GL_UNIFORM_BUFFER, 0, transformationBuffer);
@@ -75,7 +75,8 @@ Viewer::Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries, const T
     glEnable(GL_CULL_FACE);
     glFrontFace(GL_CCW);
 
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    const auto &clearcolor = config.clearcolor;
+    glClearColor(clearcolor.r, clearcolor.g, clearcolor.b, 1.0f);
     glClearDepth(1.0f);
 
     trajectory.frame();

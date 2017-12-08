@@ -42,44 +42,43 @@ Trajectory::Trajectory(const std::vector<std::vector<rv::TrajectoryEntry>> &entr
 
     glm::vec3 bbox_min{1, 1, 1};
     glm::vec3 bbox_max{50, 50, 50};
-    glm::vec3 max, min;
     {
-        max = min = {entries[0][0].pos.x, entries[0][0].pos.y, entries[0][0].pos.z};
+        _max = _min = {entries[0][0].pos.x, entries[0][0].pos.y, entries[0][0].pos.z};
         for (const auto &frame : entries) {
             currentNParticles.push_back(frame.size());
             for (const auto &entry : frame) {
-                if (entry.pos.x < min.x) min.x = entry.pos.x;
-                if (entry.pos.y < min.y) min.y = entry.pos.y;
-                if (entry.pos.z < min.z) min.z = entry.pos.z;
+                if (entry.pos.x < _min.x) _min.x = entry.pos.x;
+                if (entry.pos.y < _min.y) _min.y = entry.pos.y;
+                if (entry.pos.z < _min.z) _min.z = entry.pos.z;
 
-                if (entry.pos.x > max.x) max.x = entry.pos.x;
-                if (entry.pos.y > max.y) max.y = entry.pos.y;
-                if (entry.pos.z > max.z) max.z = entry.pos.z;
+                if (entry.pos.x > _max.x) _max.x = entry.pos.x;
+                if (entry.pos.y > _max.y) _max.y = entry.pos.y;
+                if (entry.pos.z > _max.z) _max.z = entry.pos.z;
                 if (entry.type > maxType) maxType = entry.type;
             }
         }
     }
     // translate s.t. min is at bbox_min
-    glm::vec3 posTranslation = bbox_min - min;
+    glm::vec3 posTranslation = bbox_min - _min;
     log::debug("translate every particle by {}, {}, {}", posTranslation.x, posTranslation.y, posTranslation.z);
     // scale s.t. max is inside (10, 10, 10)
     float scale;
-    if(max.x > max.y && max.x > max.z) {
+    if(_max.x > _max.y && _max.x > _max.z) {
         // x largest
-        scale = bbox_max.x / (max.x + posTranslation.x);
-    } else if(max.y > max.x && max.y > max.z) {
+        scale = bbox_max.x / (_max.x + posTranslation.x);
+    } else if(_max.y > _max.x && _max.y > _max.z) {
         // y largest
-        scale = bbox_max.x / (max.y + posTranslation.y);
+        scale = bbox_max.x / (_max.y + posTranslation.y);
     } else {
         // z largest
-        scale = bbox_max.x / (max.z + posTranslation.z);
+        scale = bbox_max.x / (_max.z + posTranslation.z);
     }
     scale = 1.0;
     log::debug("scale every particle by {}", scale);
 
     maxNParticles = 0;
-    for (auto it = entries.begin(); it != entries.end(); ++it) {
-        maxNParticles = std::max(maxNParticles, it->size());
+    for (const auto &e : entries) {
+        maxNParticles = std::max(maxNParticles, e.size());
     }
 
     posTypes.resize(maxNParticles * T);
@@ -127,7 +126,7 @@ Trajectory::Trajectory(const std::vector<std::vector<rv::TrajectoryEntry>> &entr
                     c.radius = defaultRadius;
                 }
             }
-            conf.push_back(std::move(c));
+            conf.push_back(c);
         }
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, particleConfigurationBuffer);
         glBufferData(GL_SHADER_STORAGE_BUFFER, conf.size() * sizeof(particle_config_t), nullptr, GL_DYNAMIC_COPY);
@@ -194,6 +193,14 @@ void Trajectory::reset() {
 
 GLuint Trajectory::getConfigurationBuffer() const {
     return particleConfigurationBuffer;
+}
+
+const glm::vec3 &Trajectory::max() const {
+    return _max;
+}
+
+const glm::vec3 &Trajectory::min() const {
+    return _min;
 }
 
 TrajectoryEntry::TrajectoryEntry(float x, float y, float z, TrajectoryEntry::type_t type, unsigned long id)
