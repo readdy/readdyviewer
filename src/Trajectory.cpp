@@ -173,8 +173,12 @@ void Trajectory::setUpEdges(const std::vector<std::vector<TrajectoryEntry>> &ent
     edgeColors.resize(2 * maxNEdges * T);
 
     for (std::size_t i = 0; i < entries.size(); ++i) {
-        edgePositions[2 * i] = glm::vec4(entries[i][0].pos, 0);
-        edgePositions[2 * i + 1] = glm::vec4(entries[i][5].pos, 0);
+        const auto &p1 = posTypes.at(i*maxNParticles);
+        const auto &p2 = posTypes.at(i*maxNParticles + 5);
+        edgePositions[2 * i] = glm::vec4(p1.x, p1.y, p1.z, 0);
+        edgePositions[2 * i + 1] = glm::vec4(p2.x, p2.y, p2.z, 0);
+
+        log::debug("p1: {} {} {}, p2: {} {} {}", p1.x, p1.y, p1.z, p2.x, p2.y, p2.z);
 
         edgeColors[2 * i] = glm::vec4(defaultColor, 0);
         edgeColors[2 * i + 1] = glm::vec4(defaultColor, 0);
@@ -219,10 +223,6 @@ void Trajectory::updateEdges() const {
     glBindBuffer(GL_COPY_READ_BUFFER, tmpBuffer);
     glBufferData(GL_COPY_READ_BUFFER, 2 * 4 * sizeof(float) * getCurrentNEdges(),
                  edgePositions.data() + (t - config.stride) * maxNEdges, GL_STREAM_COPY);
-
-    auto pos1 = *(edgePositions.data() + (t - config.stride) * maxNEdges);
-    auto pos2 = *(edgePositions.data() + (t - config.stride) * maxNEdges + 1);
-    log::debug("v1 ({}, {}, {}), v2 ({}, {}, {})", pos1.x, pos1.y, pos1.z, pos2.x, pos2.y, pos2.z);
 
     glBindBuffer(GL_COPY_WRITE_BUFFER, edgeBuffer);
     glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0,

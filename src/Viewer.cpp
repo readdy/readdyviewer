@@ -184,7 +184,7 @@ bool Viewer::frame() {
     GL_CHECK_ERROR()
     pointSprite.setPositionBuffer(trajectory.getPositionBuffer());
     GL_CHECK_ERROR()
-    //pointSprite.render(static_cast<GLuint>(trajectory.getCurrentNParticles()));
+    pointSprite.render(static_cast<GLuint>(trajectory.getCurrentNParticles()));
     GL_CHECK_ERROR()
 
     edges.setEdgesBuffer(trajectory.getEdgeBuffer());
@@ -193,7 +193,7 @@ bool Viewer::frame() {
     GL_CHECK_ERROR()
     edges.render(static_cast<GLuint>(trajectory.getCurrentNEdges()));
     GL_CHECK_ERROR()
-    //framing.render();
+    framing.render();
     GL_CHECK_ERROR()
 
     // determine the framerate every second

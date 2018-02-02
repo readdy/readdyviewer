@@ -35,6 +35,12 @@
 namespace rv {
 
 Edges::Edges() : _edgeSize(1.f) {
+
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+
+    glGenBuffers(sizeof(buffers) / sizeof(buffers[0]), buffers);
+
     program.compileShader(GL_VERTEX_SHADER, "shaders/edge/vertex.glsl");
     program.compileShader(GL_FRAGMENT_SHADER, "shaders/edge/fragment.glsl");
     program.link();
@@ -42,16 +48,13 @@ Edges::Edges() : _edgeSize(1.f) {
     program.use();
     GL_CHECK_ERROR()
 
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-
-    glGenBuffers(sizeof(buffers) / sizeof(buffers[0]), buffers);
 }
 
 void Edges::render(GLuint instances) {
+    glBindVertexArray(vao);
+    GL_CHECK_ERROR()
     glDepthMask(false);
     GL_CHECK_ERROR()
-    glBindVertexArray(vao);
     glEnableVertexAttribArray(0);
     GL_CHECK_ERROR()
     program.use();
@@ -68,7 +71,9 @@ void Edges::render(GLuint instances) {
     glDepthRange(0, 1);
     GL_CHECK_ERROR()
     glDepthMask(true);
+    GL_CHECK_ERROR()
     glDisableVertexAttribArray(0);
+    GL_CHECK_ERROR()
 }
 
 Edges::~Edges() {

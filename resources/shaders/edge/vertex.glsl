@@ -16,5 +16,6 @@ void main (void)
 {
     // projmat * viewmat *
     gl_Position = projmat * viewmat * position;
+    //gl_Position = vec4(0, 0, 0, 0);
     fColor = vec3(1,0,0); // color.bgr
 }
