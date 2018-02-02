@@ -58,7 +58,7 @@ Viewer::Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries, const T
 
     // camera
     {
-        camera.setPosition(trajectory.max() + glm::vec3(20, 20, 20));
+        camera.setPosition(trajectory.max() + glm::vec3(50, 50, 50));
         camera.rotate(30, 240);
         glBindBuffer(GL_UNIFORM_BUFFER, transformationBuffer);
         glBufferData(GL_UNIFORM_BUFFER, sizeof(transformation_buffer_t), nullptr, GL_DYNAMIC_DRAW);
@@ -81,6 +81,8 @@ Viewer::Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries, const T
 
     trajectory.frame();
     pointSprite.setPositionBuffer(trajectory.getPositionBuffer(), 4 * sizeof(float), 0);
+    edges.setEdgesBuffer(trajectory.getEdgeBuffer(), 2*4*sizeof(float), 0);
+    edges.setEdgeColorBuffer(trajectory.getEdgeColorBuffer(), 2*4*sizeof(float), 0);
 
     updateViewMatrix();
 
@@ -184,6 +186,11 @@ bool Viewer::frame() {
     pointSprite.render(static_cast<GLuint>(trajectory.getCurrentNParticles()));
     GL_CHECK_ERROR()
 
+    edges.setEdgesBuffer(trajectory.getEdgeBuffer());
+    GL_CHECK_ERROR()
+    edges.setEdgeColorBuffer(trajectory.getEdgeColorBuffer());
+    GL_CHECK_ERROR()
+    edges.render(static_cast<GLuint>(trajectory.getCurrentNEdges()));
     GL_CHECK_ERROR()
     framing.render();
     GL_CHECK_ERROR()

@@ -1,5 +1,5 @@
 /********************************************************************
- * Copyright © 2016 Computational Molecular Biology Group,          *
+ * Copyright © 2018 Computational Molecular Biology Group,          *
  *                  Freie Universität Berlin (GER)                  *
  *                                                                  *
  * This file is part of ReaDDy.                                     *
@@ -21,78 +21,55 @@
 
 
 /**
+ * << detailed description >>
  *
- *
- * @file Viewer.h
- * @brief 
+ * @file Edges.h
+ * @brief << brief description >>
  * @author clonker
- * @date 2/12/17
+ * @date 2/2/18
  */
-#ifndef PROJECT_VIEWER_H
-#define PROJECT_VIEWER_H
+
+
+
+#pragma once
 
 #include "common.h"
-#include "Camera.h"
 #include "ShaderProgram.h"
 #include "Trajectory.h"
-#include "PointSprite.h"
-#include "Framing.h"
-#include "LightArrangement.h"
-#include "Edges.h"
 
 namespace rv {
-class Viewer {
+class Edges {
 public:
-    Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries, const TrajectoryConfiguration& config);
+    using edge_size_type = GLfloat;
 
-    ~Viewer();
+    Edges();
+    ~Edges();
+    void render(GLuint instances);
 
-    void onMouseMove(double x, double y);
-    void onMouseDown(int button);
-    void onMouseUp(int button);
-    void onKeyUp(int key);
-    void onKeyDown(int key);
-    void resize(unsigned int width, unsigned int height);
+    void setEdgesBuffer(GLuint buffer, GLsizei stride = 0, GLintptr offset = 0);
 
-    bool frame();
+    void setEdgeColorBuffer(GLuint buffer, GLsizei stride = 0, GLintptr offset = 0);
 
+    edge_size_type &edgeSize() {
+        return _edgeSize;
+    }
+
+    const edge_size_type &edgeSize() const {
+        return _edgeSize;
+    }
 private:
-    using transformation_buffer_t = struct transformation_buffer {
-        glm::mat4 viewmat;
-        glm::mat4 projmat;
-        glm::mat4 invviewmat;
-    };
-
-    void updateViewMatrix();
 
     union {
         struct {
-            GLuint transformationBuffer;
+            GLuint edgeBuffer;
+            GLuint edgeColorBuffer;
         };
-        GLuint buffers[1];
+        GLuint buffers[2];
     };
 
-    Framing framing;
-    Trajectory trajectory;
-    PointSprite pointSprite;
-    Edges edges;
-    ShaderProgram particleProgram;
-    Camera camera;
-    LightArrangement lights;
-
-    bool running, interrupt;
-    glm::mat4 projmat;
-    unsigned int width;
-    unsigned int height;
-    double last_time;
-    double last_fps_time;
-    float guitimer;
-    unsigned int framecount;
-    unsigned int fps;
-
-
+    ShaderProgram program;
+    GLuint vao;
+    edge_size_type _edgeSize;
 };
 }
 
-
-#endif //PROJECT_VIEWER_H

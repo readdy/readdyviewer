@@ -40,16 +40,19 @@ namespace rv {
 struct TrajectoryEntry {
     using pos_t = glm::vec3;
     using type_t = unsigned int;
+
     TrajectoryEntry();
+
     TrajectoryEntry(float x, float y, float z, type_t type, unsigned long id);
+
     pos_t pos;
     type_t type;
     unsigned long id;
 };
 
 struct TrajectoryConfiguration {
-    std::unordered_map<TrajectoryEntry::type_t, glm::vec3> colors {};
-    std::unordered_map<TrajectoryEntry::type_t, float> radii {};
+    std::unordered_map<TrajectoryEntry::type_t, glm::vec3> colors{};
+    std::unordered_map<TrajectoryEntry::type_t, float> radii{};
     unsigned int stride = 1;
     glm::vec3 clearcolor;
 };
@@ -57,17 +60,28 @@ struct TrajectoryConfiguration {
 class Trajectory {
 public:
     Trajectory(const std::vector<std::vector<TrajectoryEntry>> &entries, const TrajectoryConfiguration &config);
+
     ~Trajectory();
 
     GLuint getPositionBuffer() const;
+
     GLuint getConfigurationBuffer() const;
 
+    GLuint getEdgeBuffer() const;
+
+    GLuint getEdgeColorBuffer() const;
+
     void frame();
+
     void reset();
+
     std::size_t nTimeSteps() const;
+
     std::size_t currentTimeStep() const;
 
     std::size_t getCurrentNParticles() const;
+
+    std::size_t getCurrentNEdges() const;
 
     const glm::vec3 &max() const;
 
@@ -84,18 +98,36 @@ private:
         struct {
             GLuint positionBuffer;
             GLuint particleConfigurationBuffer;
+            GLuint edgeBuffer;
+            GLuint edgeColorBuffer;
         };
-        GLuint buffers[2];
+        GLuint buffers[4];
     };
+    std::size_t maxNEdges;
     std::size_t maxNParticles;
     std::vector<glm::vec4> posTypes;
+    std::vector<glm::vec4> edgePositions;
+    std::vector<glm::vec4> edgeColors;
     std::vector<std::size_t> currentNParticles;
+    std::vector<std::size_t> currentNEdges;
     std::size_t T;
     TrajectoryConfiguration config;
     TrajectoryEntry::type_t maxType;
     glm::vec3 defaultColor;
     float defaultRadius;
     glm::vec3 _max, _min;
+
+    void setUpEdges(const std::vector<std::vector<TrajectoryEntry>> &entries);
+
+    void setUpParticles(const std::vector<std::vector<TrajectoryEntry>> &entries);
+
+    void setUpConfig(const TrajectoryConfiguration &config) const;
+
+    void updateParticlePositions() const;
+
+    void updateEdges() const;
+
+    void updateEdgeColors() const;
 };
 }
 

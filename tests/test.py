@@ -34,6 +34,14 @@ def showsim():
     n_particles_per_frame, positions, types, ids = load_trajectory_to_npy("yay.h5")
     config = readdyviewer.Configuration()
     t = readdy.Trajectory("yay.h5")
+    time, topology_records = t.read_observable_topologies()
+    print(len(topology_records))
+    print(len(topology_records[0][0].edges))
+
+    for tops in topology_records:
+        for top in tops:
+            top.edges
+            top.particles
     config.colors[t.particle_types['T']] = readdyviewer.Color(255./255., 153./255., 0.)
     config.radii[t.particle_types['T']] = .5
 

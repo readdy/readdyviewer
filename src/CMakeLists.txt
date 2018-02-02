@@ -9,7 +9,8 @@ set(SOURCE_FILES main.cpp common.h)
 set(SOURCE_FILES_43 common.h Viewer.cpp Viewer.h Camera.cpp Camera.h
         ShaderProgram.cpp ShaderProgram.h PointSprite.cpp PointSprite.h
         Trajectory.cpp Trajectory.h Framing.cpp Framing.h
-        Texture.cpp Texture.h LightArrangement.cpp LightArrangement.h)
+        Texture.cpp Texture.h LightArrangement.cpp LightArrangement.h
+        Edges.cpp Edges.h)
 
 if (BUILD_PYTHON_LIBRARY)
     pybind11_add_module(${PROJECT_NAME} ${SOURCE_FILES} ${SOURCE_FILES_43} ${SOURCE_FILES_30})
