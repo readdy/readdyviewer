@@ -81,8 +81,9 @@ Viewer::Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries, const T
 
     trajectory.frame();
     pointSprite.setPositionBuffer(trajectory.getPositionBuffer(), 4 * sizeof(float), 0);
-    edges.setEdgesBuffer(trajectory.getEdgeBuffer(), 2*4*sizeof(float), 0);
-    edges.setEdgeColorBuffer(trajectory.getEdgeColorBuffer(), 2*4*sizeof(float), 0);
+    edges.setEdgesBuffer(trajectory.getEdgeBuffer(), 4*sizeof(float), 0);
+    edges.setEdgeColorBuffer(trajectory.getEdgeColorBuffer(), 4*sizeof(float), 0);
+    edges.render(static_cast<GLuint>(trajectory.getCurrentNEdges()));
 
     updateViewMatrix();
 
@@ -183,7 +184,7 @@ bool Viewer::frame() {
     GL_CHECK_ERROR()
     pointSprite.setPositionBuffer(trajectory.getPositionBuffer());
     GL_CHECK_ERROR()
-    pointSprite.render(static_cast<GLuint>(trajectory.getCurrentNParticles()));
+    //pointSprite.render(static_cast<GLuint>(trajectory.getCurrentNParticles()));
     GL_CHECK_ERROR()
 
     edges.setEdgesBuffer(trajectory.getEdgeBuffer());
@@ -192,7 +193,7 @@ bool Viewer::frame() {
     GL_CHECK_ERROR()
     edges.render(static_cast<GLuint>(trajectory.getCurrentNEdges()));
     GL_CHECK_ERROR()
-    framing.render();
+    //framing.render();
     GL_CHECK_ERROR()
 
     // determine the framerate every second

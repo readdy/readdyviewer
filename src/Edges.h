@@ -43,7 +43,9 @@ public:
     using edge_size_type = GLfloat;
 
     Edges();
+
     ~Edges();
+
     void render(GLuint instances);
 
     void setEdgesBuffer(GLuint buffer, GLsizei stride = 0, GLintptr offset = 0);
@@ -57,6 +59,7 @@ public:
     const edge_size_type &edgeSize() const {
         return _edgeSize;
     }
+
 private:
 
     union {

@@ -174,7 +174,7 @@ void Trajectory::setUpEdges(const std::vector<std::vector<TrajectoryEntry>> &ent
 
     for (std::size_t i = 0; i < entries.size(); ++i) {
         edgePositions[2 * i] = glm::vec4(entries[i][0].pos, 0);
-        edgePositions[2 * i + 1] = glm::vec4(entries[i][1].pos, 0);
+        edgePositions[2 * i + 1] = glm::vec4(entries[i][5].pos, 0);
 
         edgeColors[2 * i] = glm::vec4(defaultColor, 0);
         edgeColors[2 * i + 1] = glm::vec4(defaultColor, 0);
@@ -217,8 +217,13 @@ void Trajectory::updateEdges() const {
     GLuint tmpBuffer;
     glGenBuffers(1, &tmpBuffer);
     glBindBuffer(GL_COPY_READ_BUFFER, tmpBuffer);
-    glBufferData(GL_COPY_READ_BUFFER, 2*4 * sizeof(float) * getCurrentNEdges(),
+    glBufferData(GL_COPY_READ_BUFFER, 2 * 4 * sizeof(float) * getCurrentNEdges(),
                  edgePositions.data() + (t - config.stride) * maxNEdges, GL_STREAM_COPY);
+
+    auto pos1 = *(edgePositions.data() + (t - config.stride) * maxNEdges);
+    auto pos2 = *(edgePositions.data() + (t - config.stride) * maxNEdges + 1);
+    log::debug("v1 ({}, {}, {}), v2 ({}, {}, {})", pos1.x, pos1.y, pos1.z, pos2.x, pos2.y, pos2.z);
+
     glBindBuffer(GL_COPY_WRITE_BUFFER, edgeBuffer);
     glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0,
                             2*4 * sizeof(float) * getCurrentNEdges());

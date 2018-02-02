@@ -1,7 +1,7 @@
 import numpy as np
 import readdy
 from readdy.api.utils import load_trajectory_to_npy
-import readdyviewer.readdyviewer as readdyviewer
+import readdyviewer as readdyviewer
 
 
 def runsim():

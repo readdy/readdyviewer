@@ -52,13 +52,14 @@ void Edges::render(GLuint instances) {
     glDepthMask(false);
     GL_CHECK_ERROR()
     glBindVertexArray(vao);
+    glEnableVertexAttribArray(0);
     GL_CHECK_ERROR()
     program.use();
     GL_CHECK_ERROR()
     auto edgeSize = _edgeSize;
     GL_CHECK_ERROR()
     if (_edgeSize > 1) edgeSize = edgeSize * 2 - 1;
-    glLineWidth(edgeSize);
+    glLineWidth(1.0);
     GL_CHECK_ERROR()
     glDepthRange(0.01f, 1.0f);
     GL_CHECK_ERROR()
@@ -67,6 +68,7 @@ void Edges::render(GLuint instances) {
     glDepthRange(0, 1);
     GL_CHECK_ERROR()
     glDepthMask(true);
+    glDisableVertexAttribArray(0);
 }
 
 Edges::~Edges() {
@@ -77,17 +79,17 @@ Edges::~Edges() {
 void Edges::setEdgesBuffer(GLuint buffer, GLsizei stride, GLintptr offset) {
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride, (const void *) offset);
-    glEnableVertexAttribArray(1);
-    glVertexAttribDivisor(1,1);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, stride, (const void *) offset);
+    glEnableVertexAttribArray(0);
+    glVertexAttribDivisor(0, 1);
 }
 
 void Edges::setEdgeColorBuffer(GLuint buffer, GLsizei stride, GLintptr offset) {
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride, (const void *) offset);
-    glEnableVertexAttribArray(2);
-    glVertexAttribDivisor(2, 1);
+    glEnableVertexAttribArray(1);
+    glVertexAttribDivisor(1, 1);
 }
 
 }
