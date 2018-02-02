@@ -31,6 +31,7 @@
 #ifndef PROJECT_COMMON_H
 #define PROJECT_COMMON_H
 
+#include <glbinding/gl43/gl.h>
 #include <GLFW/glfw3.h>
 
 #include <glbinding/Binding.h>

@@ -23,32 +23,39 @@
 /**
  * << detailed description >>
  *
- * @file Texture.h
+ * @file ShaderProgram.h
  * @brief << brief description >>
  * @author clonker
- * @date 14.02.17
+ * @date 13.02.17
  * @copyright GNU Lesser General Public License v3.0
  */
 
-#ifndef PROJECT_TEXTURE_H
-#define PROJECT_TEXTURE_H
+#ifndef PROJECT_SHADERPROGRAM_H
+#define PROJECT_SHADERPROGRAM_H
 
-#include "common43.h"
+#include "common.h"
 
 namespace rv {
-class Texture {
+class ShaderProgram {
 public:
-    Texture();
-    ~Texture();
-    void bind(GLenum target) const;
-    static void load(const GLenum& target, const std::string& fname, GLenum internalFormat = GL_RGBA8);
-    const GLuint& get() const;
+    ShaderProgram();
+
+    ~ShaderProgram();
+
+    void compileShader(GLenum type, const std::string &fname, const std::string &header = {});
+
+    void link();
+
+    void use();
+
+    GLint getUniformLocation(const char *name) const;
+
+    gl::GLuint get() const;
 
 private:
-    GLuint texture;
+    gl::GLuint program;
 };
-
 }
 
 
-#endif //PROJECT_TEXTURE_H
+#endif //PROJECT_SHADERPROGRAM_H

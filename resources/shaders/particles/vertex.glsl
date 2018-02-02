@@ -36,9 +36,9 @@ void main (void)
 	fPosition = pos.xyz;
 	fTexcoord = vPosition;
 	fColor = particleConfigs[uint(particlePosition.w)].color.xyz;
-	if ((highlight&1) == 1) {
+	if ((highlight&1U) == 1) {
 		fColor = vec3 (1, 0, 0);
-	} else if ((highlight&2) ==2) {
+	} else if ((highlight&2U) ==2) {
 		fColor = vec3 (0, 1, 0);
 	}
 

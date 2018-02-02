@@ -23,40 +23,45 @@
 /**
  * << detailed description >>
  *
- * @file PointSprites.h
+ * @file Framing.h
  * @brief << brief description >>
  * @author clonker
- * @date 13.02.17
+ * @date 14.02.17
  * @copyright GNU Lesser General Public License v3.0
  */
 
-#ifndef PROJECT_POINTSPRITES_H
-#define PROJECT_POINTSPRITES_H
+#ifndef PROJECT_FRAMING_H
+#define PROJECT_FRAMING_H
 
-#include "common43.h"
+#include "common.h"
+#include "Texture.h"
+#include "ShaderProgram.h"
 
 namespace rv {
-class PointSprite {
+class Framing {
 public:
-    PointSprite();
-    ~PointSprite();
-
-    void setPositionBuffer(GLuint buffer, GLsizei stride = 0, GLintptr offset = 0);
-    void setHighlightBuffer(GLuint buffer, GLsizei stride = 0, GLintptr offset = 0);
-    void render(GLuint instances) const;
-
+    Framing();
+    ~Framing();
+    void render();
 private:
+
+    ShaderProgram program;
+
     union {
         struct {
             GLuint vertexBuffer;
+            GLuint normalBuffer;
+            GLuint texCoordBuffer;
             GLuint indexBuffer;
         };
-        GLuint buffers[2];
+        GLuint buffers[4];
     };
-    GLuint vertexArray;
+    GLuint vao;
+    Texture texture;
+
 };
 
 }
 
 
-#endif //PROJECT_POINTSPRITES_H
+#endif //PROJECT_FRAMING_H

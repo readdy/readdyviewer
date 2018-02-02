@@ -54,19 +54,7 @@ endif ()
 
 add_subdirectory(libs/pybind11)
 
-
-set(shaders
-        "resources/shaders/gl43/framing/fragment.glsl"
-        "resources/shaders/gl43/framing/vertex.glsl"
-        "resources/shaders/gl43/light/light.glsl"
-        "resources/shaders/gl43/particles/fragment.glsl"
-        "resources/shaders/gl43/particles/vertex.glsl")
-message(STATUS "found shaders ${shaders}")
-foreach (shader ${shaders})
-    message(STATUS "configuring shader ${shader}")
-    configure_file(${shader} "${READDYVIEWER_BINARY_ROOT}/${shader}")
-endforeach ()
-
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/resources/textures DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+add_subdirectory(resources/shaders)
+add_subdirectory(resources/textures)
 
 add_subdirectory(src)

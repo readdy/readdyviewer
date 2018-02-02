@@ -20,8 +20,8 @@
  ********************************************************************/
 
 #include <sstream>
-#include "gl43/common43.h"
-#include "gl43/Viewer.h"
+#include "common.h"
+#include "Viewer.h"
 
 namespace rv {
 

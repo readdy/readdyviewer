@@ -23,45 +23,47 @@
 /**
  * << detailed description >>
  *
- * @file Framing.h
+ * @file Camera.h
  * @brief << brief description >>
  * @author clonker
- * @date 14.02.17
+ * @date 13.02.17
  * @copyright GNU Lesser General Public License v3.0
  */
 
-#ifndef PROJECT_FRAMING_H
-#define PROJECT_FRAMING_H
+#ifndef PROJECT_CAMERA_H
+#define PROJECT_CAMERA_H
 
-#include "common43.h"
-#include "Texture.h"
-#include "ShaderProgram.h"
+#include "common.h"
 
 namespace rv {
-class Framing {
+class Camera {
 public:
-    Framing();
-    ~Framing();
-    void render();
+    Camera();
+
+    ~Camera();
+
+    glm::mat4 getViewMatrix() const;
+
+    const glm::vec3 &position() const;
+
+    void rotate(const float xangle, const float yangle);
+
+    void zoom(const float value);
+
+    void movex(const float value);
+
+    void movey(const float value);
+
+    void setPosition(const glm::vec3 &pos);
+
 private:
-
-    ShaderProgram program;
-
-    union {
-        struct {
-            GLuint vertexBuffer;
-            GLuint normalBuffer;
-            GLuint texCoordBuffer;
-            GLuint indexBuffer;
-        };
-        GLuint buffers[4];
-    };
-    GLuint vao;
-    Texture texture;
-
+    glm::vec3 _pos;
+    glm::quat _rot;
+    float _xangle;
+    float _yangle;
 };
 
 }
 
 
-#endif //PROJECT_FRAMING_H
+#endif //PROJECT_CAMERA_H

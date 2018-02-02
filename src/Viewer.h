@@ -23,20 +23,74 @@
 /**
  *
  *
- * @file common30.h
+ * @file Viewer.h
  * @brief 
  * @author clonker
- * @date 2/15/17
+ * @date 2/12/17
  */
-#ifndef PROJECT_COMMON30_H
-#define PROJECT_COMMON30_H
+#ifndef PROJECT_VIEWER_H
+#define PROJECT_VIEWER_H
 
-#include <glbinding/gl30/gl.h>
-#include "../common.h"
+#include "common.h"
+#include "Camera.h"
+#include "ShaderProgram.h"
+#include "Trajectory.h"
+#include "PointSprite.h"
+#include "Framing.h"
+#include "LightArrangement.h"
 
 namespace rv {
-namespace gl30 {
+class Viewer {
+public:
+    Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries, const TrajectoryConfiguration& config);
 
+    ~Viewer();
+
+    void onMouseMove(double x, double y);
+    void onMouseDown(int button);
+    void onMouseUp(int button);
+    void onKeyUp(int key);
+    void onKeyDown(int key);
+    void resize(unsigned int width, unsigned int height);
+
+    bool frame();
+
+private:
+    using transformation_buffer_t = struct transformation_buffer {
+        glm::mat4 viewmat;
+        glm::mat4 projmat;
+        glm::mat4 invviewmat;
+    };
+
+    void updateViewMatrix();
+
+    union {
+        struct {
+            GLuint transformationBuffer;
+        };
+        GLuint buffers[1];
+    };
+
+    Framing framing;
+    Trajectory trajectory;
+    PointSprite pointSprite;
+    ShaderProgram particleProgram;
+    Camera camera;
+    LightArrangement lights;
+
+    bool running, interrupt;
+    glm::mat4 projmat;
+    unsigned int width;
+    unsigned int height;
+    double last_time;
+    double last_fps_time;
+    float guitimer;
+    unsigned int framecount;
+    unsigned int fps;
+
+
+};
 }
-}
-#endif //PROJECT_COMMON30_H
+
+
+#endif //PROJECT_VIEWER_H

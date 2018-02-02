@@ -1,17 +1,15 @@
 project(readdyviewer)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 find_package(PNG REQUIRED)
 find_package(OpenGL REQUIRED)
 
 set(SOURCE_FILES main.cpp common.h)
-set(SOURCE_FILES_43 gl43/common43.h gl43/Viewer.cpp gl43/Viewer.h gl43/Camera.cpp gl43/Camera.h
-        gl43/ShaderProgram.cpp gl43/ShaderProgram.h gl43/PointSprite.cpp gl43/PointSprite.h
-        gl43/Trajectory.cpp gl43/Trajectory.h gl43/Framing.cpp gl43/Framing.h
-        gl43/Texture.cpp gl43/Texture.h gl43/LightArrangement.cpp gl43/LightArrangement.h)
-
-set(SOURCE_FILES_30 gl30/common30.h)
+set(SOURCE_FILES_43 common43.h Viewer.cpp Viewer.h Camera.cpp Camera.h
+        ShaderProgram.cpp ShaderProgram.h PointSprite.cpp PointSprite.h
+        Trajectory.cpp Trajectory.h Framing.cpp Framing.h
+        Texture.cpp Texture.h LightArrangement.cpp LightArrangement.h)
 
 if (BUILD_PYTHON_LIBRARY)
     pybind11_add_module(${PROJECT_NAME} ${SOURCE_FILES} ${SOURCE_FILES_43} ${SOURCE_FILES_30})
@@ -24,6 +22,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         )
 
 target_link_libraries(${PROJECT_NAME} PUBLIC glfw ${GLFW_LIBRARIES} ${PNG_LIBRARIES} ${OPENGL_LIBRARIES} glbinding::glbinding)
+
+add_dependencies(${PROJECT_NAME} shaders-target textures-target)
 
 if (HIDDEN_FRANK_MODE)
     if(BUILD_PYTHON_LIBRARY)

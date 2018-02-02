@@ -33,7 +33,7 @@
 #ifndef PROJECT_LIGHTARRANGEMENT_H
 #define PROJECT_LIGHTARRANGEMENT_H
 
-#include "common43.h"
+#include "common.h"
 
 namespace rv {
 enum class LightType {

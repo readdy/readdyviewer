@@ -1,5 +1,5 @@
 /********************************************************************
- * Copyright © 2016 Computational Molecular Biology Group,          *
+ * Copyright © 2016 Computational Molecular Biology Group,          * 
  *                  Freie Universität Berlin (GER)                  *
  *                                                                  *
  * This file is part of ReaDDy.                                     *
@@ -21,25 +21,34 @@
 
 
 /**
+ * << detailed description >>
  *
- *
- * @file common.h
- * @brief 
+ * @file Texture.h
+ * @brief << brief description >>
  * @author clonker
- * @date 2/12/17
+ * @date 14.02.17
+ * @copyright GNU Lesser General Public License v3.0
  */
-#ifndef PROJECT_COMMON43_H
-#define PROJECT_COMMON43_H
 
-#include <glbinding/gl43/gl.h>
-#include "../common.h"
+#ifndef PROJECT_TEXTURE_H
+#define PROJECT_TEXTURE_H
+
+#include "common.h"
 
 namespace rv {
+class Texture {
+public:
+    Texture();
+    ~Texture();
+    void bind(GLenum target) const;
+    static void load(const GLenum& target, const std::string& fname, GLenum internalFormat = GL_RGBA8);
+    const GLuint& get() const;
 
-
-
+private:
+    GLuint texture;
+};
 
 }
 
 
-#endif //PROJECT_COMMON43_H
+#endif //PROJECT_TEXTURE_H
