@@ -6,7 +6,7 @@ find_package(PNG REQUIRED)
 find_package(OpenGL REQUIRED)
 
 set(SOURCE_FILES main.cpp common.h)
-set(SOURCE_FILES_43 common43.h Viewer.cpp Viewer.h Camera.cpp Camera.h
+set(SOURCE_FILES_43 common.h Viewer.cpp Viewer.h Camera.cpp Camera.h
         ShaderProgram.cpp ShaderProgram.h PointSprite.cpp PointSprite.h
         Trajectory.cpp Trajectory.h Framing.cpp Framing.h
         Texture.cpp Texture.h LightArrangement.cpp LightArrangement.h)
