@@ -26,7 +26,7 @@ set (OPTION_BUILD_TOOLS     OFF CACHE BOOL "Don't need the tools")
 if (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/glbinding-src)
     download_project(PROJ glbinding
             GIT_REPOSITORY https://github.com/cginternals/glbinding.git
-            GIT_TAG v2.1.1
+            GIT_TAG v2.1.3
             ${UPDATE_DISCONNECTED_IF_AVAILABLE}
             )
     add_subdirectory(${glbinding_SOURCE_DIR} ${glbinding_BINARY_DIR})
@@ -45,7 +45,7 @@ endif ()
 if (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/glm-src)
     download_project(PROJ glm
             GIT_REPOSITORY https://github.com/g-truc/glm.git
-            GIT_TAG 0.9.8.4
+            GIT_TAG 0.9.8.5
             ${UPDATE_DISCONNECTED_IF_AVAILABLE}
             )
 else ()

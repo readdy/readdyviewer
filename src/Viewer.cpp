@@ -47,9 +47,9 @@ Viewer::Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries, const T
 
     last_time = glfwGetTime();
 
-    particleProgram.compileShader(GL_VERTEX_SHADER, "shaders/gl43/particles/vertex.glsl");
-    particleProgram.compileShader(GL_FRAGMENT_SHADER, "shaders/gl43/particles/fragment.glsl");
-    particleProgram.compileShader(GL_FRAGMENT_SHADER, "shaders/gl43/light/light.glsl");
+    particleProgram.compileShader(GL_VERTEX_SHADER, "shaders/particles/vertex.glsl");
+    particleProgram.compileShader(GL_FRAGMENT_SHADER, "shaders/particles/fragment.glsl");
+    particleProgram.compileShader(GL_FRAGMENT_SHADER, "shaders/light/light.glsl");
     particleProgram.link();
 
     GL_CHECK_ERROR()

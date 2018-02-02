@@ -4,9 +4,11 @@ import sys
 import platform
 import subprocess
 
-from setuptools import setup, Extension
+from setuptools import setup, Extension, find_packages
 from setuptools.command.build_ext import build_ext
 from distutils.version import LooseVersion
+
+__version__ = '0.0.1'
 
 
 class CMakeExtension(Extension):
@@ -33,6 +35,7 @@ class CMakeBuild(build_ext):
 
     def build_extension(self, ext):
         extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
+        extdir = os.path.join(extdir, "readdyviewer")
         cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
                       '-DPYTHON_EXECUTABLE=' + sys.executable]
 
@@ -41,7 +44,7 @@ class CMakeBuild(build_ext):
 
         if platform.system() == "Windows":
             cmake_args += ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}'.format(cfg.upper(), extdir)]
-            if sys.maxsize > 2**32:
+            if sys.maxsize > 2 ** 32:
                 cmake_args += ['-A', 'x64']
             build_args += ['--', '/m']
         else:
@@ -56,14 +59,18 @@ class CMakeBuild(build_ext):
         subprocess.check_call(['cmake', ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env)
         subprocess.check_call(['cmake', '--build', '.'] + build_args, cwd=self.build_temp)
 
+
 setup(
-    name='PyTools',
-    version='0.0.1',
+    name='ReaDDyViewer',
+    version=__version__,
     author='Moritz Hoffmann',
-    author_email='clonker@gmail.com',
-    description='A test project.',
+    author_email='clonker at gmail.com',
+    url='https://github.com/readdy/readdyviewer',
+    description='',
     long_description='',
     ext_modules=[CMakeExtension('readdyviewer')],
-    cmdclass=dict(build_ext=CMakeBuild),
+    packages=find_packages(),
     zip_safe=False,
+    cmdclass=dict(build_ext=CMakeBuild),
+    install_requires=['numpy']
 )
