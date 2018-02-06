@@ -22,22 +22,32 @@ out float fRadius;
 
 void main (void)
 {
-    float particleSize = 5.f;
+    float height = .1;
 	vec4 pos;
-	if (gl_VertexID == 3 || gl_VertexID == 2) {
+	if (gl_VertexID == 0 || gl_VertexID == 3) {
 	    pos = viewmat * vec4 (edgeToPosition.xyz, 1.0);
-        pos.xy += vPosition * particleSize;
+	    if (gl_VertexID == 0) {
+	        pos.y += vPosition[1] * height;
+	    } else {
+            pos.y -= vPosition[1] * height;
+	    }
+        //pos.xy += vPosition * particleSize;
     } else {
         pos = viewmat * vec4 (edgeFromPosition.xyz, 1.0);
-        pos.xy += vPosition * particleSize;
+        if (gl_VertexID == 1) {
+            pos.y += vPosition[1] * height;
+        } else {
+            pos.y -= vPosition[1] * height;
+        }
     }
 	fPosition = pos.xyz;
 	fTexcoord = vPosition;
-	if (gl_VertexID == 3) {
-	    fColor = vec3(0,1,0);
-	} else {
-	    fColor = vec3(1,0,0);
-	}
+	//if (gl_VertexID == 3) {
+	//    fColor = vec3(0,1,0);
+	//} else {
+	//    fColor = vec3(1,0,0);
+	//}
+	fColor = color.xyz;
 
 	// compute and output the vertex position
 	// after view transformation and projection

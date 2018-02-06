@@ -79,8 +79,8 @@ Viewer::Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries, const T
     GL_CHECK_ERROR()
 
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    glFrontFace(GL_CCW);
+    //glEnable(GL_CULL_FACE);
+    //glFrontFace(GL_CCW);
 
     const auto &clearcolor = config.clearcolor;
     glClearColor(clearcolor.r, clearcolor.g, clearcolor.b, 1.0f);
