@@ -48,7 +48,7 @@ PointSprite::PointSprite() {
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     // define the vertices as vertex attribute 0
-    glVertexAttribPointer(0, 2, GL_SHORT, GL_TRUE, 0, 0);
+    glVertexAttribPointer(0, 2, GL_SHORT, GL_TRUE, 0, nullptr);
     glEnableVertexAttribArray(0);
 
     const GLushort indices[] = {

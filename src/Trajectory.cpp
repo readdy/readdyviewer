@@ -179,7 +179,7 @@ void Trajectory::setUpEdges(const std::vector<std::vector<TrajectoryEntry>> &ent
 
     for (std::size_t i = 0; i < entries.size(); ++i) {
         const auto &p1 = posTypes.at(i*maxNParticles);
-        const auto &p2 = posTypes.at(i*maxNParticles + 1);
+        const auto &p2 = posTypes.at(i*maxNParticles + 5);
         edgePositionsFrom[i] = glm::vec4(p1.x, p1.y, p1.z, 0);
         edgePositionsTo[i] = glm::vec4(p2.x, p2.y, p2.z, 0);
         edgeColors[i] = glm::vec4(1., 0, 0, 0);
@@ -299,7 +299,7 @@ GLuint Trajectory::getEdgeColorBuffer() const {
 }
 
 std::size_t Trajectory::getCurrentNEdges() const {
-    return currentNEdges.at(currentTimeStep() - config.stride);;
+    return currentNEdges.at(currentTimeStep() - config.stride);
 }
 
 GLuint Trajectory::getEdgeBufferTo() const {

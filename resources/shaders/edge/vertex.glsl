@@ -22,35 +22,28 @@ out float fRadius;
 
 void main (void)
 {
-    float height = .1;
-	vec4 pos;
+    vec4 posFrom = viewmat * vec4(edgeFromPosition.xyz, 1.0);
+    vec4 posTo = viewmat * vec4(edgeToPosition.xyz, 1.0);
+
+    vec4 midpoint = .5 * edgeFromPosition + .5 * edgeToPosition;
+	// pass data to the fragment shader
+	float particleSize = 1.;
+	vec4 pos = viewmat * vec4 (midpoint.xyz, 1.0);
 	if (gl_VertexID == 0 || gl_VertexID == 3) {
-	    pos = viewmat * vec4 (edgeToPosition.xyz, 1.0);
-	    if (gl_VertexID == 0) {
-	        pos.y += vPosition[1] * height;
-	    } else {
-            pos.y -= vPosition[1] * height;
-	    }
-        //pos.xy += vPosition * particleSize;
-    } else {
-        pos = viewmat * vec4 (edgeFromPosition.xyz, 1.0);
-        if (gl_VertexID == 1) {
-            pos.y += vPosition[1] * height;
-        } else {
-            pos.y -= vPosition[1] * height;
-        }
-    }
+	    pos.xyz = posFrom.xyz;
+	    pos.x += vPosition[0] * .1;
+	    pos.y += vPosition[1] * .1;
+	} else {
+	    pos.xyz = posTo.xyz;
+        pos.x += vPosition[0] * .1;
+        pos.y += vPosition[1] * .1;
+	}
 	fPosition = pos.xyz;
 	fTexcoord = vPosition;
-	//if (gl_VertexID == 3) {
-	//    fColor = vec3(0,1,0);
-	//} else {
-	//    fColor = vec3(1,0,0);
-	//}
-	fColor = color.xyz;
+	fColor = vec3(0, 1, 0);
 
 	// compute and output the vertex position
 	// after view transformation and projection
 	gl_Position = projmat * pos;
-	fRadius = 1;
+	fRadius = particleSize;
 }
