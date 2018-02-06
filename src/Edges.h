@@ -48,7 +48,9 @@ public:
 
     void render(GLuint instances);
 
-    void setEdgesBuffer(GLuint buffer, GLsizei stride = 0, GLintptr offset = 0);
+    void setEdgesFromBuffer(GLuint buffer, GLsizei stride = 0, GLintptr offset = 0);
+
+    void setEdgesToBuffer(GLuint buffer, GLsizei stride = 0, GLintptr offset = 0);
 
     void setEdgeColorBuffer(GLuint buffer, GLsizei stride = 0, GLintptr offset = 0);
 
@@ -61,18 +63,16 @@ public:
     }
 
 private:
-
     union {
         struct {
-            GLuint edgeBuffer;
-            GLuint edgeColorBuffer;
+            GLuint vertexBuffer;
+            GLuint indexBuffer;
         };
         GLuint buffers[2];
     };
+    GLuint vertexArray;
 
-    ShaderProgram program;
-    GLuint vao;
     edge_size_type _edgeSize;
 };
-}
 
+}

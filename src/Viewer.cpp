@@ -54,6 +54,13 @@ Viewer::Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries, const T
 
     GL_CHECK_ERROR()
 
+    edgeProgram.compileShader(GL_VERTEX_SHADER, "shaders/edge/vertex.glsl");
+    edgeProgram.compileShader(GL_FRAGMENT_SHADER, "shaders/edge/fragment.glsl");
+    edgeProgram.compileShader(GL_FRAGMENT_SHADER, "shaders/light/light.glsl");
+    edgeProgram.link();
+
+    GL_CHECK_ERROR()
+
     glGenBuffers(sizeof(buffers)/sizeof(buffers[0]), buffers);
 
     // camera
@@ -81,7 +88,8 @@ Viewer::Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries, const T
 
     trajectory.frame();
     pointSprite.setPositionBuffer(trajectory.getPositionBuffer(), 4 * sizeof(float), 0);
-    edges.setEdgesBuffer(trajectory.getEdgeBuffer(), 4*sizeof(float), 0);
+    edges.setEdgesFromBuffer(trajectory.getEdgeBufferFrom(), 4*sizeof(float), 0);
+    edges.setEdgesToBuffer(trajectory.getEdgeBufferTo(), 4*sizeof(float), 0);
     edges.setEdgeColorBuffer(trajectory.getEdgeColorBuffer(), 4*sizeof(float), 0);
     edges.render(static_cast<GLuint>(trajectory.getCurrentNEdges()));
 
@@ -186,8 +194,11 @@ bool Viewer::frame() {
     GL_CHECK_ERROR()
     pointSprite.render(static_cast<GLuint>(trajectory.getCurrentNParticles()));
     GL_CHECK_ERROR()
-
-    edges.setEdgesBuffer(trajectory.getEdgeBuffer());
+    edgeProgram.use();
+    GL_CHECK_ERROR()
+    edges.setEdgesFromBuffer(trajectory.getEdgeBufferFrom());
+    GL_CHECK_ERROR()
+    edges.setEdgesToBuffer(trajectory.getEdgeBufferTo());
     GL_CHECK_ERROR()
     edges.setEdgeColorBuffer(trajectory.getEdgeColorBuffer());
     GL_CHECK_ERROR()

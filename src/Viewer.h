@@ -77,6 +77,7 @@ private:
     PointSprite pointSprite;
     Edges edges;
     ShaderProgram particleProgram;
+    ShaderProgram edgeProgram;
     Camera camera;
     LightArrangement lights;
 

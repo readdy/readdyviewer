@@ -33,15 +33,6 @@ if (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/glbinding-src)
 else ()
     add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/glbinding-src ${CMAKE_CURRENT_BINARY_DIR}/glbinding-build)
 endif ()
-if (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/spdlog-src)
-    download_project(PROJ spdlog
-            GIT_REPOSITORY https://github.com/gabime/spdlog.git
-            GIT_TAG master
-            ${UPDATE_DISCONNECTED_IF_AVAILABLE}
-            )
-else ()
-    set(spdlog_SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/spdlog-src")
-endif ()
 if (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/glm-src)
     download_project(PROJ glm
             GIT_REPOSITORY https://github.com/g-truc/glm.git
@@ -53,6 +44,9 @@ else ()
 endif ()
 
 add_subdirectory(libs/pybind11)
+set(BUILD_SHARED_LIBS ON)
+add_subdirectory(libs/fmt)
+add_subdirectory(libs/spdlog)
 
 add_subdirectory(resources/shaders)
 add_subdirectory(resources/textures)

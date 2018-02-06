@@ -67,7 +67,9 @@ public:
 
     GLuint getConfigurationBuffer() const;
 
-    GLuint getEdgeBuffer() const;
+    GLuint getEdgeBufferFrom() const;
+
+    GLuint getEdgeBufferTo() const;
 
     GLuint getEdgeColorBuffer() const;
 
@@ -98,15 +100,17 @@ private:
         struct {
             GLuint positionBuffer;
             GLuint particleConfigurationBuffer;
-            GLuint edgeBuffer;
+            GLuint edgeBufferFrom;
+            GLuint edgeBufferTo;
             GLuint edgeColorBuffer;
         };
-        GLuint buffers[4];
+        GLuint buffers[5];
     };
     std::size_t maxNEdges;
     std::size_t maxNParticles;
     std::vector<glm::vec4> posTypes;
-    std::vector<glm::vec4> edgePositions;
+    std::vector<glm::vec4> edgePositionsFrom;
+    std::vector<glm::vec4> edgePositionsTo;
     std::vector<glm::vec4> edgeColors;
     std::vector<std::size_t> currentNParticles;
     std::vector<std::size_t> currentNEdges;
@@ -125,7 +129,9 @@ private:
 
     void updateParticlePositions() const;
 
-    void updateEdges() const;
+    void updateEdgesFrom() const;
+
+    void updateEdgesTo() const;
 
     void updateEdgeColors() const;
 };
