@@ -34,8 +34,8 @@ namespace rv {
 
 std::vector<Light> getLights() {
     std::vector<Light> lights;
-    lights.emplace_back(glm::vec3(20, 20, 20), glm::normalize(glm::vec3(-1, -1, -1)), glm::vec3(.5, .5, .5), .8f, LightType::AMBIENT);
-    lights.emplace_back(glm::vec3(40, 40, 40), glm::normalize(glm::vec3(1, 1, 1)), glm::vec3(.5, .5, .5), .4f, LightType::HEAD);
+    lights.emplace_back(glm::vec3(20, 20, 20), glm::normalize(glm::vec3(-1, -1, -1)), glm::vec3(.5, .5, .5), 2.f, LightType::AMBIENT);
+    lights.emplace_back(glm::vec3(40, 40, 40), glm::normalize(glm::vec3(1, 1, 1)), glm::vec3(.5, .5, .5), 1.f, LightType::HEAD);
     return lights;
 }
 
@@ -193,7 +193,7 @@ bool Viewer::frame() {
     GL_CHECK_ERROR()
     edges.render(static_cast<GLuint>(trajectory.getCurrentNEdges()));
     GL_CHECK_ERROR()
-    framing.render();
+    //framing.render();
     GL_CHECK_ERROR()
 
     // determine the framerate every second

@@ -24,6 +24,9 @@ void main (void)
 	if (r > 1)
 		discard;
 
+    if(fColor.x + fColor.y + fColor.z == 0.)
+        discard;
+
 	vec3 normal = vec3 (fTexcoord, sqrt (1 - r));
 
 	vec4 fPos = vec4 (fPosition + fRadius * normal, 1.0);
