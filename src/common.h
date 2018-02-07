@@ -50,6 +50,8 @@ using namespace gl;
 
 namespace rv {
 
+using edges_type = std::vector<std::vector<std::tuple<std::size_t, std::size_t>>>;
+
 extern GLFWwindow *window;
 
 

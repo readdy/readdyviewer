@@ -33,20 +33,12 @@ if (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/glbinding-src)
 else ()
     add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/glbinding-src ${CMAKE_CURRENT_BINARY_DIR}/glbinding-build)
 endif ()
-if (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/glm-src)
-    download_project(PROJ glm
-            GIT_REPOSITORY https://github.com/g-truc/glm.git
-            GIT_TAG 0.9.8.5
-            ${UPDATE_DISCONNECTED_IF_AVAILABLE}
-            )
-else ()
-    set(glm_SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/glm-src")
-endif ()
 
 add_subdirectory(libs/pybind11)
 set(BUILD_SHARED_LIBS ON)
 add_subdirectory(libs/fmt)
 add_subdirectory(libs/spdlog)
+add_subdirectory(libs/glm)
 
 add_subdirectory(resources/shaders)
 add_subdirectory(resources/textures)

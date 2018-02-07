@@ -32,23 +32,39 @@ def runsim():
 
 def edges():
     print(readdyviewer.__file__)
-    trajfile = "/home/mho/Development/readdyviewer/tests/yay.h5"
+    trajfile = "/home/mho/Development/readdyviewer/tests/topology_simulation.h5"
     n_particles_per_frame, positions, types, ids = load_trajectory_to_npy(trajfile)
     config = readdyviewer.Configuration()
     t = readdy.Trajectory(trajfile)
+    entries = t.read()
     time, topology_records = t.read_observable_topologies()
     print(len(topology_records))
     print(len(topology_records[0][0].edges))
 
-    for tops in topology_records:
+    edges = []
+    for timestep, tops in zip(time, topology_records):
+        current_edges = []
         for top in tops:
-            top.edges
-            top.particles
+            for e1, e2 in top.edges:
+                ix1 = top.particles[e1]
+                ix2 = top.particles[e2]
+                current_edges.append((ix1, ix2))
+                p1 = entries[timestep][ix1]
+                p2 = entries[timestep][ix2]
+                assert p1.type == 'T' or p1.type == 'unstable T', "expected topology type but got {} -- {}".format(p1, p2)
+                assert p2.type == 'T' or p2.type == 'unstable T', "expected topology type but got {} -- {}".format(p1, p2)
+        edges.append(current_edges)
+    config.colors[t.particle_types['unstable T']] = readdyviewer.Color(153. / 255., 255. / 255., 0.)
+    config.radii[t.particle_types['unstable T']] = .5
     config.colors[t.particle_types['T']] = readdyviewer.Color(255. / 255., 153. / 255., 0.)
     config.radii[t.particle_types['T']] = .5
+    config.colors[t.particle_types['Ligand']] = readdyviewer.Color(.5, .5, .5)
+    config.radii[t.particle_types['Ligand']] = 1.
+    config.colors[t.particle_types['Decay']] = readdyviewer.Color(.1, .2, .3)
+    config.radii[t.particle_types['Decay']] = .5
 
     config.stride = 1
-    readdyviewer.watch_npy(positions, types, ids, n_particles_per_frame, config)
+    readdyviewer.watch_npy(positions, types, ids, n_particles_per_frame, config, edges)
 
 def showsim():
     edges()

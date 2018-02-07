@@ -40,7 +40,7 @@ void main (void)
 	}
 	fPosition = pos.xyz;
 	fTexcoord = vPosition;
-	fColor = vec3(0, 1, 0);
+	fColor = color.rgb;
 
 	// compute and output the vertex position
 	// after view transformation and projection

@@ -39,9 +39,9 @@ std::vector<Light> getLights() {
     return lights;
 }
 
-Viewer::Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries, const TrajectoryConfiguration& config)
+Viewer::Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries, const TrajectoryConfiguration& config, const rv::edges_type &edges)
         : width(0), height(0), last_fps_time(glfwGetTime()), framecount(0), fps(0), running(false),
-          guitimer(0.0f), trajectory(entries, config),
+          guitimer(0.0f), trajectory(entries, config, edges),
           interrupt(false), lights(getLights()) {
     GL_CHECK_ERROR()
 
@@ -88,10 +88,10 @@ Viewer::Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries, const T
 
     trajectory.frame();
     pointSprite.setPositionBuffer(trajectory.getPositionBuffer(), 4 * sizeof(float), 0);
-    edges.setEdgesFromBuffer(trajectory.getEdgeBufferFrom(), 4*sizeof(float), 0);
-    edges.setEdgesToBuffer(trajectory.getEdgeBufferTo(), 4*sizeof(float), 0);
-    edges.setEdgeColorBuffer(trajectory.getEdgeColorBuffer(), 4*sizeof(float), 0);
-    edges.render(static_cast<GLuint>(trajectory.getCurrentNEdges()));
+    edgeSprite.setEdgesFromBuffer(trajectory.getEdgeBufferFrom(), 4*sizeof(float), 0);
+    edgeSprite.setEdgesToBuffer(trajectory.getEdgeBufferTo(), 4*sizeof(float), 0);
+    edgeSprite.setEdgeColorBuffer(trajectory.getEdgeColorBuffer(), 4*sizeof(float), 0);
+    edgeSprite.render(static_cast<GLuint>(trajectory.getCurrentNEdges()));
 
     updateViewMatrix();
 
@@ -194,14 +194,16 @@ bool Viewer::frame() {
     GL_CHECK_ERROR()
     pointSprite.render(static_cast<GLuint>(trajectory.getCurrentNParticles()));
     GL_CHECK_ERROR()
-    edgeProgram.use();
-    GL_CHECK_ERROR()
-    edges.setEdgesFromBuffer(trajectory.getEdgeBufferFrom());
-    edges.setEdgesToBuffer(trajectory.getEdgeBufferTo());
-    edges.setEdgeColorBuffer(trajectory.getEdgeColorBuffer());
-    GL_CHECK_ERROR()
-    edges.render(static_cast<GLuint>(trajectory.getCurrentNEdges()));
-    GL_CHECK_ERROR()
+    if(trajectory.getCurrentNEdges() > 0) {
+        edgeProgram.use();
+        GL_CHECK_ERROR()
+        edgeSprite.setEdgesFromBuffer(trajectory.getEdgeBufferFrom());
+        edgeSprite.setEdgesToBuffer(trajectory.getEdgeBufferTo());
+        edgeSprite.setEdgeColorBuffer(trajectory.getEdgeColorBuffer());
+        GL_CHECK_ERROR()
+        edgeSprite.render(static_cast<GLuint>(trajectory.getCurrentNEdges()));
+        GL_CHECK_ERROR()
+    }
     //framing.render();
     GL_CHECK_ERROR()
 

@@ -59,7 +59,8 @@ struct TrajectoryConfiguration {
 
 class Trajectory {
 public:
-    Trajectory(const std::vector<std::vector<TrajectoryEntry>> &entries, const TrajectoryConfiguration &config);
+    Trajectory(const std::vector<std::vector<TrajectoryEntry>> &entries, const TrajectoryConfiguration &config,
+               const rv::edges_type &edges);
 
     ~Trajectory();
 
@@ -121,7 +122,7 @@ private:
     float defaultRadius;
     glm::vec3 _max, _min;
 
-    void setUpEdges(const std::vector<std::vector<TrajectoryEntry>> &entries);
+    void setUpEdges(const std::vector<std::vector<TrajectoryEntry>> &entries, const rv::edges_type &edges);
 
     void setUpParticles(const std::vector<std::vector<TrajectoryEntry>> &entries);
 

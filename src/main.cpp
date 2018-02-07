@@ -84,12 +84,12 @@ std::vector<std::vector<TrajectoryEntry>> generateTestData() {
 }
 
 void window_size_callback(GLFWwindow* window, int width, int height)  {
-    Viewer *viewer = reinterpret_cast<Viewer *>(glfwGetWindowUserPointer(window));
-    viewer->resize(width, height);
+    auto *viewer = reinterpret_cast<Viewer *>(glfwGetWindowUserPointer(window));
+    viewer->resize(static_cast<unsigned int>(width), static_cast<unsigned int>(height));
 }
 
 void initialize(bool debugContext, const std::vector<std::vector<TrajectoryEntry>> &data,
-                const TrajectoryConfiguration &config) {
+                const TrajectoryConfiguration &config, const rv::edges_type& edges) {
     glbinding::Binding::initialize();
     glbinding::Binding::useCurrentContext();
     if (!glfwInit()) {
@@ -97,7 +97,7 @@ void initialize(bool debugContext, const std::vector<std::vector<TrajectoryEntry
     }
     glfwSetErrorCallback(glfwErrorCallback);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE.m_value);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, debugContext ? GL_TRUE.m_value : GL_FALSE.m_value);
@@ -114,7 +114,7 @@ void initialize(bool debugContext, const std::vector<std::vector<TrajectoryEntry
     }
 
 
-    viewer = std::make_unique<Viewer>(data, config);
+    viewer = std::make_unique<Viewer>(data, config, edges);
     GL_CHECK_ERROR()
     glfwSetWindowUserPointer(window, viewer.get());
     glfwGetCursorPos(window, &cursor.x, &cursor.y);
@@ -171,7 +171,11 @@ PYBIND11_MAKE_OPAQUE(radii_map)
 
 namespace py = pybind11;
 
+template<typename T>
+using np_array = py::array_t<T, py::array::c_style | py::array::forcecast>;
+
 PYBIND11_PLUGIN(readdyviewer) {
+    using namespace py::literals;
     py::module m("readdyviewer");
 
     py::class_<glm::vec3>(m, "Color").def(py::init<float, float, float>());
@@ -187,11 +191,11 @@ PYBIND11_PLUGIN(readdyviewer) {
             .def(py::init < float, float, float, unsigned int, unsigned long> ());
 
     m.def("watch_npy", [](
-            py::array_t<float, py::array::c_style | py::array::forcecast> &positions,
-            py::array_t<unsigned int, py::array::c_style | py::array::forcecast> &types,
-            py::array_t<unsigned long, py::array::c_style | py::array::forcecast> &ids,
-            py::array_t<unsigned int, py::array::c_style | py::array::forcecast> &n_particles_arr,
-            const rv::TrajectoryConfiguration &config) {
+            np_array<float> &positions,
+            np_array<unsigned int> &types,
+            np_array<unsigned long> &ids,
+            np_array<unsigned int> &n_particles_arr,
+            const rv::TrajectoryConfiguration &config, const rv::edges_type &edges) {
         auto info_positions = positions.request(false);
         auto info_types = types.request(false);
         auto info_ids = ids.request(false);
@@ -228,7 +232,7 @@ PYBIND11_PLUGIN(readdyviewer) {
                             rv::log::debug("\t {} -> ({}, {}, {})",
                                            color.first, color.second.x, color.second.y, color.second.z);
                         }
-                        rv::initialize(false, data, config);
+                        rv::initialize(false, data, config, edges);
                         rv::cleanup();
                     } catch (const std::exception &e) {
                         rv::log::error("Encountered exception: {}", e.what());
@@ -250,10 +254,10 @@ PYBIND11_PLUGIN(readdyviewer) {
                     n_frames, info_types.shape[0], info_ids.shape[0], info_n_particles.shape[0]);
         }
         return -1;
-    });
+    }, "positions"_a, "types"_a, "ids"_a, "n_particles_per_frame"_a, "config"_a, "edges"_a = rv::edges_type());
     m.def("watch_debug", []() {
         try {
-            rv::initialize(false, rv::generateTestData(), rv::getTrajectoryTestConfig());
+            rv::initialize(false, rv::generateTestData(), rv::getTrajectoryTestConfig(), {});
             rv::cleanup();
         } catch (const std::exception &e) {
             rv::log::error("Encountered exception: {}", e.what());
@@ -265,7 +269,7 @@ PYBIND11_PLUGIN(readdyviewer) {
     m.def("watch",
           [](const std::vector<std::vector<rv::TrajectoryEntry>> &data, const rv::TrajectoryConfiguration &config) {
               try {
-                  rv::initialize(false, data, config);
+                  rv::initialize(false, data, config, {});
                   rv::cleanup();
               } catch (const std::exception &e) {
                   rv::log::error("Encountered exception: {}", e.what());

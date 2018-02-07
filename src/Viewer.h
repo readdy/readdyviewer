@@ -43,7 +43,8 @@
 namespace rv {
 class Viewer {
 public:
-    Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries, const TrajectoryConfiguration& config);
+    Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries, const TrajectoryConfiguration& config,
+           const rv::edges_type &edges);
 
     ~Viewer();
 
@@ -75,7 +76,7 @@ private:
     Framing framing;
     Trajectory trajectory;
     PointSprite pointSprite;
-    Edges edges;
+    Edges edgeSprite;
     ShaderProgram particleProgram;
     ShaderProgram edgeProgram;
     Camera camera;
