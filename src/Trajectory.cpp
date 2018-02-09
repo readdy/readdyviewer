@@ -132,6 +132,7 @@ void Trajectory::setUpParticles(const std::vector<std::vector<TrajectoryEntry>> 
     }
     // translate s.t. min is at bbox_min
     glm::vec3 posTranslation = bbox_min - _min;
+    //posTranslation = {0, 0, 0};
     log::debug("translate every particle by {}, {}, {}", posTranslation.x, posTranslation.y, posTranslation.z);
     // scale s.t. max is inside (10, 10, 10)
     float scale;

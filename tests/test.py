@@ -46,13 +46,14 @@ def edges():
         current_edges = []
         for top in tops:
             for e1, e2 in top.edges:
-                ix1 = top.particles[e1]
-                ix2 = top.particles[e2]
-                current_edges.append((ix1, ix2))
-                p1 = entries[timestep][ix1]
-                p2 = entries[timestep][ix2]
-                assert p1.type == 'T' or p1.type == 'unstable T', "expected topology type but got {} -- {}".format(p1, p2)
-                assert p2.type == 'T' or p2.type == 'unstable T', "expected topology type but got {} -- {}".format(p1, p2)
+                if e1 <= e2:
+                    ix1 = top.particles[e1]
+                    ix2 = top.particles[e2]
+                    current_edges.append((ix1, ix2))
+                    p1 = entries[timestep][ix1]
+                    p2 = entries[timestep][ix2]
+                    assert p1.type == 'T' or p1.type == 'unstable T', "expected topology type but got {} -- {}".format(p1, p2)
+                    assert p2.type == 'T' or p2.type == 'unstable T', "expected topology type but got {} -- {}".format(p1, p2)
         edges.append(current_edges)
     config.colors[t.particle_types['unstable T']] = readdyviewer.Color(153. / 255., 255. / 255., 0.)
     config.radii[t.particle_types['unstable T']] = .5
@@ -66,9 +67,42 @@ def edges():
     config.stride = 1
     readdyviewer.watch_npy(positions, types, ids, n_particles_per_frame, config, edges)
 
+def more_topologies_sim():
+    trajfile = "/home/mho/Development/readdyviewer/tests/more_topologies_simulation.h5"
+    n_particles_per_frame, positions, types, ids = load_trajectory_to_npy(trajfile)
+    config = readdyviewer.Configuration()
+    t = readdy.Trajectory(trajfile)
+    entries = t.read()
+    time, topology_records = t.read_observable_topologies()
+
+    edges = []
+    for timestep, tops in enumerate(topology_records):
+        current_edges = []
+        for top in tops:
+            for e1, e2 in top.edges:
+                ix1 = top.particles[e1]
+                ix2 = top.particles[e2]
+                current_edges.append((ix1, ix2))
+                p1 = entries[timestep][ix1]
+                p2 = entries[timestep][ix2]
+                assert p1.type == 'T' or p1.type == 'center T', "expected topology type but got {} -- {}".format(p1, p2)
+                assert p2.type == 'T' or p2.type == 'center T', "expected topology type but got {} -- {}".format(p1, p2)
+        edges.append(current_edges)
+    config.colors[t.particle_types['center T']] = readdyviewer.Color(153. / 255., 255. / 255., 0.)
+    config.radii[t.particle_types['center T']] = .5
+    config.colors[t.particle_types['T']] = readdyviewer.Color(255. / 255., 153. / 255., 0.)
+    config.radii[t.particle_types['T']] = .5
+    config.clearcolor = readdyviewer.Color(155. / 255., 155. / 255., 155. / 255.)
+
+    config.stride = 1
+    print(positions.shape)
+    print("go!")
+    readdyviewer.watch_npy(positions, types, ids, n_particles_per_frame, config, edges)
+
 def showsim():
-    edges()
+    # more_topologies_sim()
     # logo()
+    edges()
 
 def logo():
     outfile = "/home/mho/tmp/readdylogo_out2.h5"

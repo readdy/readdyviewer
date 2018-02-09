@@ -20,17 +20,5 @@ vec3 compute_light (out vec3 specular, in vec3 inNormal, in vec3 position);
 
 void main (void)
 {
-	float r = dot (fTexcoord, fTexcoord);
-
-	vec3 normal = vec3 (fTexcoord, sqrt (1 - r));
-
-	vec4 fPos = vec4 (fPosition + fRadius * normal, 1.0);
-	vec4 clipPos = projmat * fPos;
-	float d = clipPos.z / clipPos.w;
-
-	vec3 specular = vec3 (0, 0, 0);
-	vec3 light = compute_light (specular, normal, fPos.xyz);
-
-	// fetch texture value and output resulting color
-	color = vec4 (light * fColor, 1) + vec4 (specular, 1);
+    color = vec4 (fColor, 1);
 }

@@ -63,6 +63,10 @@ public:
     }
 
 private:
+
+    struct Impl;
+    std::unique_ptr<Impl> pimpl;
+
     union {
         struct {
             GLuint vertexBuffer;

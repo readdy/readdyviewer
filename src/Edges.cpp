@@ -34,39 +34,65 @@
 
 namespace rv {
 
-Edges::Edges() : _edgeSize(1.f) {
+template<unsigned int N>
+auto cylinderVertices() {
+    const GLdouble step = 2.0 * 3.141 / static_cast<double>(N);
+    std::array<GLshort, 2*3*N> vertices {};
+    std::array<GLushort, 2*3*N+6> indices {};
+
+    auto x = [&](std::uint32_t n) { return 32767 * std::cos(n * step); };
+    auto y = [&](std::uint32_t n) { return 32767 * std::sin(n * step); };
+
+    for(auto i = 0U; i < N; ++i) {
+        vertices[3*i + 0] = x(i);
+        vertices[3*i + 1] = y(i);
+        vertices[3*i + 2] = 32767;
+    }
+    for(auto i = 0U; i < N; ++i) {
+        vertices[3*N + 3*i + 0] = x(i);
+        vertices[3*N + 3*i + 1] = y(i);
+        vertices[3*N + 3*i + 2] = -32767;
+    }
+
+    for(auto i = 0U; i < N+1; ++i) {
+        indices[6*i + 0] = i % N;
+        indices[6*i + 1] = (i % N) + N;
+        indices[6*i + 2] = ((i+1) % N)+N;
+        indices[6*i + 3] = i % N;
+        indices[6*i + 4] = (i+1) % N;
+        indices[6*i + 5] = ((i+1)%N)+N;
+    }
+
+    return std::make_tuple(vertices, indices);
+};
+
+struct Edges::Impl {
+    decltype(cylinderVertices<20>()) cylinder = cylinderVertices<20U>();
+};
+
+Edges::Edges() : _edgeSize(1.f), pimpl(std::make_unique<Impl>()) {
+
+    const auto &cylinderVertices = std::get<0>(pimpl->cylinder);
+    const auto &cylinderIndices = std::get<1>(pimpl->cylinder);
 
     glGenVertexArrays(1, &vertexArray);
     glBindVertexArray(vertexArray);
     glGenBuffers(sizeof(buffers) / sizeof(buffers[0]), buffers);
-    GLshort vertices[] = {
-            -32767, 32767,
-            32767, 32767,
-            32767, -32767,
-            -32767, -32767
-    };
     // store vertices to a buffer object
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, cylinderVertices.size() * sizeof(GLshort), cylinderVertices.data(), GL_STATIC_DRAW);
     // define the vertices as vertex attribute 0
-    glVertexAttribPointer(0, 2, GL_SHORT, GL_TRUE, 0, nullptr);
+    glVertexAttribPointer(0, 3, GL_SHORT, GL_TRUE, 0, nullptr);
     glEnableVertexAttribArray(0);
 
-    const GLushort indices[] = {
-            0, 2, 1,
-            2, 0, 3
-    };
-
-    // store indices to a buffer object
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, cylinderIndices.size() * sizeof(GLushort), cylinderIndices.data(), GL_STATIC_DRAW);
 }
 
 void Edges::render(GLuint instances) {
     glBindVertexArray(vertexArray);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-    glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr, instances);
+    glDrawElementsInstanced(GL_TRIANGLES, std::get<1>(pimpl->cylinder).size(), GL_UNSIGNED_SHORT, nullptr, instances);
 }
 
 Edges::~Edges() {
