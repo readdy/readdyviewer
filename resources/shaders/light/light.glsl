@@ -5,7 +5,7 @@
 #define     LIGHT_POINT	    2
 #define     LIGHT_HEAD	    3
 
-#define NO_DOUBLE_SIDED_LIGHTING 1
+#define NO_DOUBLE_SIDED_LIGHTING 0
 #define USE_DISTANCE 0
 
 // projection and view matrix

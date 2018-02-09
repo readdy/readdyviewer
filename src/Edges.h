@@ -71,8 +71,9 @@ private:
         struct {
             GLuint vertexBuffer;
             GLuint indexBuffer;
+            GLuint normalsBuffer;
         };
-        GLuint buffers[2];
+        GLuint buffers[3];
     };
     GLuint vertexArray;
 
