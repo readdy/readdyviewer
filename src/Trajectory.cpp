@@ -202,9 +202,11 @@ void Trajectory::setUpParticles(const std::vector<std::vector<TrajectoryEntry>> 
                 return frame.at(i1).id < frame.at(i2).id;
             });
 
-
             //reorder(indices.begin(), indices.end(), frame.begin());
-            reorder(frame, indices);
+            {
+                auto idxCopy = indices;
+                reorder(frame, idxCopy);
+            }
 
             for (auto it = frame.begin(); it != frame.end() - 1; ++it) {
                 if (it->id > (it + 1)->id) {
