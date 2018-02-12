@@ -35,13 +35,13 @@
 
 namespace rv {
 Trajectory::Trajectory(const std::vector<std::vector<rv::TrajectoryEntry>> &entries,
-                       const TrajectoryConfiguration &config, const rv::edges_type &edges)
+                       const TrajectoryConfiguration &config, rv::edges_type &edges)
         : t(0), config(config), maxType(0), defaultColor(0.25, 0, 1), defaultRadius(.6) {
 
     T = entries.size();
     currentNParticles.reserve(T);
 
-    setUpParticles(entries);
+    setUpParticles(entries, edges);
 
     glGenBuffers(sizeof(buffers) / sizeof(buffers[0]), buffers);
     // positions
@@ -111,7 +111,27 @@ void Trajectory::setUpConfig(const TrajectoryConfiguration &config) const {
     GL_CHECK_ERROR()
 }
 
-void Trajectory::setUpParticles(const std::vector<std::vector<TrajectoryEntry>> &entries) {
+template<class T>
+void reorder(std::vector<T> &vA, std::vector<std::size_t> &vI) {
+    std::size_t i, j, k;
+    T t;
+    for (i = 0; i < vA.size(); i++) {
+        if (i != vI[i]) {
+            t = vA[i];
+            k = i;
+            while (i != (j = vI[k])) {
+                // every move places a value in it's final location
+                vA[k] = vA[j];
+                vI[k] = k;
+                k = j;
+            }
+            vA[k] = t;
+            vI[k] = k;
+        }
+    }
+}
+
+void Trajectory::setUpParticles(const std::vector<std::vector<TrajectoryEntry>> &entries, rv::edges_type &edges) {
     glm::vec3 bbox_min{1, 1, 1};
     glm::vec3 bbox_max{50, 50, 50};
     {
@@ -155,7 +175,9 @@ void Trajectory::setUpParticles(const std::vector<std::vector<TrajectoryEntry>> 
     }
 
     posTypes.resize(maxNParticles * T);
-    {
+    const auto smoothing = config.smoothing;
+    log::debug("got smoothing window width {}", smoothing);
+    if (smoothing == 1) {
         for (std::size_t i = 0; i < entries.size(); ++i) {
             const auto &frame = entries.at(i);
             std::size_t j = 0;
@@ -169,6 +191,64 @@ void Trajectory::setUpParticles(const std::vector<std::vector<TrajectoryEntry>> 
                 }
             }
         }
+    } else {
+        // smooth
+        auto sortedEntries = entries;
+        std::size_t t = 0;
+        for (auto &frame : sortedEntries) {
+            std::vector<std::size_t> indices(frame.size());
+            std::iota(indices.begin(), indices.end(), 0);
+            std::sort(indices.begin(), indices.end(), [&](const auto i1, const auto i2) {
+                return frame.at(i1).id < frame.at(i2).id;
+            });
+
+
+            //reorder(indices.begin(), indices.end(), frame.begin());
+            reorder(frame, indices);
+
+            for (auto it = frame.begin(); it != frame.end() - 1; ++it) {
+                if (it->id > (it + 1)->id) {
+                    throw std::runtime_error("the frames are not properly sorted by ID, internal error");
+                }
+            }
+
+            if (edges.size() > t) {
+                for (auto &e : edges.at(t)) {
+                    std::get<0>(e) = indices.at(std::get<0>(e));
+                    std::get<1>(e) = indices.at(std::get<1>(e));
+                }
+            }
+
+            ++t;
+        }
+        for (std::size_t i = 0; i < sortedEntries.size(); ++i) {
+            std::size_t offset = i * maxNParticles;
+            const auto &frame = sortedEntries.at(i);
+
+            std::size_t k = 0;
+            for (auto itParticle = frame.begin(); itParticle != frame.end(); ++itParticle, ++k) {
+
+                auto it_pt = posTypes.begin() + offset + k;
+
+                *it_pt = glm::vec4(0, 0, 0, 0);
+                std::size_t n = 0;
+                for (std::size_t j = i >= smoothing ? i - smoothing : 0;
+                     j < std::min(i + smoothing, sortedEntries.size()); ++j) {
+                    const auto &otherFrame = sortedEntries.at(j);
+
+                    auto findIt = std::lower_bound(otherFrame.begin(), otherFrame.end(), itParticle->id,
+                                                   [](const auto &entry, const auto id) {
+                                                       return entry.id < id;
+                                                   });
+                    if (findIt != otherFrame.end() && findIt->id == itParticle->id) {
+                        *it_pt += glm::vec4(scale * (findIt->pos + posTranslation), findIt->type);
+                        ++n;
+                    }
+                }
+                *it_pt /= static_cast<double>(n);
+            }
+
+        }
     }
 }
 
@@ -181,15 +261,15 @@ void Trajectory::setUpEdges(const std::vector<std::vector<TrajectoryEntry>> &ent
     edgePositionsTo.resize(maxNEdges * T);
     edgeColors.resize(maxNEdges * T);
 
-    for(std::size_t frame = 0; frame < edges.size(); ++frame) {
+    for (std::size_t frame = 0; frame < edges.size(); ++frame) {
         const auto &currentEdges = edges.at(frame);
-        for(std::size_t edgeIndex = 0; edgeIndex < currentEdges.size(); ++edgeIndex) {
+        for (std::size_t edgeIndex = 0; edgeIndex < currentEdges.size(); ++edgeIndex) {
             const auto &edge = currentEdges.at(edgeIndex);
-            const auto &p1 = posTypes.at(frame*maxNParticles + std::get<0>(edge));
-            const auto &p2 = posTypes.at(frame*maxNParticles + std::get<1>(edge));
-            edgePositionsFrom[frame*maxNEdges + edgeIndex] = glm::vec4(p1.x, p1.y, p1.z, 0);
-            edgePositionsTo[frame*maxNEdges + edgeIndex] = glm::vec4(p2.x, p2.y, p2.z, 0);
-            edgeColors[frame*maxNEdges + edgeIndex] = glm::vec4(1., 0, 0, 0);
+            const auto &p1 = posTypes.at(frame * maxNParticles + std::get<0>(edge));
+            const auto &p2 = posTypes.at(frame * maxNParticles + std::get<1>(edge));
+            edgePositionsFrom[frame * maxNEdges + edgeIndex] = glm::vec4(p1.x, p1.y, p1.z, 0);
+            edgePositionsTo[frame * maxNEdges + edgeIndex] = glm::vec4(p2.x, p2.y, p2.z, 0);
+            edgeColors[frame * maxNEdges + edgeIndex] = glm::vec4(1., 0, 0, 0);
         }
         currentNEdges.push_back(currentEdges.size());
     }
@@ -222,7 +302,7 @@ void Trajectory::updateEdgeColors() const {
                  edgeColors.data() + (t - config.stride) * maxNEdges, GL_STREAM_COPY);
     glBindBuffer(GL_COPY_WRITE_BUFFER, edgeColorBuffer);
     glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0,
-                            4 * sizeof(float) * getCurrentNEdges());
+                        4 * sizeof(float) * getCurrentNEdges());
     glDeleteBuffers(1, &tmpBuffer);
 }
 

@@ -67,6 +67,7 @@ def edges():
     config.radii[t.particle_types['Decay']] = .5
 
     config.stride = 1
+    config.smoothing = 20
     readdyviewer.watch_npy(positions, types, ids, n_particles_per_frame, config, edges)
 
 
@@ -118,8 +119,8 @@ def more_topologies_sim():
 
 def showsim():
     # more_topologies_sim()
-    # logo()
-    edges()
+    logo()
+    # edges()
     # test_cylinders()
 
 
@@ -129,6 +130,7 @@ def logo():
     config = get_config_solarized_light(outfile)
 
     config.stride = 1
+    config.smoothing = 5
     from readdy.api.utils import load_trajectory_to_npy as to_npy
     n_particles_per_frame, positions, types, ids = to_npy(outfile)
     readdyviewer.watch_npy(positions, types, ids, n_particles_per_frame, config)

@@ -55,12 +55,13 @@ struct TrajectoryConfiguration {
     std::unordered_map<TrajectoryEntry::type_t, float> radii{};
     unsigned int stride = 1;
     glm::vec3 clearcolor;
+    std::size_t smoothing = 1;
 };
 
 class Trajectory {
 public:
     Trajectory(const std::vector<std::vector<TrajectoryEntry>> &entries, const TrajectoryConfiguration &config,
-               const rv::edges_type &edges);
+               rv::edges_type &edges);
 
     ~Trajectory();
 
@@ -116,6 +117,7 @@ private:
     std::vector<std::size_t> currentNParticles;
     std::vector<std::size_t> currentNEdges;
     std::size_t T;
+    std::size_t _smoothing;
     TrajectoryConfiguration config;
     TrajectoryEntry::type_t maxType;
     glm::vec3 defaultColor;
@@ -124,7 +126,7 @@ private:
 
     void setUpEdges(const std::vector<std::vector<TrajectoryEntry>> &entries, const rv::edges_type &edges);
 
-    void setUpParticles(const std::vector<std::vector<TrajectoryEntry>> &entries);
+    void setUpParticles(const std::vector<std::vector<TrajectoryEntry>> &entries, rv::edges_type &edges);
 
     void setUpConfig(const TrajectoryConfiguration &config) const;
 

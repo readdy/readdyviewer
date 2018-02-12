@@ -44,7 +44,7 @@ namespace rv {
 class Viewer {
 public:
     Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries, const TrajectoryConfiguration& config,
-           const rv::edges_type &edges);
+           rv::edges_type &edges);
 
     ~Viewer();
 

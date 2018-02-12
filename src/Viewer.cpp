@@ -39,7 +39,7 @@ std::vector<Light> getLights() {
     return lights;
 }
 
-Viewer::Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries, const TrajectoryConfiguration& config, const rv::edges_type &edges)
+Viewer::Viewer(const std::vector<std::vector<TrajectoryEntry>> &entries, const TrajectoryConfiguration& config, rv::edges_type &edges)
         : width(0), height(0), last_fps_time(glfwGetTime()), framecount(0), fps(0), running(false),
           guitimer(0.0f), trajectory(entries, config, edges),
           interrupt(false), lights(getLights()) {
