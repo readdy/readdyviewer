@@ -52,8 +52,10 @@ def edges():
                     current_edges.append((ix1, ix2))
                     p1 = entries[timestep][ix1]
                     p2 = entries[timestep][ix2]
-                    assert p1.type == 'T' or p1.type == 'unstable T', "expected topology type but got {} -- {}".format(p1, p2)
-                    assert p2.type == 'T' or p2.type == 'unstable T', "expected topology type but got {} -- {}".format(p1, p2)
+                    assert p1.type == 'T' or p1.type == 'unstable T', "expected topology type but got {} -- {}".format(
+                        p1, p2)
+                    assert p2.type == 'T' or p2.type == 'unstable T', "expected topology type but got {} -- {}".format(
+                        p1, p2)
         edges.append(current_edges)
     config.colors[t.particle_types['unstable T']] = readdyviewer.Color(153. / 255., 255. / 255., 0.)
     config.radii[t.particle_types['unstable T']] = .5
@@ -66,6 +68,20 @@ def edges():
 
     config.stride = 1
     readdyviewer.watch_npy(positions, types, ids, n_particles_per_frame, config, edges)
+
+
+def test_cylinders():
+    n_particles_per_frame = np.array([2], dtype=int)
+    positions = np.array([[[2., -4., 1.], [0, 0., 0.]]])
+    types = np.array([[0, 0]], dtype=int)
+    ids = np.array([[0, 1]], dtype=int)
+    config = readdyviewer.Configuration()
+    config.colors[0] = readdyviewer.Color(153. / 255., 255. / 255., 0.)
+    config.radii[0] = .1
+    config.stride = 1
+    edges = [[(0, 1)]]
+    readdyviewer.watch_npy(positions, types, ids, n_particles_per_frame, config, edges)
+
 
 def more_topologies_sim():
     trajfile = "/home/mho/Development/readdyviewer/tests/more_topologies_simulation.h5"
@@ -99,10 +115,13 @@ def more_topologies_sim():
     print("go!")
     readdyviewer.watch_npy(positions, types, ids, n_particles_per_frame, config, edges)
 
+
 def showsim():
     # more_topologies_sim()
     # logo()
     edges()
+    # test_cylinders()
+
 
 def logo():
     outfile = "/home/mho/tmp/readdylogo_out2.h5"

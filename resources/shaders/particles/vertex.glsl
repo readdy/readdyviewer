@@ -36,11 +36,6 @@ void main (void)
 	fPosition = pos.xyz;
 	fTexcoord = vPosition;
 	fColor = particleConfigs[uint(particlePosition.w)].color.xyz;
-	if ((highlight&1U) == 1) {
-		fColor = vec3 (1, 0, 0);
-	} else if ((highlight&2U) ==2) {
-		fColor = vec3 (0, 1, 0);
-	}
 
 	// compute and output the vertex position
 	// after view transformation and projection
