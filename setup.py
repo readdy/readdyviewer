@@ -40,7 +40,7 @@ class CMakeBuild(build_ext):
                       '-DPYTHON_EXECUTABLE=' + sys.executable]
 
         # todo change back to cfg = 'Debug' if self.debug else 'Release'
-        cfg = 'Debug' if self.debug else 'Debug'
+        cfg = 'Debug' if self.debug else 'Release'
         build_args = ['--config', cfg]
 
         if platform.system() == "Windows":
