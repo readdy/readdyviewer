@@ -67,7 +67,7 @@ def edges():
     config.radii[t.particle_types['Decay']] = .5
 
     config.stride = 1
-    config.smoothing = 20
+    config.smoothing = 5
     readdyviewer.watch_npy(positions, types, ids, n_particles_per_frame, config, edges)
 
 
@@ -119,8 +119,8 @@ def more_topologies_sim():
 
 def showsim():
     # more_topologies_sim()
-    logo()
-    # edges()
+    # logo()
+    edges()
     # test_cylinders()
 
 
