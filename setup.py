@@ -37,7 +37,14 @@ class CMakeBuild(build_ext):
         extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
         extdir = os.path.join(extdir, "readdyviewer")
         cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
-                      '-DPYTHON_EXECUTABLE=' + sys.executable]
+                      '-DPYTHON_EXECUTABLE=' + sys.executable,
+                      '-DGLFW_BUILD_EXAMPLES=OFF',
+                      '-DGLFW_BUILD_TESTS=OFF',
+                      '-DGLFW_BUILD_DOCS=OFF',
+                      '-DOPTION_BUILD_EXAMPLES=OFF',
+                      '-DOPTION_BUILD_TESTS=OFF',
+                      '-DOPTION_BUILD_GPU_TESTS=OFF',
+                      '-DOPTION_BUILD_TOOLS=OFF']
 
         cfg = 'Debug' if self.debug else 'Release'
         build_args = ['--config', cfg]
@@ -58,6 +65,7 @@ class CMakeBuild(build_ext):
             os.makedirs(self.build_temp)
         subprocess.check_call(['cmake', ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env)
         subprocess.check_call(['cmake', '--build', '.'] + build_args, cwd=self.build_temp)
+        subprocess.check_call(['make', 'install'], cwd=self.build_temp)
 
 
 setup(
