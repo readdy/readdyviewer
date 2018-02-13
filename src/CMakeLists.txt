@@ -22,7 +22,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         ${spdlog_SOURCE_DIR}/include ${glfw_SOURCE_DIR}/include ${PNG_INCLUDE_DIRS}
         )
 
-target_link_libraries(${PROJECT_NAME} PUBLIC glfw ${GLFW_LIBRARIES} ${PNG_LIBRARIES} ${OPENGL_LIBRARIES} glbinding::glbinding fmt spdlog glm)
+target_link_libraries(${PROJECT_NAME} PUBLIC glfw ${GLFW_LIBRARIES} ${PNG_LIBRARIES} ${OPENGL_LIBRARIES} glbinding::glbinding fmt-header-only spdlog glm)
 target_compile_definitions(${PROJECT_NAME} PUBLIC -DSPDLOG_FMT_EXTERNAL)
 
 add_dependencies(${PROJECT_NAME} shaders-target textures-target)

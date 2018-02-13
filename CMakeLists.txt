@@ -14,6 +14,9 @@ if (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/glfw-src)
             GIT_TAG 3.2.1
             ${UPDATE_DISCONNECTED_IF_AVAILABLE}
             )
+    set(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
+    set(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
+    set(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
     add_subdirectory(${glfw_SOURCE_DIR} ${glfw_BINARY_DIR})
 else ()
     add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/glfw-src ${CMAKE_CURRENT_BINARY_DIR}/glfw-build)
