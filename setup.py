@@ -44,7 +44,8 @@ class CMakeBuild(build_ext):
                       '-DOPTION_BUILD_EXAMPLES=OFF',
                       '-DOPTION_BUILD_TESTS=OFF',
                       '-DOPTION_BUILD_GPU_TESTS=OFF',
-                      '-DOPTION_BUILD_TOOLS=OFF']
+                      '-DOPTION_BUILD_TOOLS=OFF',
+                      '-DCMAKE_INSTALL_PREFIX=' + os.environ['PREFIX']]
 
         cfg = 'Debug' if self.debug else 'Release'
         build_args = ['--config', cfg]
