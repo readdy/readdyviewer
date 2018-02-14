@@ -34,6 +34,7 @@
 #pragma once
 
 #include <vector>
+#include <algorithm>
 #include "common.h"
 
 namespace rv {
@@ -111,6 +112,7 @@ struct TrajectoryEntries {
     std::vector<std::size_t> nParticlesPerFrame;
     std::vector<glm::vec4> posTypes;
     edges_type edges;
+    std::size_t maxType {0};
 };
 
 template<typename T>
@@ -132,6 +134,8 @@ TrajectoryEntries convertTrajectory(std::vector<std::vector<T>> frames, edges_ty
         auto it = std::max_element(result.nParticlesPerFrame.begin(), result.nParticlesPerFrame.end());
         if(it != result.nParticlesPerFrame.end()) result.maxNParticles = *it;
     }
+
+    log::debug("got max number of particles in a single frame: {}", result.maxNParticles);
 
     result.posTypes.resize(result.maxNParticles * frames.size());
 
@@ -160,13 +164,14 @@ TrajectoryEntries convertTrajectory(std::vector<std::vector<T>> frames, edges_ty
                                                        return entry.id < id;
                                                    });
                     if (findIt != otherFrame.end() && findIt->id == itParticle->id) {
-                        *it_pt += glm::vec4(scale * (findIt->pos + posTranslation), findIt->type);
+                        *it_pt += glm::vec4(scale * (findIt->pos + posTranslation), 0);
                         ++n;
                     }
                 }
                 *it_pt /= static_cast<double>(n);
+                it_pt->w = frame.at(k).type;
+                result.maxType = std::max(result.maxType, static_cast<std::size_t>(frame.at(k).type));
             }
-
         }
     } else {
         for (std::size_t i = 0; i < frames.size(); ++i) {
@@ -174,11 +179,12 @@ TrajectoryEntries convertTrajectory(std::vector<std::vector<T>> frames, edges_ty
             std::size_t j = 0;
             std::size_t offset = i * result.maxNParticles;
             auto it_pt = result.posTypes.begin() + offset;
-            auto it_frame = frame.begin();
-            for (; it_pt != result.posTypes.begin() + offset + frame.size(); ++it_pt, ++j, ++it_frame) {
+            auto itParticles = frame.begin();
+            for (; it_pt != result.posTypes.begin() + offset + frame.size(); ++it_pt, ++j, ++itParticles) {
                 // project into [0, 10]**3
                 if (j < frame.size()) {
-                    *it_pt = glm::vec4(scale * (it_frame->pos + posTranslation), it_frame->type);
+                    *it_pt = glm::vec4(scale * (itParticles->pos + posTranslation), itParticles->type);
+                    result.maxType = std::max(result.maxType, static_cast<std::size_t>(itParticles->type));
                 }
             }
         }

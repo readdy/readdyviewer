@@ -35,7 +35,7 @@
 
 namespace rv {
 Trajectory::Trajectory(TrajectoryEntries entries, const TrajectoryConfiguration &config)
-        : t(0), config(config), entries(std::move(entries)), maxType(0), defaultColor(0.25, 0, 1), defaultRadius(.6) {
+        : t(0), config(config), entries(std::move(entries)), defaultColor(0.25, 0, 1), defaultRadius(.6) {
 
     //setUpParticles(entries, edges);
 
@@ -69,13 +69,14 @@ Trajectory::Trajectory(TrajectoryEntries entries, const TrajectoryConfiguration 
 
 void Trajectory::setUpConfig(const TrajectoryConfiguration &config) const {
     std::vector<particle_config_t> conf;
-    conf.reserve(maxType + 1);
-    for (unsigned int i = 0; i < maxType + 1; ++i) {
+    conf.reserve(entries.maxType + 1);
+    for (unsigned int i = 0; i < entries.maxType + 1; ++i) {
         particle_config_t c;
         {
             auto it = config.colors.find(i);
             if (it != config.colors.end()) {
                 c.color = glm::vec4(it->second, 0);
+                log::debug("assigning type {} color ({}, {}, {})", i, c.color.r, c.color.g, c.color.b);
             } else {
                 log::debug("Could not find color for type {}, using default", i);
                 c.color = glm::vec4(defaultColor, 0);
@@ -85,6 +86,7 @@ void Trajectory::setUpConfig(const TrajectoryConfiguration &config) const {
             auto it = config.radii.find(i);
             if (it != config.radii.end()) {
                 c.radius = it->second;
+                log::debug("assigning type {} radius {}", i, c.radius);
             } else {
                 log::debug("Could not find radius for type {}, using default", i);
                 c.radius = defaultRadius;

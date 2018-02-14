@@ -114,7 +114,6 @@ private:
     std::vector<glm::vec4> edgeColors;
     std::vector<std::size_t> currentNEdges;
     TrajectoryConfiguration config;
-    TrajectoryEntry::type_t maxType;
     glm::vec3 defaultColor;
     float defaultRadius;
     glm::vec3 _max, _min;

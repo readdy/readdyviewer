@@ -67,7 +67,7 @@ def edges():
     config.radii[t.particle_types['Decay']] = .5
 
     config.stride = 100
-    config.smoothing = 5
+    config.smoothing = 2
     readdyviewer.watch_npy(positions, types, ids, n_particles_per_frame, config, edges)
 
 
