@@ -1,5 +1,5 @@
 /********************************************************************
- * Copyright © 2016 Computational Molecular Biology Group,          *
+ * Copyright © 2018 Computational Molecular Biology Group,          *
  *                  Freie Universität Berlin (GER)                  *
  *                                                                  *
  * This file is part of ReaDDy.                                     *
@@ -21,80 +21,42 @@
 
 
 /**
+ * << detailed description >>
  *
- *
- * @file Viewer.h
- * @brief 
+ * @file TesselatedPointSprite.h
+ * @brief << brief description >>
  * @author clonker
- * @date 2/12/17
+ * @date 2/14/18
  */
-#ifndef PROJECT_VIEWER_H
-#define PROJECT_VIEWER_H
+
+
+
+#pragma once
 
 #include "common.h"
-#include "Camera.h"
-#include "ShaderProgram.h"
-#include "Trajectory.h"
-#include "PointSprite.h"
-#include "Framing.h"
-#include "LightArrangement.h"
-#include "Edges.h"
-#include "preprocessing.h"
 
 namespace rv {
-class Viewer {
+
+class TesselatedPointSprite {
 public:
-    Viewer(rv::TrajectoryEntries entries, const TrajectoryConfiguration& config);
 
-    ~Viewer();
+    TesselatedPointSprite();
+    ~TesselatedPointSprite();
 
-    void onMouseMove(double x, double y);
-    void onMouseDown(int button);
-    void onMouseUp(int button);
-    void onKeyUp(int key);
-    void onKeyDown(int key);
-    void resize(unsigned int width, unsigned int height);
+    void render(GLuint instances);
 
-    bool frame();
+    void setPositionBuffer(GLuint buffer, GLsizei stride = 0, GLintptr offset = 0);
 
 private:
-    using transformation_buffer_t = struct transformation_buffer {
-        glm::mat4 viewmat;
-        glm::mat4 projmat;
-        glm::mat4 invviewmat;
-    };
-
-    void updateViewMatrix();
-
     union {
         struct {
-            GLuint transformationBuffer;
+            GLuint vertexBuffer;
+            GLuint indexBuffer;
         };
-        GLuint buffers[1];
+        GLuint buffers[2];
     };
-
-    Framing framing;
-    Trajectory trajectory;
-    PointSprite pointSprite;
-    Edges edgeSprite;
-    ShaderProgram particleProgram;
-    ShaderProgram edgeProgram;
-    Camera camera;
-    LightArrangement lights;
-
-    bool running, interrupt;
-    glm::mat4 projmat;
-    unsigned int width;
-    unsigned int height;
-    double last_time;
-    double last_fps_time;
-    float guitimer;
-    unsigned int framecount;
-    unsigned int fps;
-
-
+    GLuint vertexArray;
 };
+
 }
 
-
-#endif //PROJECT_VIEWER_H

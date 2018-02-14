@@ -22,6 +22,7 @@
 #include <sstream>
 #include "common.h"
 #include "Viewer.h"
+#include "preprocessing.h"
 
 namespace rv {
 
@@ -88,8 +89,7 @@ void window_size_callback(GLFWwindow* window, int width, int height)  {
     viewer->resize(static_cast<unsigned int>(width), static_cast<unsigned int>(height));
 }
 
-void initialize(bool debugContext, const std::vector<std::vector<TrajectoryEntry>> &data,
-                const TrajectoryConfiguration &config, rv::edges_type& edges) {
+void initialize(bool debugContext, rv::TrajectoryEntries entries, const TrajectoryConfiguration &config) {
     glbinding::Binding::initialize();
     glbinding::Binding::useCurrentContext();
     if (!glfwInit()) {
@@ -114,7 +114,7 @@ void initialize(bool debugContext, const std::vector<std::vector<TrajectoryEntry
     }
 
 
-    viewer = std::make_unique<Viewer>(data, config, edges);
+    viewer = std::make_unique<Viewer>(std::move(entries), config);
     GL_CHECK_ERROR()
     glfwSetWindowUserPointer(window, viewer.get());
     glfwGetCursorPos(window, &cursor.x, &cursor.y);
@@ -233,7 +233,10 @@ PYBIND11_PLUGIN(readdyviewer) {
                             rv::log::debug("\t {} -> ({}, {}, {})",
                                            color.first, color.second.x, color.second.y, color.second.z);
                         }
-                        rv::initialize(false, data, config, edges);
+
+                        auto entries = rv::convertTrajectory(std::move(data), edges, config.stride, config.smoothing);
+
+                        rv::initialize(false, std::move(entries), config);
                         rv::cleanup();
                     } catch (const std::exception &e) {
                         rv::log::error("Encountered exception: {}", e.what());
@@ -256,7 +259,7 @@ PYBIND11_PLUGIN(readdyviewer) {
         }
         return -1;
     }, "positions"_a, "types"_a, "ids"_a, "n_particles_per_frame"_a, "config"_a, "edges"_a = rv::edges_type());
-    m.def("watch_debug", []() {
+    /*m.def("watch_debug", []() {
         try {
             rv::edges_type edges;
             rv::initialize(false, rv::generateTestData(), rv::getTrajectoryTestConfig(), edges);
@@ -280,7 +283,7 @@ PYBIND11_PLUGIN(readdyviewer) {
                   return -1;
               }
               return 0;
-          });
+          });*/
 
     py::bind_map<colors_map>(m, "ColorsMap");
     py::bind_map<radii_map>(m, "RadiiMap");

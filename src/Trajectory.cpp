@@ -34,23 +34,19 @@
 #include "Trajectory.h"
 
 namespace rv {
-Trajectory::Trajectory(const std::vector<std::vector<rv::TrajectoryEntry>> &entries,
-                       const TrajectoryConfiguration &config, rv::edges_type &edges)
-        : t(0), config(config), maxType(0), defaultColor(0.25, 0, 1), defaultRadius(.6) {
+Trajectory::Trajectory(TrajectoryEntries entries, const TrajectoryConfiguration &config)
+        : t(0), config(config), entries(std::move(entries)), maxType(0), defaultColor(0.25, 0, 1), defaultRadius(.6) {
 
-    T = entries.size();
-    currentNParticles.reserve(T);
-
-    setUpParticles(entries, edges);
+    //setUpParticles(entries, edges);
 
     glGenBuffers(sizeof(buffers) / sizeof(buffers[0]), buffers);
     // positions
     {
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, positionBuffer);
-        glBufferData(GL_SHADER_STORAGE_BUFFER, 4 * sizeof(float) * maxNParticles, nullptr, GL_DYNAMIC_COPY);
+        glBufferData(GL_SHADER_STORAGE_BUFFER, 4 * sizeof(float) * maxNParticles(), nullptr, GL_DYNAMIC_COPY);
     }
 
-    setUpEdges(entries, edges);
+    setUpEdges();
     {
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, edgeBufferFrom);
         GL_CHECK_ERROR()
@@ -77,18 +73,20 @@ void Trajectory::setUpConfig(const TrajectoryConfiguration &config) const {
     for (unsigned int i = 0; i < maxType + 1; ++i) {
         particle_config_t c;
         {
-            decltype(config.colors.begin()) it;
-            if ((it = config.colors.find(i)) != config.colors.end()) {
+            auto it = config.colors.find(i);
+            if (it != config.colors.end()) {
                 c.color = glm::vec4(it->second, 0);
             } else {
+                log::debug("Could not find color for type {}, using default", i);
                 c.color = glm::vec4(defaultColor, 0);
             }
         }
         {
-            decltype(config.radii.begin()) it;
-            if ((it = config.radii.find(i)) != config.radii.end()) {
+            auto it = config.radii.find(i);
+            if (it != config.radii.end()) {
                 c.radius = it->second;
             } else {
+                log::debug("Could not find radius for type {}, using default", i);
                 c.radius = defaultRadius;
             }
         }
@@ -111,27 +109,7 @@ void Trajectory::setUpConfig(const TrajectoryConfiguration &config) const {
     GL_CHECK_ERROR()
 }
 
-template<class T>
-void reorder(std::vector<T> &vA, std::vector<std::size_t> &vI) {
-    std::size_t i, j, k;
-    T t;
-    for (i = 0; i < vA.size(); i++) {
-        if (i != vI[i]) {
-            t = vA[i];
-            k = i;
-            while (i != (j = vI[k])) {
-                // every move places a value in it's final location
-                vA[k] = vA[j];
-                vI[k] = k;
-                k = j;
-            }
-            vA[k] = t;
-            vI[k] = k;
-        }
-    }
-}
-
-void Trajectory::setUpParticles(const std::vector<std::vector<TrajectoryEntry>> &entries, rv::edges_type &edges) {
+/*void Trajectory::setUpParticles(const std::vector<std::vector<TrajectoryEntry>> &entries, rv::edges_type &edges) {
     glm::vec3 bbox_min{1, 1, 1};
     glm::vec3 bbox_max{50, 50, 50};
     {
@@ -170,6 +148,11 @@ void Trajectory::setUpParticles(const std::vector<std::vector<TrajectoryEntry>> 
     log::debug("scale every particle by {}", scale);
 
     maxNParticles = 0;
+    {
+        auto it = std::max_element(currentNParticles.begin(), currentNParticles.end());
+        if(it != currentNParticles.end()) maxNParticles = *it;
+    }
+
     for (const auto &e : entries) {
         maxNParticles = std::max(maxNParticles, e.size());
     }
@@ -252,9 +235,14 @@ void Trajectory::setUpParticles(const std::vector<std::vector<TrajectoryEntry>> 
 
         }
     }
-}
+}*/
 
-void Trajectory::setUpEdges(const std::vector<std::vector<TrajectoryEntry>> &entries, const rv::edges_type &edges) {
+void Trajectory::setUpEdges() {
+    const auto &edges = entries.edges;
+    const auto T = entries.nParticlesPerFrame.size();
+    const auto &posTypes = entries.posTypes;
+    const auto maxNParticles = entries.maxNParticles;
+
     maxNEdges = 0;
     for (const auto &frame : edges) {
         maxNEdges = std::max(maxNEdges, frame.size());
@@ -286,14 +274,14 @@ GLuint Trajectory::getPositionBuffer() const {
 }
 
 void Trajectory::frame() {
-    t += config.stride;
-    if (t <= T) {
-        log::debug("frame: {} / {}", t, T);
+    if (t < nTimeSteps()) {
+        log::debug("frame: {} / {}", t, nTimeSteps() - 1);
         updateParticlePositions();
         updateEdgesFrom();
         updateEdgesTo();
         updateEdgeColors();
     }
+    t += 1;
 }
 
 void Trajectory::updateEdgeColors() const {
@@ -301,7 +289,7 @@ void Trajectory::updateEdgeColors() const {
     glGenBuffers(1, &tmpBuffer);
     glBindBuffer(GL_COPY_READ_BUFFER, tmpBuffer);
     glBufferData(GL_COPY_READ_BUFFER, 4 * sizeof(float) * getCurrentNEdges(),
-                 edgeColors.data() + (t - config.stride) * maxNEdges, GL_STREAM_COPY);
+                 edgeColors.data() + t * maxNEdges, GL_STREAM_COPY);
     glBindBuffer(GL_COPY_WRITE_BUFFER, edgeColorBuffer);
     glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0,
                         4 * sizeof(float) * getCurrentNEdges());
@@ -313,7 +301,7 @@ void Trajectory::updateEdgesFrom() const {
     glGenBuffers(1, &tmpBuffer);
     glBindBuffer(GL_COPY_READ_BUFFER, tmpBuffer);
     glBufferData(GL_COPY_READ_BUFFER, 4 * sizeof(float) * getCurrentNEdges(),
-                 edgePositionsFrom.data() + (t - config.stride) * maxNEdges, GL_STREAM_COPY);
+                 edgePositionsFrom.data() + t * maxNEdges, GL_STREAM_COPY);
     glBindBuffer(GL_COPY_WRITE_BUFFER, edgeBufferFrom);
     glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, 4 * sizeof(float) * getCurrentNEdges());
     glDeleteBuffers(1, &tmpBuffer);
@@ -324,7 +312,7 @@ void Trajectory::updateEdgesTo() const {
     glGenBuffers(1, &tmpBuffer);
     glBindBuffer(GL_COPY_READ_BUFFER, tmpBuffer);
     glBufferData(GL_COPY_READ_BUFFER, 4 * sizeof(float) * getCurrentNEdges(),
-                 edgePositionsTo.data() + (t - config.stride) * maxNEdges, GL_STREAM_COPY);
+                 edgePositionsTo.data() + t * maxNEdges, GL_STREAM_COPY);
     glBindBuffer(GL_COPY_WRITE_BUFFER, edgeBufferTo);
     glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, 4 * sizeof(float) * getCurrentNEdges());
     glDeleteBuffers(1, &tmpBuffer);
@@ -335,27 +323,27 @@ void Trajectory::updateParticlePositions() const {
     glGenBuffers(1, &tmpBuffer);
     glBindBuffer(GL_COPY_READ_BUFFER, tmpBuffer);
     glBufferData(GL_COPY_READ_BUFFER, 4 * sizeof(float) * getCurrentNParticles(),
-                 posTypes.data() + (t - config.stride) * maxNParticles, GL_STREAM_COPY);
+                 entries.posTypes.data() + t * entries.maxNParticles, GL_STREAM_COPY);
     glBindBuffer(GL_COPY_WRITE_BUFFER, positionBuffer);
     glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, 4 * sizeof(float) * getCurrentNParticles());
     glDeleteBuffers(1, &tmpBuffer);
 }
 
 std::size_t Trajectory::nTimeSteps() const {
-    return T;
+    return entries.nParticlesPerFrame.size();
 }
 
 std::size_t Trajectory::currentTimeStep() const {
-    return std::min(t, T);
+    return std::min(t, entries.nParticlesPerFrame.size()-1);
 }
 
 std::size_t Trajectory::getCurrentNParticles() const {
-    return currentNParticles.at(currentTimeStep() - config.stride);
+    return entries.nParticlesPerFrame.at(currentTimeStep());
 }
 
 void Trajectory::reset() {
-    t = config.stride;
-    log::debug("frame: {} / {}", t, T);
+    t = 0;
+    log::debug("frame: {} / {}", t, nTimeSteps() - 1);
     updateParticlePositions();
     updateEdgesFrom();
     updateEdgesTo();
@@ -390,11 +378,15 @@ GLuint Trajectory::getEdgeColorBuffer() const {
 
 std::size_t Trajectory::getCurrentNEdges() const {
     if (currentNEdges.empty()) return 0;
-    return currentNEdges.at(currentTimeStep() - config.stride);
+    return currentNEdges.at(currentTimeStep());
 }
 
 GLuint Trajectory::getEdgeBufferTo() const {
     return edgeBufferTo;
+}
+
+std::size_t Trajectory::maxNParticles() const {
+    return entries.maxNParticles;
 }
 
 TrajectoryEntry::TrajectoryEntry(float x, float y, float z, TrajectoryEntry::type_t type, unsigned long id)

@@ -5,17 +5,22 @@ set(CMAKE_CXX_STANDARD 17)
 find_package(PNG REQUIRED)
 find_package(OpenGL REQUIRED)
 
-set(SOURCE_FILES main.cpp common.h)
-set(SOURCE_FILES_43 common.h Viewer.cpp Viewer.h Camera.cpp Camera.h
-        ShaderProgram.cpp ShaderProgram.h PointSprite.cpp PointSprite.h
-        Trajectory.cpp Trajectory.h Framing.cpp Framing.h
-        Texture.cpp Texture.h LightArrangement.cpp LightArrangement.h
-        Edges.cpp Edges.h)
+set(SOURCE_FILES main.cpp common.h preprocessing.h
+        Viewer.cpp Viewer.h
+        Camera.cpp Camera.h
+        ShaderProgram.cpp ShaderProgram.h
+        PointSprite.cpp PointSprite.h
+        Trajectory.cpp Trajectory.h
+        Framing.cpp Framing.h
+        Texture.cpp Texture.h
+        LightArrangement.cpp LightArrangement.h
+        Edges.cpp Edges.h
+        TesselatedPointSprite.cpp TesselatedPointSprite.h)
 
 if (BUILD_PYTHON_LIBRARY)
-    pybind11_add_module(${PROJECT_NAME} ${SOURCE_FILES} ${SOURCE_FILES_43} ${SOURCE_FILES_30})
+    pybind11_add_module(${PROJECT_NAME} ${SOURCE_FILES})
 else ()
-    add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${SOURCE_FILES_43} ${SOURCE_FILES_30})
+    add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 endif ()
 
 target_include_directories(${PROJECT_NAME} PUBLIC

@@ -34,6 +34,7 @@
 #define PROJECT_TRAJECTORY_H
 
 #include "common.h"
+#include "preprocessing.h"
 
 namespace rv {
 
@@ -60,8 +61,7 @@ struct TrajectoryConfiguration {
 
 class Trajectory {
 public:
-    Trajectory(const std::vector<std::vector<TrajectoryEntry>> &entries, const TrajectoryConfiguration &config,
-               rv::edges_type &edges);
+    Trajectory(TrajectoryEntries entries, const TrajectoryConfiguration &config);
 
     ~Trajectory();
 
@@ -109,24 +109,21 @@ private:
         GLuint buffers[5];
     };
     std::size_t maxNEdges;
-    std::size_t maxNParticles;
-    std::vector<glm::vec4> posTypes;
     std::vector<glm::vec4> edgePositionsFrom;
     std::vector<glm::vec4> edgePositionsTo;
     std::vector<glm::vec4> edgeColors;
-    std::vector<std::size_t> currentNParticles;
     std::vector<std::size_t> currentNEdges;
-    std::size_t T;
-    std::size_t _smoothing;
     TrajectoryConfiguration config;
     TrajectoryEntry::type_t maxType;
     glm::vec3 defaultColor;
     float defaultRadius;
     glm::vec3 _max, _min;
 
-    void setUpEdges(const std::vector<std::vector<TrajectoryEntry>> &entries, const rv::edges_type &edges);
+    TrajectoryEntries entries;
 
-    void setUpParticles(const std::vector<std::vector<TrajectoryEntry>> &entries, rv::edges_type &edges);
+    void setUpEdges();
+
+    //void setUpParticles(const std::vector<std::vector<TrajectoryEntry>> &entries, rv::edges_type &edges);
 
     void setUpConfig(const TrajectoryConfiguration &config) const;
 
@@ -137,6 +134,8 @@ private:
     void updateEdgesTo() const;
 
     void updateEdgeColors() const;
+
+    std::size_t maxNParticles() const;
 };
 }
 
