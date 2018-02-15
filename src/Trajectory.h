@@ -57,6 +57,7 @@ struct TrajectoryConfiguration {
     unsigned int stride = 1;
     glm::vec3 clearcolor;
     std::size_t smoothing = 1;
+    float bondRadius = .1;
 };
 
 class Trajectory {
@@ -121,8 +122,6 @@ private:
     TrajectoryEntries entries;
 
     void setUpEdges();
-
-    //void setUpParticles(const std::vector<std::vector<TrajectoryEntry>> &entries, rv::edges_type &edges);
 
     void setUpConfig(const TrajectoryConfiguration &config) const;
 

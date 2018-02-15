@@ -1,5 +1,3 @@
-#version 430 core
-
 #define     LIGHT_AMBIENT   0
 #define     LIGHT_DIRECTION 1
 #define     LIGHT_POINT	    2
@@ -7,13 +5,6 @@
 
 #define NO_DOUBLE_SIDED_LIGHTING 0
 #define USE_DISTANCE 0
-
-// projection and view matrix
-layout (binding = 0, std140) uniform TransformationBlock {
-	mat4 viewmat;
-	mat4 projmat;
-	mat4 invviewmat;
-};
 
 struct Light {
     vec4 position;

@@ -1,5 +1,3 @@
-#version 430 core
-
 // input vertex attributes
 layout (location = 0) in vec3 vPosition;
 layout (location = 1) in vec3 normal;
@@ -29,7 +27,7 @@ void main (void)
     // scale cylinder into z direction
     vec3 vertpos = vPosition;
     vertpos.z *= .5*length(edgeToPosition.xyz - edgeFromPosition.xyz);
-    vertpos.xy *= .2;
+    vertpos.xy *= radius;
 
     vec3 b = edgeToPosition.xyz - edgeFromPosition.xyz;
 

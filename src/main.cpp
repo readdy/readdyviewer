@@ -186,7 +186,8 @@ PYBIND11_PLUGIN(readdyviewer) {
             .def_readwrite("colors", &rv::TrajectoryConfiguration::colors)
             .def_readwrite("radii", &rv::TrajectoryConfiguration::radii)
             .def_readwrite("stride", &rv::TrajectoryConfiguration::stride)
-            .def_readwrite("smoothing", &rv::TrajectoryConfiguration::smoothing);
+            .def_readwrite("smoothing", &rv::TrajectoryConfiguration::smoothing)
+            .def_readwrite("bond_radius", &rv::TrajectoryConfiguration::bondRadius);
 
     py::class_<rv::TrajectoryEntry>(m, "TrajectoryEntry")
             .def(py::init < float, float, float, unsigned int, unsigned long> ());

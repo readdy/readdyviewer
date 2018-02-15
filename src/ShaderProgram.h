@@ -42,7 +42,11 @@ public:
 
     ~ShaderProgram();
 
-    void compileShader(GLenum type, const std::string &fname, const std::string &header = {});
+    void compileShader(GLenum type, const std::string &fileName, const std::string &header = {}) {
+        compileShader(type, {fileName}, header);
+    }
+
+    void compileShader(GLenum type, std::initializer_list<std::string> filenames, const std::string &header = {});
 
     void link();
 

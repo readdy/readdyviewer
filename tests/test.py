@@ -68,6 +68,7 @@ def edges():
 
     config.stride = 100
     config.smoothing = 2
+    config.bond_radius = .5
     readdyviewer.watch_npy(positions, types, ids, n_particles_per_frame, config, edges)
 
 

@@ -1,5 +1,3 @@
-#version 430 core
-
 struct ParticleConfiguration {
     vec4 color;
     float radius;

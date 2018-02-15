@@ -1,5 +1,3 @@
-#version 430 core
-
 // output color
 layout (location = 0) out vec4 color;
 

@@ -48,15 +48,14 @@ Viewer::Viewer(rv::TrajectoryEntries entries, const TrajectoryConfiguration& con
     last_time = glfwGetTime();
 
     particleProgram.compileShader(GL_VERTEX_SHADER, "shaders/particles/vertex.glsl");
-    particleProgram.compileShader(GL_FRAGMENT_SHADER, "shaders/particles/fragment.glsl");
-    particleProgram.compileShader(GL_FRAGMENT_SHADER, "shaders/light/light.glsl");
+    particleProgram.compileShader(GL_FRAGMENT_SHADER, {"shaders/particles/fragment.glsl", "shaders/light/light.glsl"});
     particleProgram.link();
 
     GL_CHECK_ERROR()
 
-    edgeProgram.compileShader(GL_VERTEX_SHADER, "shaders/edge/vertex.glsl");
-    edgeProgram.compileShader(GL_FRAGMENT_SHADER, "shaders/edge/fragment.glsl");
-    edgeProgram.compileShader(GL_FRAGMENT_SHADER, "shaders/light/light.glsl");
+    edgeProgram.compileShader(GL_VERTEX_SHADER, "shaders/edge/vertex.glsl",
+                              fmt::format("const float radius = {};\n", config.bondRadius));
+    edgeProgram.compileShader(GL_FRAGMENT_SHADER, {"shaders/edge/fragment.glsl", "shaders/light/light.glsl"});
     edgeProgram.link();
 
     GL_CHECK_ERROR()
