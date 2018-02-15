@@ -35,12 +35,32 @@
 namespace rv {
 
 
-TesselatedSphereSprite::TesselatedSphereSprite() : _sphere(10) {
+TesselatedSphereSprite::TesselatedSphereSprite() : _sphere(6) {
     glGenVertexArrays(1, &vertexArray);
     glBindVertexArray(vertexArray);
     glGenBuffers(sizeof(buffers) / sizeof(buffers[0]), buffers);
 
+    // store vertices to a buffer object
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, 3 * _sphere.vertices().size() * sizeof(GLshort), &_sphere.vertices()[0][0],
+                 GL_STATIC_DRAW);
 
+    // define the vertices as vertex attribute 0
+    glVertexAttribPointer(0, 3, GL_SHORT, GL_TRUE, 0, nullptr);
+    glEnableVertexAttribArray(0);
+
+    {
+        glBindBuffer(GL_ARRAY_BUFFER, normalsBuffer);
+        glBufferData(GL_ARRAY_BUFFER, 3 * _sphere.normals().size() * sizeof(GLshort), &_sphere.normals()[0][0],
+                     GL_STATIC_DRAW);
+        glVertexAttribPointer(1, 3, GL_SHORT, GL_TRUE, 0, nullptr);
+        glEnableVertexAttribArray(1);
+    }
+    {
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * _sphere.indices().size() * sizeof(GLushort), &_sphere.indices()[0][0],
+                     GL_STATIC_DRAW);
+    }
 }
 
 TesselatedSphereSprite::~TesselatedSphereSprite() {

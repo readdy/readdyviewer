@@ -39,24 +39,29 @@ namespace rv {
 
 class SphereTesselation {
 public:
+
+    using vertices_type = std::vector<std::array<GLshort, 3>>;
+    using indices_type = std::vector<std::array<GLushort, 3>>;
+    using normals_type = std::vector<std::array<GLshort, 3>>;
+
     explicit SphereTesselation(std::size_t recursionDepth);
 
-    const auto &vertices() const {
+    const vertices_type &vertices() const{
         return _vertices;
     }
 
-    const auto &indices() const {
+    const indices_type &indices() const {
         return _indices;
     }
 
-    const auto &normals() const {
+    const normals_type &normals() const {
         return _normals;
     }
 
 private:
-    std::vector<std::array<GLshort, 3>> _vertices;
-    std::vector<std::array<GLushort, 3>> _indices;
-    std::vector<std::array<GLshort, 3>> _normals;
+    vertices_type _vertices;
+    indices_type _indices;
+    normals_type _normals;
 
     void subdivide();
 };
@@ -77,8 +82,9 @@ private:
         struct {
             GLuint vertexBuffer;
             GLuint indexBuffer;
+            GLuint normalsBuffer;
         };
-        GLuint buffers[2];
+        GLuint buffers[3];
     };
     GLuint vertexArray;
 
