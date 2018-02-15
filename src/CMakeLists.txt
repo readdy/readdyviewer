@@ -15,7 +15,7 @@ set(SOURCE_FILES main.cpp common.h preprocessing.h
         Texture.cpp Texture.h
         LightArrangement.cpp LightArrangement.h
         Edges.cpp Edges.h
-        TesselatedPointSprite.cpp TesselatedPointSprite.h)
+        TesselatedSphereSprite.cpp TesselatedSphereSprite.h)
 
 if (BUILD_PYTHON_LIBRARY)
     pybind11_add_module(${PROJECT_NAME} ${SOURCE_FILES})

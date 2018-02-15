@@ -37,11 +37,36 @@
 
 namespace rv {
 
-class TesselatedPointSprite {
+class SphereTesselation {
+public:
+    explicit SphereTesselation(std::size_t recursionDepth);
+
+    const auto &vertices() const {
+        return _vertices;
+    }
+
+    const auto &indices() const {
+        return _indices;
+    }
+
+    const auto &normals() const {
+        return _normals;
+    }
+
+private:
+    std::vector<std::array<GLshort, 3>> _vertices;
+    std::vector<std::array<GLushort, 3>> _indices;
+    std::vector<std::array<GLshort, 3>> _normals;
+
+    void subdivide();
+};
+
+class TesselatedSphereSprite {
 public:
 
-    TesselatedPointSprite();
-    ~TesselatedPointSprite();
+    TesselatedSphereSprite();
+
+    ~TesselatedSphereSprite();
 
     void render(GLuint instances);
 
@@ -56,6 +81,8 @@ private:
         GLuint buffers[2];
     };
     GLuint vertexArray;
+
+    SphereTesselation _sphere;
 };
 
 }
