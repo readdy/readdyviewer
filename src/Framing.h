@@ -40,7 +40,7 @@
 namespace rv {
 class Framing {
 public:
-    Framing();
+    Framing(const std::string& resourceDir);
     ~Framing();
     void render();
 private:

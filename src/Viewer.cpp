@@ -42,17 +42,19 @@ std::vector<Light> getLights() {
 Viewer::Viewer(rv::TrajectoryEntries entries, const TrajectoryConfiguration& config)
         : width(0), height(0), last_fps_time(glfwGetTime()), framecount(0), fps(0), running(false),
           guitimer(0.0f), trajectory(std::move(entries), config),
-          interrupt(false), lights(getLights()) {
+          interrupt(false), lights(getLights()), framing(config.resourcedir) {
     GL_CHECK_ERROR()
 
     last_time = glfwGetTime();
 
+    particleProgram.pathPrefix() = config.resourcedir;
     particleProgram.compileShader(GL_VERTEX_SHADER, "shaders/particles/vertex.glsl");
     particleProgram.compileShader(GL_FRAGMENT_SHADER, {"shaders/particles/fragment.glsl", "shaders/light/light.glsl"});
     particleProgram.link();
 
     GL_CHECK_ERROR()
 
+    edgeProgram.pathPrefix() = config.resourcedir;
     edgeProgram.compileShader(GL_VERTEX_SHADER, "shaders/edge/vertex.glsl",
                               fmt::format("const float radius = {};\n", config.bondRadius));
     edgeProgram.compileShader(GL_FRAGMENT_SHADER, {"shaders/edge/fragment.glsl", "shaders/light/light.glsl"},

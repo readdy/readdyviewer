@@ -65,10 +65,16 @@ void ShaderProgram::compileShader(GLenum type, std::initializer_list<std::string
     // load shader source
     length = static_cast<GLint>(data.size());
     for (const auto &filename : filenames) {
+        
+        std::string fname = filename;
+        if(pathPrefix() != "") {
+            fname = pathPrefix() + fname;
+        }
+        
         size_t len;
-        std::ifstream f(filename.c_str(), std::ios_base::in);
+        std::ifstream f(fname, std::ios_base::in);
         if (!f.is_open())
-            throw std::runtime_error(std::string("Cannot load shader: ") + filename);
+            throw std::runtime_error(std::string("Cannot load shader: ") + fname);
 
         f.seekg(0, std::ios_base::end);
         len = static_cast<std::size_t>(f.tellg());
@@ -79,7 +85,7 @@ void ShaderProgram::compileShader(GLenum type, std::initializer_list<std::string
         len = static_cast<std::size_t>(f.gcount());
 
         if (f.bad())
-            throw std::runtime_error(std::string("Cannot load shader: ") + filename);
+            throw std::runtime_error(std::string("Cannot load shader: ") + fname);
         length += len;
     }
 

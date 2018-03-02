@@ -43,7 +43,7 @@ add_subdirectory(libs/fmt)
 add_subdirectory(libs/spdlog)
 add_subdirectory(libs/glm)
 
-add_subdirectory(resources/shaders)
-add_subdirectory(resources/textures)
+add_subdirectory(readdyviewer/resources/shaders)
+add_subdirectory(readdyviewer/resources/textures)
 
 add_subdirectory(src)

@@ -34,7 +34,8 @@
 
 namespace rv {
 
-Framing::Framing() {
+Framing::Framing(const std::string &resourceDir) {
+    program.pathPrefix() = resourceDir;
     program.compileShader(GL_VERTEX_SHADER, "shaders/framing/vertex.glsl");
     program.compileShader(GL_FRAGMENT_SHADER, {"shaders/framing/fragment.glsl", "shaders/light/light.glsl"});
     program.link();

@@ -59,6 +59,7 @@ struct TrajectoryConfiguration {
     std::size_t smoothing = 1;
     float bondRadius = .1f;
     float smoothingCutoff = 2.f;
+    std::string resourcedir;
 };
 
 class Trajectory {

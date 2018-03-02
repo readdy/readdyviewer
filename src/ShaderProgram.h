@@ -55,9 +55,18 @@ public:
     GLint getUniformLocation(const char *name) const;
 
     gl::GLuint get() const;
+    
+    std::string &pathPrefix() {
+        return _pathPrefix;
+    }
+    
+    const std::string &pathPrefix() const {
+        return _pathPrefix;
+    }
 
 private:
     gl::GLuint program;
+    std::string _pathPrefix = "";
 };
 }
 

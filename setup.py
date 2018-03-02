@@ -81,5 +81,7 @@ setup(
     packages=find_packages(),
     zip_safe=False,
     cmdclass=dict(build_ext=CMakeBuild),
+    package_data={'readdyviewer': ['resources/*']},
+    include_package_data=True,
     install_requires=['numpy']
 )

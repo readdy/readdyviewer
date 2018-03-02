@@ -29,6 +29,7 @@ namespace rv {
 GLFWwindow *window = NULL;
 std::unique_ptr<Viewer> viewer;
 glm::dvec2 cursor;
+std::string resourcedir;
 
 void glfwErrorCallback(int error, const char *msg) {
     rv::log::error("GLFW error {}: {}", error, msg);
@@ -193,12 +194,20 @@ PYBIND11_PLUGIN(readdyviewer) {
     py::class_<rv::TrajectoryEntry>(m, "TrajectoryEntry")
             .def(py::init < float, float, float, unsigned int, unsigned long> ());
 
+    m.def("set_resource_dir", [&](const std::string &dir) {
+        rv::resourcedir = dir;
+        if(!rv::resourcedir.empty() && rv::resourcedir.back() != '/') {
+            rv::resourcedir += "/";
+        }
+    });
+
     m.def("watch_npy", [](
             np_array<float> &positions,
             np_array<unsigned int> &types,
             np_array<unsigned long> &ids,
             np_array<unsigned int> &n_particles_arr,
-            const rv::TrajectoryConfiguration &config, rv::edges_type &edges) {
+            rv::TrajectoryConfiguration config, rv::edges_type &edges) {
+        config.resourcedir = rv::resourcedir;
         auto info_positions = positions.request(false);
         auto info_types = types.request(false);
         auto info_ids = ids.request(false);
