@@ -69,6 +69,20 @@ class CMakeBuild(build_ext):
         subprocess.check_call(['make', 'install'], cwd=self.build_temp)
 
 
+def package_files(directory):
+    paths = []
+    for (path, directories, filenames) in os.walk(directory):
+        for filename in filenames:
+            paths.append(os.path.join('..', path, filename))
+    return paths
+
+
+extra_files = package_files('readdyviewer/resources')
+
+print("------- using extra files ---------")
+for f in extra_files:
+    print("\t{}".format(f))
+
 setup(
     name='ReaDDyViewer',
     version=__version__,
@@ -81,7 +95,6 @@ setup(
     packages=find_packages(),
     zip_safe=False,
     cmdclass=dict(build_ext=CMakeBuild),
-    package_data={'readdyviewer': ['resources/*']},
-    include_package_data=True,
+    package_data={'readdyviewer': extra_files},
     install_requires=['numpy']
 )
