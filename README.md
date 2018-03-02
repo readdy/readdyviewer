@@ -1,1 +1,5 @@
-[![Build Status](https://travis-ci.org/readdy/readdyviewer.svg?branch=master)](https://travis-ci.org/readdy/readdyviewer)
+Installation:
+
+```
+conda install -c clonker readdyviewer
+```
