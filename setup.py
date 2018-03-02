@@ -77,7 +77,7 @@ setup(
     url='https://github.com/readdy/readdyviewer',
     description='',
     long_description='',
-    ext_modules=[CMakeExtension('readdyviewer')],
+    ext_modules=[CMakeExtension('readdyviewer_binding')],
     packages=find_packages(),
     zip_safe=False,
     cmdclass=dict(build_ext=CMakeBuild),

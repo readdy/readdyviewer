@@ -1,4 +1,4 @@
-project(readdyviewer)
+project(readdyviewer_binding)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -45,3 +45,9 @@ else ()
         target_compile_definitions(${PROJECT_NAME} PRIVATE GLFW_INCLUDE_NONE HIDDEN_FRANK_MODE=0 PYLIB=0)
     endif()
 endif ()
+
+install(TARGETS ${PROJECT_NAME}
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib)
+install_targets(/lib RUNTIME_DIRECTORY /lib ${READDY_PROJECT_NAME})
