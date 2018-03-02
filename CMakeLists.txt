@@ -39,6 +39,7 @@ endif ()
 
 add_subdirectory(libs/pybind11)
 set(BUILD_SHARED_LIBS ON)
+set(FMT_INSTALL ON)
 add_subdirectory(libs/fmt)
 add_subdirectory(libs/spdlog)
 add_subdirectory(libs/glm)
