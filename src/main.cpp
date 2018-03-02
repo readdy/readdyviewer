@@ -175,9 +175,8 @@ namespace py = pybind11;
 template<typename T>
 using np_array = py::array_t<T, py::array::c_style | py::array::forcecast>;
 
-PYBIND11_PLUGIN(readdyviewer_binding) {
+PYBIND11_MODULE(readdyviewer_binding, m) {
     using namespace py::literals;
-    py::module m("readdyviewer_binding");
 
     py::class_<glm::vec3>(m, "Color").def(py::init<float, float, float>());
     py::class_<rv::TrajectoryConfiguration>(m, "Configuration")
@@ -298,7 +297,6 @@ PYBIND11_PLUGIN(readdyviewer_binding) {
 
     py::bind_map<colors_map>(m, "ColorsMap");
     py::bind_map<radii_map>(m, "RadiiMap");
-    return m.ptr();
 }
 
 #else
