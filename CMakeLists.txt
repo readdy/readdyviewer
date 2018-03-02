@@ -29,7 +29,7 @@ set (OPTION_BUILD_TOOLS     OFF CACHE BOOL "Don't need the tools")
 if (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/glbinding-src)
     download_project(PROJ glbinding
             GIT_REPOSITORY https://github.com/cginternals/glbinding.git
-            GIT_TAG v2.1.3
+            GIT_TAG v2.1.4
             ${UPDATE_DISCONNECTED_IF_AVAILABLE}
             )
     add_subdirectory(${glbinding_SOURCE_DIR} ${glbinding_BINARY_DIR})
