@@ -55,7 +55,8 @@ Viewer::Viewer(rv::TrajectoryEntries entries, const TrajectoryConfiguration& con
 
     edgeProgram.compileShader(GL_VERTEX_SHADER, "shaders/edge/vertex.glsl",
                               fmt::format("const float radius = {};\n", config.bondRadius));
-    edgeProgram.compileShader(GL_FRAGMENT_SHADER, {"shaders/edge/fragment.glsl", "shaders/light/light.glsl"});
+    edgeProgram.compileShader(GL_FRAGMENT_SHADER, {"shaders/edge/fragment.glsl", "shaders/light/light.glsl"},
+                              fmt::format("const float cutoff = {};\n", config.smoothingCutoff));
     edgeProgram.link();
 
     GL_CHECK_ERROR()

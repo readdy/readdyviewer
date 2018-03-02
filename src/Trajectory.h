@@ -57,7 +57,8 @@ struct TrajectoryConfiguration {
     unsigned int stride = 1;
     glm::vec3 clearcolor;
     std::size_t smoothing = 1;
-    float bondRadius = .1;
+    float bondRadius = .1f;
+    float smoothingCutoff = 2.f;
 };
 
 class Trajectory {

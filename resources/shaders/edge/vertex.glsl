@@ -17,6 +17,7 @@ layout (binding = 0, std140) uniform TransformationBlock {
 out vec3 fColor;
 out vec3 fNormal;
 out vec3 fPosition;
+out float fBondLength;
 
 vec3 compute_light (out vec3 specular, in vec3 inNormal, in vec3 position);
 
@@ -99,5 +100,7 @@ void main (void)
     gl_Position = projmat * pos;
 
     fNormal = mat3 (viewmat) * normalize (rot*normal);
+
+    fBondLength = length(edgeToPosition.xyz - edgeFromPosition.xyz);
 
 }

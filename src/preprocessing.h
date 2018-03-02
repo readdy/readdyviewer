@@ -35,6 +35,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <glm/gtx/norm.hpp>
 #include "common.h"
 
 namespace rv {
@@ -117,7 +118,7 @@ struct TrajectoryEntries {
 
 template<typename T>
 TrajectoryEntries convertTrajectory(std::vector<std::vector<T>> frames, edges_type edges, std::size_t stride,
-                                    std::size_t smoothing) {
+                                    std::size_t smoothing, float smoothingCutoff) {
     if (stride > 1) {
         frames = strideFrames(stride, frames);
         edges = strideFrames(stride, edges);
@@ -164,8 +165,13 @@ TrajectoryEntries convertTrajectory(std::vector<std::vector<T>> frames, edges_ty
                                                        return entry.id < id;
                                                    });
                     if (findIt != otherFrame.end() && findIt->id == itParticle->id) {
-                        *it_pt += glm::vec4(scale * (findIt->pos + posTranslation), 0);
-                        ++n;
+                        if (smoothingCutoff > 0 && smoothingCutoff < glm::l2Norm(findIt->pos + posTranslation)) {
+                            *it_pt += glm::vec4(scale * (findIt->pos + posTranslation), 0);
+                            ++n;
+                        } else {
+                            *it_pt += glm::vec4(scale * (findIt->pos + posTranslation), 0);
+                            ++n;
+                        }
                     }
                 }
                 *it_pt /= static_cast<double>(n);

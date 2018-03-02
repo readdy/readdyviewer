@@ -66,9 +66,10 @@ def edges():
     config.colors[t.particle_types['Decay']] = readdyviewer.Color(.1, .2, .3)
     config.radii[t.particle_types['Decay']] = .5
 
-    config.stride = 100
-    config.smoothing = 2
-    config.bond_radius = .5
+    config.stride = 1
+    config.smoothing = 10
+    config.bond_radius = 1.2
+    config.cutoff = 10
     readdyviewer.watch_npy(positions, types, ids, n_particles_per_frame, config, edges)
 
 

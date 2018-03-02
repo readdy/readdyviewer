@@ -187,7 +187,8 @@ PYBIND11_PLUGIN(readdyviewer) {
             .def_readwrite("radii", &rv::TrajectoryConfiguration::radii)
             .def_readwrite("stride", &rv::TrajectoryConfiguration::stride)
             .def_readwrite("smoothing", &rv::TrajectoryConfiguration::smoothing)
-            .def_readwrite("bond_radius", &rv::TrajectoryConfiguration::bondRadius);
+            .def_readwrite("bond_radius", &rv::TrajectoryConfiguration::bondRadius)
+            .def_readwrite("cutoff", &rv::TrajectoryConfiguration::smoothingCutoff);
 
     py::class_<rv::TrajectoryEntry>(m, "TrajectoryEntry")
             .def(py::init < float, float, float, unsigned int, unsigned long> ());
@@ -235,7 +236,7 @@ PYBIND11_PLUGIN(readdyviewer) {
                                            color.first, color.second.x, color.second.y, color.second.z);
                         }
 
-                        auto entries = rv::convertTrajectory(std::move(data), edges, config.stride, config.smoothing);
+                        auto entries = rv::convertTrajectory(std::move(data), edges, config.stride, config.smoothing, config.smoothingCutoff);
 
                         rv::initialize(false, std::move(entries), config);
                         rv::cleanup();

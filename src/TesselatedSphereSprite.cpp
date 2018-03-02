@@ -146,7 +146,7 @@ void normalize(std::vector<std::array<T, 3>> &arr) {
             return current + x * x;
         }));
         std::transform(elem.begin(), elem.end(), elem.begin(), [len](const auto x) {
-            return x / len;
+            return std::numeric_limits<GLshort>::max() * x / len;
         });
     }
 }
