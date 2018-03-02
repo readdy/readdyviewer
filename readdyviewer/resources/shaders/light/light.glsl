@@ -3,7 +3,7 @@
 #define     LIGHT_POINT	    2
 #define     LIGHT_HEAD	    3
 
-#define NO_DOUBLE_SIDED_LIGHTING 0
+// #define NO_DOUBLE_SIDED_LIGHTING 0
 #define USE_DISTANCE 0
 
 struct Light {

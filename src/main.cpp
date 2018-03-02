@@ -188,7 +188,9 @@ PYBIND11_MODULE(readdyviewer_binding, m) {
             .def_readwrite("stride", &rv::TrajectoryConfiguration::stride)
             .def_readwrite("smoothing", &rv::TrajectoryConfiguration::smoothing)
             .def_readwrite("bond_radius", &rv::TrajectoryConfiguration::bondRadius)
-            .def_readwrite("cutoff", &rv::TrajectoryConfiguration::smoothingCutoff);
+            .def_readwrite("cutoff", &rv::TrajectoryConfiguration::smoothingCutoff)
+            .def_property("edge_color", [](const rv::TrajectoryConfiguration &self) {return self.edgecolor;},
+                          [](rv::TrajectoryConfiguration &self, glm::vec3 edgecolor) { self.edgecolor = edgecolor; });
 
     py::class_<rv::TrajectoryEntry>(m, "TrajectoryEntry")
             .def(py::init < float, float, float, unsigned int, unsigned long> ());

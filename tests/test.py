@@ -1,7 +1,9 @@
 import numpy as np
 import readdy
 from readdy.api.utils import load_trajectory_to_npy
-import readdyviewer as readdyviewer
+import readdyviewer_binding as readdyviewer
+
+readdyviewer.set_resource_dir('/home/mho/Development/readdyviewer/readdyviewer/resources')
 
 
 def runsim():
@@ -68,8 +70,9 @@ def edges():
 
     config.stride = 1
     config.smoothing = 10
-    config.bond_radius = 1.2
+    config.bond_radius = .2
     config.cutoff = 10
+    config.edge_color = readdyviewer.Color(.1, .1, .1)
     readdyviewer.watch_npy(positions, types, ids, n_particles_per_frame, config, edges)
 
 

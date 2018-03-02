@@ -81,9 +81,14 @@ void main (void)
                     c2*s3 , c3*s2, c3);*/
 
     // Y1 Z2 Y3
-    mat3 rot = mat3( c1*c2*c3 - s1*s3, -c1 * s2, c3*s1 + c1*c2*s3,
+    /*mat3 rot = mat3( c1*c2*c3 - s1*s3, -c1 * s2, c3*s1 + c1*c2*s3,
                      c3*s2,            c2,       s2*s3,
-                     -c1*s3 - c2*c3*s1, s1*s2, c1*c3 - c2*s1*s3);
+                     -c1*s3 - c2*c3*s1, s1*s2, c1*c3 - c2*s1*s3);*/
+    mat3 rot = mat3( c1*c2*c3 - s1*s3, c3*s2, -c1*s3 - c2*c3*s1,
+                    -c1*s2, c2, s1*s2, c3*s1 + c1*c2*s3, s2*s3,
+                    c1*c3 - c2 * s1 * s3);
+
+    //rot = transpose(rot);
     /*mat3 rot = mat3( c2*c3, -s2, c2*s3,
                      s1*s3 + c1*c3*s2, c1*c2, c1*s2*s3 - c3*s1,
                      c3*s1*s2 - c1*s3, c2*s1, c1*c3 + s1*s2*s3);*/
@@ -92,14 +97,14 @@ void main (void)
                      s2, c2*c3, -c2*s3,
                      -c2*s1, c1*s3 + c3*s1*s2, c1*c3 - s1*s2*s3);*/
 
-    vec4 pos = viewmat * vec4 (center + transpose(rot) * vertpos, 1.0);
+    vec4 pos = viewmat * vec4 (center + rot * vertpos, 1.0);
 
-    fColor = vec3(.5, .5, .5); // color.rgb
+    fColor = edgeColor;
 
     fPosition = pos.xyz;
     gl_Position = projmat * pos;
 
-    fNormal = mat3 (viewmat) * normalize (rot*normal);
+    fNormal = mat3 (viewmat) * normalize (rot * normal);
 
     fBondLength = length(edgeToPosition.xyz - edgeFromPosition.xyz);
 

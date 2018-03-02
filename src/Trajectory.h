@@ -60,6 +60,7 @@ struct TrajectoryConfiguration {
     float bondRadius = .1f;
     float smoothingCutoff = 2.f;
     std::string resourcedir;
+    glm::vec3 edgecolor = glm::vec3(.5, .5, .5);
 };
 
 class Trajectory {

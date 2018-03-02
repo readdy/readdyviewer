@@ -67,7 +67,7 @@ void ShaderProgram::compileShader(GLenum type, std::initializer_list<std::string
     for (const auto &filename : filenames) {
         
         std::string fname = filename;
-        if(pathPrefix() != "") {
+        if(!pathPrefix().empty()) {
             fname = pathPrefix() + fname;
         }
         
