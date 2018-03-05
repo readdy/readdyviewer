@@ -165,7 +165,7 @@ TrajectoryEntries convertTrajectory(std::vector<std::vector<T>> frames, edges_ty
                                                        return entry.id < id;
                                                    });
                     if (findIt != otherFrame.end() && findIt->id == itParticle->id) {
-                        if (smoothingCutoff > 0 && smoothingCutoff < glm::l2Norm(findIt->pos + posTranslation)) {
+                        if (smoothingCutoff > 0 && glm::l2Norm(findIt->pos + posTranslation) < smoothingCutoff) {
                             *it_pt += glm::vec4(scale * (findIt->pos + posTranslation), 0);
                             ++n;
                         } else {
