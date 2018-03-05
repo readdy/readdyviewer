@@ -44,7 +44,7 @@
 namespace rv {
 class Viewer {
 public:
-    Viewer(rv::TrajectoryEntries entries, const TrajectoryConfiguration& config);
+    Viewer(rv::TrajectoryEntries entries, const std::vector<Light> &lights, const TrajectoryConfiguration& config);
 
     ~Viewer();
 
@@ -80,7 +80,7 @@ private:
     ShaderProgram particleProgram;
     ShaderProgram edgeProgram;
     Camera camera;
-    LightArrangement lights;
+    LightArrangement lightArrangement;
 
     bool running, interrupt;
     glm::mat4 projmat;

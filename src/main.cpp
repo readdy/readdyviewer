@@ -115,7 +115,8 @@ void initialize(bool debugContext, rv::TrajectoryEntries entries, const Trajecto
     }
 
 
-    viewer = std::make_unique<Viewer>(std::move(entries), config);
+    std::vector<rv::Light> lights;
+    viewer = std::make_unique<Viewer>(std::move(entries), lights, config);
     GL_CHECK_ERROR()
     glfwSetWindowUserPointer(window, viewer.get());
     glfwGetCursorPos(window, &cursor.x, &cursor.y);
