@@ -4,7 +4,7 @@
 #define     LIGHT_HEAD	    3
 
 // #define NO_DOUBLE_SIDED_LIGHTING 0
-#define USE_DISTANCE 0
+// #define USE_DISTANCE 0
 
 struct Light {
     vec4 position;
@@ -75,9 +75,9 @@ vec3 compute_light (out vec3 specularSum, in vec3 inNormal, in vec3 position) {
                 specular = pow (NdotH, 16) * lights[l].color.xyz;
 
                 #ifdef USE_DISTANCE
-                //float attenuation = 25 / dot (vec3 (0, 0.5, 0.0), vec3 (1, dist, dist * dist));
-                //diffuse *= attenuation;
-                //specular *= attenuation;
+                float attenuation = 25 / dot (vec3 (0, 0.5, 0.0), vec3 (1, dist, dist * dist));
+                diffuse *= attenuation;
+                specular *= attenuation;
                 #endif
 
             }
