@@ -154,7 +154,9 @@ TrajectoryEntries convertTrajectory(std::vector<std::vector<T>> frames, edges_ty
 
                 auto it_pt = result.posTypes.begin() + offset + k;
 
-                *it_pt = glm::vec4(0, 0, 0, 0);
+                auto referenceFrame = glm::vec4(0, 0, 0, 0);
+
+                bool reset = false;
                 std::size_t n = 0;
                 for (std::size_t j = i >= smoothing ? i - smoothing : 0;
                      j < std::min(i + smoothing, frames.size()); ++j) {
@@ -165,17 +167,26 @@ TrajectoryEntries convertTrajectory(std::vector<std::vector<T>> frames, edges_ty
                                                        return entry.id < id;
                                                    });
                     if (findIt != otherFrame.end() && findIt->id == itParticle->id) {
-                        if (smoothingCutoff > 0 && glm::l2Norm(findIt->pos + posTranslation) < smoothingCutoff) {
-                            *it_pt += glm::vec4(scale * (findIt->pos + posTranslation), 0);
+                        if (smoothingCutoff > 0) {
+                            if(glm::l2Norm(findIt->pos - itParticle->pos) > smoothingCutoff) {
+                                reset = true;
+                                break;
+                            }
+                            referenceFrame += glm::vec4(scale * (findIt->pos + posTranslation), 0);
                             ++n;
                         } else {
-                            *it_pt += glm::vec4(scale * (findIt->pos + posTranslation), 0);
+                            referenceFrame += glm::vec4(scale * (findIt->pos + posTranslation), 0);
                             ++n;
                         }
                     }
                 }
-                *it_pt /= static_cast<double>(n);
-                it_pt->w = frame.at(k).type;
+                if(reset) {
+                    referenceFrame = glm::vec4(itParticle->pos, 0);
+                } else {
+                    referenceFrame /= static_cast<double>(n);
+                }
+                referenceFrame.w = frame.at(k).type;
+                *it_pt = referenceFrame;
                 result.maxType = std::max(result.maxType, static_cast<std::size_t>(frame.at(k).type));
             }
         }

@@ -71,7 +71,7 @@ def edges():
     config.stride = 1
     config.smoothing = 10
     config.bond_radius = .2
-    config.cutoff = 10
+    config.cutoff = 3
     config.edge_color = readdyviewer.Color(.1, .1, .1)
     readdyviewer.watch_npy(positions, types, ids, n_particles_per_frame, config, edges)
 
