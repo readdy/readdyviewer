@@ -191,7 +191,12 @@ PYBIND11_MODULE(readdyviewer_binding, m) {
             .def_readwrite("bond_radius", &rv::TrajectoryConfiguration::bondRadius)
             .def_readwrite("cutoff", &rv::TrajectoryConfiguration::smoothingCutoff)
             .def_property("edge_color", [](const rv::TrajectoryConfiguration &self) {return self.edgecolor;},
-                          [](rv::TrajectoryConfiguration &self, glm::vec3 edgecolor) { self.edgecolor = edgecolor; });
+                          [](rv::TrajectoryConfiguration &self, glm::vec3 edgecolor) { self.edgecolor = edgecolor; })
+            .def_property("draw_periodic", [](const rv::TrajectoryConfiguration &self) { return self.drawPeriodic; },
+                          [](rv::TrajectoryConfiguration &self, bool draw) { self.drawPeriodic = draw; })
+            .def("set_box_size", [](rv::TrajectoryConfiguration &self, float dx, float dy, float dz) {
+                self.boxSize = glm::vec3(dx, dy, dz);
+            });
 
     py::class_<rv::TrajectoryEntry>(m, "TrajectoryEntry")
             .def(py::init < float, float, float, unsigned int, unsigned long> ());

@@ -41,16 +41,42 @@ std::vector<Light> getLights() {
 
 Viewer::Viewer(rv::TrajectoryEntries entries, const std::vector<Light> &lights, const TrajectoryConfiguration& config)
         : width(0), height(0), last_fps_time(glfwGetTime()), framecount(0), fps(0), running(false),
-          guitimer(0.0f), trajectory(std::move(entries), config),
+          guitimer(0.0f), trajectory(std::move(entries), config), drawPeriodic(config.drawPeriodic),
           interrupt(false), lightArrangement(lights.empty() ? getLights() : lights), framing(config.resourcedir) {
     GL_CHECK_ERROR()
 
     last_time = glfwGetTime();
 
     particleProgram.pathPrefix() = config.resourcedir;
-    particleProgram.compileShader(GL_VERTEX_SHADER, "shaders/particles/vertex.glsl");
+    particleProgram.compileShader(GL_VERTEX_SHADER, "shaders/particles/vertex.glsl", fmt::format("const vec3 boxOffset = vec3({}, {}, {});\n", 0.f, 0.f, 0.f));
     particleProgram.compileShader(GL_FRAGMENT_SHADER, {"shaders/particles/fragment.glsl", "shaders/light/light.glsl"});
     particleProgram.link();
+
+    GL_CHECK_ERROR()
+
+    if(config.drawPeriodic) {
+
+        std::size_t ix = 0;
+        for(int i = -1; i < 2; ++i) {
+            for(int j = -1; j < 2; ++j) {
+                for(int k = -1; j < 2; ++k) {
+                    if(i != 0 && j != 0 && k != 0) {
+                        auto &program = periodicParticleProgram.at(ix);
+
+                        glm::vec3 offset = glm::vec3(i*config.boxSize.x, j*config.boxSize.y, k*config.boxSize.z);
+
+                        particleProgram.pathPrefix() = config.resourcedir;
+                        particleProgram.compileShader(GL_VERTEX_SHADER, "shaders/particles/vertex.glsl", fmt::format("const vec3 boxOffset = vec3({}, {}, {});\n", offset.x, offset.y, offset.z));
+                        particleProgram.compileShader(GL_FRAGMENT_SHADER, {"shaders/particles/fragment.glsl", "shaders/light/light.glsl"});
+                        particleProgram.link();
+
+                        ++ix;
+                    }
+                }
+            }
+
+        }
+    }
 
     GL_CHECK_ERROR()
 
@@ -197,6 +223,18 @@ bool Viewer::frame() {
     pointSprite.setPositionBuffer(trajectory.getPositionBuffer());
     GL_CHECK_ERROR()
     pointSprite.render(static_cast<GLuint>(trajectory.getCurrentNParticles()));
+
+    if(drawPeriodic) {
+        for(auto &pp : periodicParticleProgram) {
+            GL_CHECK_ERROR()
+            particleProgram.use();
+            GL_CHECK_ERROR()
+            pointSprite.setPositionBuffer(trajectory.getPositionBuffer());
+            GL_CHECK_ERROR()
+            pointSprite.render(static_cast<GLuint>(trajectory.getCurrentNParticles()));
+        }
+    }
+
     GL_CHECK_ERROR()
     if(trajectory.getCurrentNEdges() > 0) {
         edgeProgram.use();

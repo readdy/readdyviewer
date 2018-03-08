@@ -61,6 +61,8 @@ struct TrajectoryConfiguration {
     float smoothingCutoff = 2.f;
     std::string resourcedir;
     glm::vec3 edgecolor = glm::vec3(.5, .5, .5);
+    bool drawPeriodic = false;
+    glm::vec3 boxSize = glm::vec3(0, 0, 0);
 };
 
 class Trajectory {

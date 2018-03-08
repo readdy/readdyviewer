@@ -78,6 +78,7 @@ private:
     PointSprite pointSprite;
     Edges edgeSprite;
     ShaderProgram particleProgram;
+    std::array<ShaderProgram, 3*3*3-1> periodicParticleProgram;
     ShaderProgram edgeProgram;
     Camera camera;
     LightArrangement lightArrangement;
@@ -91,6 +92,7 @@ private:
     float guitimer;
     unsigned int framecount;
     unsigned int fps;
+    bool drawPeriodic;
 
 
 };

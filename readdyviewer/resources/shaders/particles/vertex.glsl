@@ -29,7 +29,7 @@ void main (void)
 {
 	// pass data to the fragment shader
 	float particleSize = particleConfigs[uint(particlePosition.w)].radius;
-	vec4 pos = viewmat * vec4 (particlePosition.xyz, 1.0);
+	vec4 pos = viewmat * vec4 (particlePosition.xyz + boxOffset, 1.0);
 	pos.xy += vPosition * particleSize;
 	fPosition = pos.xyz;
 	fTexcoord = vPosition;
