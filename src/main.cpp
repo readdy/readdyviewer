@@ -159,8 +159,6 @@ void cleanup() {
 
 }
 
-#if PYLIB
-
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
@@ -231,7 +229,7 @@ PYBIND11_MODULE(readdyviewer_binding, m) {
                     auto data_n_particles = (unsigned int (*)) n_particles_arr.data(0);
 
                     std::vector<std::vector<rv::TrajectoryEntry>> data;
-                    data.reserve(n_frames);
+                    data.reserve((unsigned long) n_frames);
                     for (std::size_t t = 0; t < n_frames; ++t) {
                         std::vector<rv::TrajectoryEntry> frame;
 
@@ -277,47 +275,8 @@ PYBIND11_MODULE(readdyviewer_binding, m) {
         }
         return -1;
     }, "positions"_a, "types"_a, "ids"_a, "n_particles_per_frame"_a, "config"_a, "edges"_a = rv::edges_type());
-    /*m.def("watch_debug", []() {
-        try {
-            rv::edges_type edges;
-            rv::initialize(false, rv::generateTestData(), rv::getTrajectoryTestConfig(), edges);
-            rv::cleanup();
-        } catch (const std::exception &e) {
-            rv::log::error("Encountered exception: {}", e.what());
-            rv::cleanup();
-            return -1;
-        }
-        return 0;
-    });
-    m.def("watch",
-          [](const std::vector<std::vector<rv::TrajectoryEntry>> &data, const rv::TrajectoryConfiguration &config) {
-              try {
-                  rv::edges_type edges;
-                  rv::initialize(false, data, config, edges);
-                  rv::cleanup();
-              } catch (const std::exception &e) {
-                  rv::log::error("Encountered exception: {}", e.what());
-                  rv::cleanup();
-                  return -1;
-              }
-              return 0;
-          });*/
 
     py::bind_map<colors_map>(m, "ColorsMap");
     py::bind_map<radii_map>(m, "RadiiMap");
 }
-
-#else
-int main() {
-    try {
-        rv::initialize(false, rv::generateTestData(), rv::getTrajectoryTestConfig());
-        rv::cleanup();
-    } catch (const std::exception &e) {
-        rv::log::error("Encountered exception: {}", e.what());
-        rv::cleanup();
-        return -1;
-    }
-    return 0;
-}
-#endif
 
