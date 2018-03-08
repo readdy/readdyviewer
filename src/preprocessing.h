@@ -169,10 +169,12 @@ TrajectoryEntries convertTrajectory(std::vector<std::vector<T>> frames, edges_ty
                     if (findIt != otherFrame.end() && findIt->id == itParticle->id) {
                         if (smoothingCutoff > 0) {
                             if(glm::l2Norm(findIt->pos - itParticle->pos) > smoothingCutoff) {
-                                reset = true;
-                                break;
+                                //reset = true;
+                                //break;
+                                referenceFrame += glm::vec4(itParticle->pos + posTranslation, 0);
+                            } else {
+                                referenceFrame += glm::vec4(scale * (findIt->pos + posTranslation), 0);
                             }
-                            referenceFrame += glm::vec4(scale * (findIt->pos + posTranslation), 0);
                             ++n;
                         } else {
                             referenceFrame += glm::vec4(scale * (findIt->pos + posTranslation), 0);
