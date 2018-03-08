@@ -34,8 +34,22 @@
 
 namespace rv {
 
-PointSprite::PointSprite() {
+PointSprite::PointSprite(bool periodic, glm::vec3 boxSize) : boxSize(boxSize), periodic(periodic) {
+
+    if(!periodic) {
+        offsets.push_back(glm::vec4(0, 0, 0, 0));
+    } else {
+        for(int i = -1; i < 2; ++i) {
+            for(int j = -1; j < 2; ++j) {
+                for(int k = -1; k < 2; ++k) {
+                    offsets.push_back(glm::vec4(i*boxSize.x, j*boxSize.y, k*boxSize.z, 0.f));
+                }
+            }
+        }
+    }
+
     glGenVertexArrays(1, &vertexArray);
+
     glBindVertexArray(vertexArray);
     glGenBuffers(sizeof(buffers) / sizeof(buffers[0]), buffers);
     GLshort vertices[] = {
@@ -51,14 +65,16 @@ PointSprite::PointSprite() {
     glVertexAttribPointer(0, 2, GL_SHORT, GL_TRUE, 0, nullptr);
     glEnableVertexAttribArray(0);
 
-    const GLushort indices[] = {
-            0, 2, 1,
-            2, 0, 3
-    };
+    {
+        const GLushort indices[] = {
+                0, 2, 1,
+                2, 0, 3
+        };
 
-    // store indices to a buffer object
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+        // store indices to a buffer object
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    }
 }
 
 PointSprite::~PointSprite() {
@@ -69,23 +85,29 @@ PointSprite::~PointSprite() {
 void PointSprite::setPositionBuffer(GLuint buffer, GLsizei stride, GLintptr offset) {
     glBindVertexArray(vertexArray);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride, (const void *) offset);
-    glEnableVertexAttribArray(1);
-    glVertexAttribDivisor(1,1);
-}
-
-void PointSprite::setHighlightBuffer(GLuint buffer, GLsizei stride, GLintptr offset) {
-    glBindVertexArray(vertexArray);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glVertexAttribIPointer(2, 1, GL_UNSIGNED_INT, stride, (const void *) offset);
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, stride, (const void *) offset);
     glEnableVertexAttribArray(2);
-    glVertexAttribDivisor(2, 1);
+    glVertexAttribDivisor(2,1);
 }
 
 void PointSprite::render(GLuint instances) const {
+
     glBindVertexArray(vertexArray);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-    glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0, instances);
+    for(const auto &offset : offsets) {
+
+        {
+            // bind offsets to vao 1
+            glBindBuffer(GL_ARRAY_BUFFER, offsetBuffer);
+            glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(float), offset.data.data, GL_STATIC_DRAW);
+            glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, nullptr);
+            glEnableVertexAttribArray(1);
+            glVertexAttribDivisor(1,instances);
+        }
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+        glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0, instances);
+
+    }
 }
 
 }

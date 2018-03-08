@@ -78,7 +78,6 @@ private:
     PointSprite pointSprite;
     Edges edgeSprite;
     ShaderProgram particleProgram;
-    std::array<ShaderProgram, 3*3*3-1> periodicParticleProgram;
     ShaderProgram edgeProgram;
     Camera camera;
     LightArrangement lightArrangement;

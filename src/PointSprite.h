@@ -38,11 +38,10 @@
 namespace rv {
 class PointSprite {
 public:
-    PointSprite();
+    PointSprite(bool periodic, glm::vec3 boxSize);
     ~PointSprite();
 
     void setPositionBuffer(GLuint buffer, GLsizei stride = 0, GLintptr offset = 0);
-    void setHighlightBuffer(GLuint buffer, GLsizei stride = 0, GLintptr offset = 0);
     void render(GLuint instances) const;
 
 private:
@@ -50,10 +49,16 @@ private:
         struct {
             GLuint vertexBuffer;
             GLuint indexBuffer;
+            GLuint offsetBuffer;
         };
-        GLuint buffers[2];
+        GLuint buffers[3];
     };
     GLuint vertexArray;
+
+    std::vector<glm::vec4> offsets;
+
+    glm::vec3 boxSize;
+    bool periodic;
 };
 
 }

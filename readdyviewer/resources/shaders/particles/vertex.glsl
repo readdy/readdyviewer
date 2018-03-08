@@ -5,8 +5,8 @@ struct ParticleConfiguration {
 
 // input vertex attributes
 layout (location = 0) in vec2 vPosition;
-layout (location = 1) in vec4 particlePosition;
-layout (location = 2) in uint highlight;
+layout (location = 1) in vec4 boxOffset;
+layout (location = 2) in vec4 particlePosition;
 
 layout (std430, binding = 0) readonly buffer ParticleConfigurationBuffer {
     ParticleConfiguration particleConfigs[];
@@ -29,7 +29,7 @@ void main (void)
 {
 	// pass data to the fragment shader
 	float particleSize = particleConfigs[uint(particlePosition.w)].radius;
-	vec4 pos = viewmat * vec4 (particlePosition.xyz + boxOffset, 1.0);
+	vec4 pos = viewmat * vec4 (particlePosition.xyz + boxOffset.xyz, 1.0);
 	pos.xy += vPosition * particleSize;
 	fPosition = pos.xyz;
 	fTexcoord = vPosition;

@@ -124,18 +124,20 @@ def more_topologies_sim():
 
 def showsim():
     # more_topologies_sim()
-    # logo()
-    edges()
+    logo()
+    # edges()
     # test_cylinders()
 
 
 def logo():
-    outfile = "/home/mho/tmp/readdylogo_out2.h5"
+    outfile = "/home/mho/Dropbox/backup2/tmp/readdylogo_out2.h5"
 
     config = get_config_solarized_light(outfile)
 
     config.stride = 1
-    config.smoothing = 5
+    config.smoothing = 1
+    config.draw_periodic = True
+    config.set_box_size(200, 200, 200)
     from readdy.api.utils import load_trajectory_to_npy as to_npy
     n_particles_per_frame, positions, types, ids = to_npy(outfile)
     readdyviewer.watch_npy(positions, types, ids, n_particles_per_frame, config)
