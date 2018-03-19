@@ -121,12 +121,36 @@ def more_topologies_sim():
     print("go!")
     readdyviewer.watch_npy(positions, types, ids, n_particles_per_frame, config, edges)
 
+def bilayer_lipid():
+    import matplotlib.pyplot as plt
+    outfile = "/home/mho/Downloads/new-self-ass.h5"
+    n_particles_per_frame, positions, types, ids = load_trajectory_to_npy(outfile, stride=10)
+    config = readdyviewer.Configuration()
+    t = readdy.Trajectory(outfile)
+
+    config.colors[t.particle_types['Head']] = readdyviewer.Color(plt.cm.jet(0)[0],
+                                                                 plt.cm.jet(0)[1],
+                                                                 plt.cm.jet(0)[2])
+    config.radii[t.particle_types['Head']] = .7
+    config.colors[t.particle_types['Tail']] = readdyviewer.Color(plt.cm.jet(1.)[0],
+                                                                 plt.cm.jet(1.)[1],
+                                                                 plt.cm.jet(1.)[2])
+    config.radii[t.particle_types['Tail']] = .7
+
+    config.stride = 1
+    config.smoothing = 5
+    config.cutoff = 5
+    config.bond_radius = .02
+    config.draw_periodic = True
+    config.set_box_size(25, 25, 25)
+    readdyviewer.watch_npy(positions, types, ids, n_particles_per_frame, config) #
 
 def showsim():
     # more_topologies_sim()
-    logo()
+    # logo()
     # edges()
     # test_cylinders()
+    bilayer_lipid()
 
 
 def logo():
