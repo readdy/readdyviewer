@@ -177,7 +177,11 @@ using np_array = py::array_t<T, py::array::c_style | py::array::forcecast>;
 PYBIND11_MODULE(readdyviewer_binding, m) {
     using namespace py::literals;
 
-    py::class_<glm::vec3>(m, "Color").def(py::init<float, float, float>());
+    py::class_<glm::vec3>(m, "Color")
+            .def(py::init<float, float, float>())
+            .def_property_readonly("r", [](const glm::vec3 &v) { return v.r;})
+            .def_property_readonly("g", [](const glm::vec3 &v) { return v.g;})
+            .def_property_readonly("b", [](const glm::vec3 &v) { return v.b;});
     py::class_<rv::TrajectoryConfiguration>(m, "Configuration")
             .def(py::init<>())
             .def_property("clearcolor", [](const rv::TrajectoryConfiguration &self) {return self.clearcolor;},
