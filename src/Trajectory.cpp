@@ -147,7 +147,7 @@ GLuint Trajectory::getPositionBuffer() const {
     return positionBuffer;
 }
 
-void Trajectory::frame() {
+void Trajectory::frame(bool updateTime) {
     if (t < nTimeSteps()) {
         log::debug("frame: {} / {}", t, nTimeSteps() - 1);
         updateParticlePositions();
@@ -155,7 +155,9 @@ void Trajectory::frame() {
         updateEdgesTo();
         updateEdgeColors();
     }
-    t += 1;
+    if(updateTime) {
+        t += 1;
+    }
 }
 
 void Trajectory::updateEdgeColors() const {

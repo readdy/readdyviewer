@@ -185,6 +185,7 @@ PYBIND11_MODULE(readdyviewer_binding, m) {
             .def_readwrite("colors", &rv::TrajectoryConfiguration::colors)
             .def_readwrite("radii", &rv::TrajectoryConfiguration::radii)
             .def_readwrite("stride", &rv::TrajectoryConfiguration::stride)
+            .def_readwrite("wait", &rv::TrajectoryConfiguration::wait)
             .def_readwrite("smoothing", &rv::TrajectoryConfiguration::smoothing)
             .def_readwrite("bond_radius", &rv::TrajectoryConfiguration::bondRadius)
             .def_readwrite("cutoff", &rv::TrajectoryConfiguration::smoothingCutoff)

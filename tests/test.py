@@ -141,6 +141,7 @@ def bilayer_lipid():
     config.smoothing = 5
     config.cutoff = 5
     config.bond_radius = .02
+    config.wait=3
     config.draw_periodic = True
     config.set_box_size(25, 25, 25)
     readdyviewer.watch_npy(positions, types, ids, n_particles_per_frame, config) #

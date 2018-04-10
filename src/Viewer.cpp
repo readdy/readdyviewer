@@ -43,7 +43,7 @@ Viewer::Viewer(rv::TrajectoryEntries entries, const std::vector<Light> &lights, 
         : width(0), height(0), last_fps_time(glfwGetTime()), framecount(0), fps(0), running(false),
           guitimer(0.0f), trajectory(std::move(entries), config), drawPeriodic(config.drawPeriodic),
           interrupt(false), lightArrangement(lights.empty() ? getLights() : lights), framing(config.resourcedir),
-          pointSprite(config.drawPeriodic, config.boxSize) {
+          pointSprite(config.drawPeriodic, config.boxSize), wait(config.wait), currentWait(0) {
     GL_CHECK_ERROR()
 
     last_time = glfwGetTime();
@@ -187,7 +187,13 @@ bool Viewer::frame() {
 
     if (running) {
         if (trajectory.currentTimeStep() < trajectory.nTimeSteps()) {
-            trajectory.frame();
+            if(currentWait == wait - 1) {
+                trajectory.frame(true);
+                currentWait = 0;
+            } else {
+                trajectory.frame(false);
+                ++currentWait;
+            }
         } else {
             running = false;
         }

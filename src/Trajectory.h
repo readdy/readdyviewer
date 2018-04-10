@@ -55,6 +55,7 @@ struct TrajectoryConfiguration {
     std::unordered_map<TrajectoryEntry::type_t, glm::vec3> colors{};
     std::unordered_map<TrajectoryEntry::type_t, float> radii{};
     unsigned int stride = 1;
+    unsigned int wait = 1;
     glm::vec3 clearcolor;
     std::size_t smoothing = 1;
     float bondRadius = .1f;
@@ -81,7 +82,7 @@ public:
 
     GLuint getEdgeColorBuffer() const;
 
-    void frame();
+    void frame(bool updateTime = true);
 
     void reset();
 

@@ -86,6 +86,8 @@ private:
     glm::mat4 projmat;
     unsigned int width;
     unsigned int height;
+    unsigned int wait;
+    unsigned int currentWait;
     double last_time;
     double last_fps_time;
     float guitimer;
