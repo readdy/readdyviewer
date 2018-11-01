@@ -46,9 +46,9 @@ struct TrajectoryEntry {
 
     TrajectoryEntry(float x, float y, float z, type_t type, unsigned long id);
 
-    pos_t pos;
-    type_t type;
-    unsigned long id;
+    pos_t pos {0, 0, 0};
+    type_t type {0};
+    unsigned long id {0};
 };
 
 struct TrajectoryConfiguration {
@@ -56,7 +56,7 @@ struct TrajectoryConfiguration {
     std::unordered_map<TrajectoryEntry::type_t, float> radii{};
     unsigned int stride = 1;
     unsigned int wait = 1;
-    glm::vec3 clearcolor;
+    glm::vec3 clearcolor {0, 0, 0};
     std::size_t smoothing = 1;
     float bondRadius = .1f;
     float smoothingCutoff = 2.f;
@@ -101,8 +101,8 @@ public:
 private:
     std::size_t t;
     using particle_config_t = struct particle_config {
-        glm::vec4 color;
-        float radius;
+        glm::vec4 color {0, 0, 0, 0};
+        float radius {0};
         float padding[3];
     };
     union {
@@ -121,9 +121,9 @@ private:
     std::vector<glm::vec4> edgeColors;
     std::vector<std::size_t> currentNEdges;
     TrajectoryConfiguration config;
-    glm::vec3 defaultColor;
+    glm::vec3 defaultColor {0, 0, 0};
     float defaultRadius;
-    glm::vec3 _max, _min;
+    glm::vec3 _max {0, 0, 0}, _min {0, 0, 0};
 
     TrajectoryEntries entries;
 

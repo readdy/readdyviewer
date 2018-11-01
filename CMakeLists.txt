@@ -22,20 +22,22 @@ else ()
     add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/glfw-src ${CMAKE_CURRENT_BINARY_DIR}/glfw-build)
 endif ()
 
-set (OPTION_BUILD_EXAMPLES  OFF CACHE BOOL "Don't need the examples")
-set (OPTION_BUILD_TESTS     OFF CACHE BOOL "Don't need to test")
-set (OPTION_BUILD_GPU_TESTS OFF CACHE BOOL "Don't need to test")
-set (OPTION_BUILD_TOOLS     OFF CACHE BOOL "Don't need the tools")
-if (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/glbinding-src)
-    download_project(PROJ glbinding
-            GIT_REPOSITORY https://github.com/cginternals/glbinding.git
-            GIT_TAG v2.1.4
-            ${UPDATE_DISCONNECTED_IF_AVAILABLE}
-            )
-    add_subdirectory(${glbinding_SOURCE_DIR} ${glbinding_BINARY_DIR})
-else ()
-    add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/glbinding-src ${CMAKE_CURRENT_BINARY_DIR}/glbinding-build)
-endif ()
+#set (OPTION_BUILD_EXAMPLES  OFF CACHE BOOL "Don't need the examples")
+#set (OPTION_BUILD_TESTS     OFF CACHE BOOL "Don't need to test")
+#set (OPTION_BUILD_GPU_TESTS OFF CACHE BOOL "Don't need to test")
+#set (OPTION_BUILD_TOOLS     OFF CACHE BOOL "Don't need the tools")
+#if (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/glbinding-src)
+#    download_project(PROJ glbinding
+#            GIT_REPOSITORY https://github.com/cginternals/glbinding.git
+#            GIT_TAG master
+#            ${UPDATE_DISCONNECTED_IF_AVAILABLE}
+#            )
+#    add_subdirectory(${glbinding_SOURCE_DIR} ${glbinding_BINARY_DIR})
+#else ()
+#    add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/glbinding-src ${CMAKE_CURRENT_BINARY_DIR}/glbinding-build)
+#endif ()
+
+find_package(glbinding REQUIRED)
 
 add_subdirectory(libs/pybind11)
 # set(BUILD_SHARED_LIBS ON)

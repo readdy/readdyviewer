@@ -49,10 +49,10 @@ public:
     void bindParams(GLuint buffer, GLuint offset) const;
 private:
     using light_params_t = struct light_params {
-        glm::vec4 position;
-        glm::vec4 direction;
-        glm::vec4 color;
-        float intensity;
+        glm::vec4 position {0, 0, 0, 0};
+        glm::vec4 direction {0, 0, 0, 0};
+        glm::vec4 color {0, 0, 0, 0};
+        float intensity {0};
         GLuint type;
         float padding[2];
     };

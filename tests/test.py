@@ -1,5 +1,6 @@
 import numpy as np
 import readdy
+import os
 from readdy.api.utils import load_trajectory_to_npy
 import readdyviewer_binding as readdyviewer
 
@@ -256,6 +257,54 @@ def get_config_brighter(outfile):
     config.clearcolor = readdyviewer.Color(15. / 255., 15. / 255., 15. / 255.)
     return config
 
+def create_and_show_sim():
+    try:
+        import os
+        import readdy.util.io_utils as ioutils
+        import matplotlib.pyplot as plt
+
+        if os.path.exists('out.h5'):
+            os.unlink('out.h5')
+
+        system = readdy.ReactionDiffusionSystem([25.,25.,25.], temperature=300.*readdy.units.kelvin)
+        system.add_species("A", 1.0)
+        system.reactions.add("myfusion: A +(2) A -> A", rate=10.)
+        system.reactions.add("myfission: A -> A +(2) A", rate=3.)
+        system.potentials.add_harmonic_repulsion("A", "A", force_constant=10.,
+                                                 interaction_distance=2.)
+        simulation = system.simulation(kernel="CPU")
+
+        simulation.output_file = "out.h5"
+        simulation.reaction_handler = "UncontrolledApproximation"
+
+        simulation.add_particle("A", [0.,0.,0.])
+
+        simulation.record_trajectory(stride=1)
+        simulation.observe.number_of_particles(stride=100)
+        simulation.run(n_steps=3000, timestep=1e-2)
+
+        n_particles_per_frame, positions, types, ids = load_trajectory_to_npy(simulation.output_file, stride=10)
+        config = readdyviewer.Configuration()
+        t = readdy.Trajectory(simulation.output_file)
+
+        config.colors[t.particle_types['A']] = readdyviewer.Color(plt.cm.jet(0)[0],
+                                                                     plt.cm.jet(0)[1],
+                                                                     plt.cm.jet(0)[2])
+        config.radii[t.particle_types['A']] = 7
+
+        config.stride = 1
+        config.smoothing = 3
+        config.cutoff = 5
+        config.bond_radius = .02
+        config.wait = 5
+        config.clearcolor = readdyviewer.Color(.5, .5, .5)
+        config.draw_periodic = False
+        config.set_box_size(25, 25, 25)
+        readdyviewer.watch_npy(positions, types, ids, n_particles_per_frame, config)
+    finally:
+        if os.path.exists('out.h5'):
+            os.unlink('out.h5')
+
 
 if __name__ == '__main__':
-    showsim()
+    create_and_show_sim()

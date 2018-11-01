@@ -31,20 +31,24 @@
 #ifndef PROJECT_COMMON_H
 #define PROJECT_COMMON_H
 
-#include <glbinding/gl43/gl.h>
-#include <GLFW/glfw3.h>
+#include <sstream>
+#include <random>
 
+#include <glbinding/gl43/gl.h>
 #include <glbinding/Binding.h>
+
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
 #include <glm/gtc/quaternion.hpp>
-
 #include <spdlog/spdlog.h>
-#include <spdlog/fmt/ostr.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 
-#include <sstream>
-#include <random>
+#include <fmt/format.h>
+
+#include <spdlog/fmt/ostr.h>
 
 using namespace gl;
 
@@ -53,7 +57,6 @@ namespace rv {
 using edges_type = std::vector<std::vector<std::tuple<std::size_t, std::size_t>>>;
 
 extern GLFWwindow *window;
-
 
 #define GL_CHECK_ERROR() { \
 GLenum err = glGetError(); \
@@ -70,7 +73,6 @@ template<typename... Args>
 void trace(Args &&... args) {
     auto consoleLog = spdlog::get("console");
     if (!consoleLog) {
-        spdlog::set_sync_mode();
         consoleLog = spdlog::stdout_color_mt("console");
         consoleLog->set_level(spdlog::level::debug);
     }
@@ -81,7 +83,6 @@ template<typename... Args>
 void debug(Args &&... args) {
     auto consoleLog = spdlog::get("console");
     if (!consoleLog) {
-        spdlog::set_sync_mode();
         consoleLog = spdlog::stdout_color_mt("console");
         consoleLog->set_level(spdlog::level::debug);
     }
@@ -92,7 +93,6 @@ template<typename... Args>
 void error(Args &&... args) {
     auto consoleLog = spdlog::get("console");
     if (!consoleLog) {
-        spdlog::set_sync_mode();
         consoleLog = spdlog::stdout_color_mt("console");
         consoleLog->set_level(spdlog::level::debug);
     }

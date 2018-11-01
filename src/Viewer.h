@@ -59,9 +59,9 @@ public:
 
 private:
     using transformation_buffer_t = struct transformation_buffer {
-        glm::mat4 viewmat;
-        glm::mat4 projmat;
-        glm::mat4 invviewmat;
+        glm::mat4 viewmat {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        glm::mat4 projmat {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        glm::mat4 invviewmat {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     };
 
     void updateViewMatrix();

@@ -33,6 +33,8 @@
 
 #pragma once
 
+#define GLM_ENABLE_EXPERIMENTAL
+
 #include <vector>
 #include <algorithm>
 #include <glm/gtx/norm.hpp>
@@ -139,6 +141,7 @@ TrajectoryEntries convertTrajectory(std::vector<std::vector<T>> frames, edges_ty
     log::debug("got max number of particles in a single frame: {}", result.maxNParticles);
 
     result.posTypes.resize(result.maxNParticles * frames.size());
+    std::fill(result.posTypes.begin(), result.posTypes.end(), glm::vec4(0, 0, 0, 0));
 
     float scale {1.f};
     glm::vec3 posTranslation {0.f, 0.f, 0.f};

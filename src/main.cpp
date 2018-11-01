@@ -19,7 +19,6 @@
  * <http://www.gnu.org/licenses/>.                                  *
  ********************************************************************/
 
-#include <sstream>
 #include "common.h"
 #include "Viewer.h"
 #include "preprocessing.h"
@@ -28,7 +27,7 @@ namespace rv {
 
 GLFWwindow *window = NULL;
 std::unique_ptr<Viewer> viewer;
-glm::dvec2 cursor;
+glm::dvec2 cursor {0, 0};
 std::string resourcedir;
 
 void glfwErrorCallback(int error, const char *msg) {
@@ -91,8 +90,6 @@ void window_size_callback(GLFWwindow* window, int width, int height)  {
 }
 
 void initialize(bool debugContext, rv::TrajectoryEntries entries, const TrajectoryConfiguration &config) {
-    glbinding::Binding::initialize();
-    glbinding::Binding::useCurrentContext();
     if (!glfwInit()) {
         throw std::runtime_error("Could not initialize GLFW!");
     }
@@ -114,7 +111,7 @@ void initialize(bool debugContext, rv::TrajectoryEntries entries, const Trajecto
         glEnable(GL_DEBUG_OUTPUT);
     }
 
-
+    glbinding::Binding::initialize(window);
     std::vector<rv::Light> lights;
     viewer = std::make_unique<Viewer>(std::move(entries), lights, config);
     GL_CHECK_ERROR()

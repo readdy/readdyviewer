@@ -46,13 +46,13 @@ public:
 
     const glm::vec3 &position() const;
 
-    void rotate(const float xangle, const float yangle);
+    void rotate(float xangle, float yangle);
 
-    void zoom(const float value);
+    void zoom(float value);
 
-    void movex(const float value);
+    void movex(float value);
 
-    void movey(const float value);
+    void movey(float value);
 
     void setPosition(const glm::vec3 &pos);
 
