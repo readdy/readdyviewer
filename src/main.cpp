@@ -111,7 +111,7 @@ void initialize(bool debugContext, rv::TrajectoryEntries entries, const Trajecto
         glEnable(GL_DEBUG_OUTPUT);
     }
 
-    glbinding::Binding::initialize(window);
+    glbinding::Binding::initialize(glfwGetProcAddress);
     std::vector<rv::Light> lights;
     viewer = std::make_unique<Viewer>(std::move(entries), lights, config);
     GL_CHECK_ERROR()

@@ -58,6 +58,11 @@ using edges_type = std::vector<std::vector<std::tuple<std::size_t, std::size_t>>
 
 extern GLFWwindow *window;
 
+inline std::ostream& operator<<(std::ostream& os, gl::GLenum value) {
+    os << static_cast<unsigned int>(value);
+    return os;
+}
+
 #define GL_CHECK_ERROR() { \
 GLenum err = glGetError(); \
 if (err != GL_NO_ERROR) { \
