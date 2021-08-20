@@ -30,8 +30,10 @@
  * @copyright GNU Lesser General Public License v3.0
  */
 
-#include "Camera.h"
 #include <cmath>
+#include <fmt/format.h>
+
+#include "Camera.h"
 
 namespace fmt {
 template <>
@@ -41,7 +43,7 @@ struct formatter<glm::vec3> {
 
     template <typename FormatContext>
     auto format(const glm::vec3 &p, FormatContext &ctx) {
-        return format_to(ctx.begin(), "({:.1f}, {:.1f}, {:.1f})", p.x, p.y, p.z);
+        return format_to(ctx.out(), "({:.1f}, {:.1f}, {:.1f})", p.x, p.y, p.z);
     }
 };
 
@@ -52,7 +54,7 @@ struct formatter<glm::quat> {
 
     template <typename FormatContext>
     auto format(const glm::quat &p, FormatContext &ctx) {
-        return format_to(ctx.begin(), "({:.1f}, {:.1f}, {:.1f}, {:.1f})", p.x, p.y, p.z, p.w);
+        return format_to(ctx.out(), "({:.1f}, {:.1f}, {:.1f}, {:.1f})", p.x, p.y, p.z, p.w);
     }
 };
 }

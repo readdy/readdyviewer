@@ -98,7 +98,7 @@ void PointSprite::render(GLuint instances) const {
         {
             // bind offsets to vao 1
             glBindBuffer(GL_ARRAY_BUFFER, offsetBuffer);
-            glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(float), offset.data.data, GL_STATIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(float), glm::value_ptr(offset), GL_STATIC_DRAW);
             glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, nullptr);
             glEnableVertexAttribArray(1);
             glVertexAttribDivisor(1,instances);

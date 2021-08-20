@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.6)
+project(readdyviewer VERSION 1.0 LANGUAGES C CXX)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 set(HIDDEN_FRANK_MODE OFF CACHE BOOL "hidden frank mode!")
 set(BUILD_PYTHON_LIBRARY ON CACHE BOOL "build python library")
@@ -11,7 +15,7 @@ include(cmake/scripts/DownloadProject.cmake)
 if (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/glfw-src)
     download_project(PROJ glfw
             GIT_REPOSITORY https://github.com/glfw/glfw.git
-            GIT_TAG 3.2.1
+            GIT_TAG 3.3.4
             ${UPDATE_DISCONNECTED_IF_AVAILABLE}
             )
     set(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
