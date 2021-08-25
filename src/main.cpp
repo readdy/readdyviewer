@@ -196,7 +196,8 @@ PYBIND11_MODULE(readdyviewer_binding, m) {
                           [](rv::TrajectoryConfiguration &self, bool draw) { self.drawPeriodic = draw; })
             .def("set_box_size", [](rv::TrajectoryConfiguration &self, float dx, float dy, float dz) {
                 self.boxSize = glm::vec3(dx, dy, dz);
-            });
+            })
+            .def_readwrite("light_intensity", &rv::TrajectoryConfiguration::intensity);
 
     py::class_<rv::TrajectoryEntry>(m, "TrajectoryEntry")
             .def(py::init < float, float, float, unsigned int, unsigned long> ());

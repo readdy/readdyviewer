@@ -32,17 +32,17 @@
 
 namespace rv {
 
-std::vector<Light> getLights() {
+std::vector<Light> getLights(float intensity) {
     std::vector<Light> lights;
-    lights.emplace_back(glm::vec3(20, 20, 20), glm::normalize(glm::vec3(-1, -1, -1)), glm::vec3(.5, .5, .5), 2.f, LightType::AMBIENT);
-    lights.emplace_back(glm::vec3(40, 40, 40), glm::normalize(glm::vec3(1, 1, 1)), glm::vec3(.5, .5, .5), 1.f, LightType::HEAD);
+    lights.emplace_back(glm::vec3(20, 20, 20), glm::normalize(glm::vec3(-1, -1, -1)), glm::vec3(.5, .5, .5), 2.f*intensity, LightType::AMBIENT);
+    lights.emplace_back(glm::vec3(40, 40, 40), glm::normalize(glm::vec3(1, 1, 1)), glm::vec3(.5, .5, .5), 1.f*intensity, LightType::HEAD);
     return lights;
 }
 
 Viewer::Viewer(rv::TrajectoryEntries entries, const std::vector<Light> &lights, const TrajectoryConfiguration& config)
         : width(0), height(0), last_fps_time(glfwGetTime()), framecount(0), fps(0), running(false),
           guitimer(0.0f), trajectory(std::move(entries), config), drawPeriodic(config.drawPeriodic),
-          interrupt(false), lightArrangement(lights.empty() ? getLights() : lights), framing(config.resourcedir),
+          interrupt(false), lightArrangement(lights.empty() ? getLights(config.intensity) : lights), framing(config.resourcedir),
           pointSprite(config.drawPeriodic, config.boxSize), wait(config.wait), currentWait(0) {
     GL_CHECK_ERROR()
 
@@ -216,7 +216,7 @@ bool Viewer::frame() {
         edgeSprite.render(static_cast<GLuint>(trajectory.getCurrentNEdges()));
         GL_CHECK_ERROR()
     }
-    //framing.render();
+    // framing.render();
     GL_CHECK_ERROR()
 
     // determine the framerate every second

@@ -2,6 +2,8 @@ import numpy as np
 import readdy
 import os
 from readdy.api.utils import load_trajectory_to_npy
+import sys
+sys.path.append('/home/mho/Development/readdyviewer/cmake-build-release/src')
 import readdyviewer_binding as readdyviewer
 
 readdyviewer.set_resource_dir('/home/mho/Development/readdyviewer/readdyviewer/resources')

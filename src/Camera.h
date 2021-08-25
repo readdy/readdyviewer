@@ -42,9 +42,9 @@ public:
 
     ~Camera();
 
-    glm::mat4 getViewMatrix() const;
+    [[nodiscard]] glm::mat4 getViewMatrix() const;
 
-    const glm::vec3 &position() const;
+    [[nodiscard]] const glm::vec3 &position() const;
 
     void rotate(float xangle, float yangle);
 

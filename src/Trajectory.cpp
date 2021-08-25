@@ -46,6 +46,13 @@ Trajectory::Trajectory(TrajectoryEntries entries, const TrajectoryConfiguration 
         glBufferData(GL_SHADER_STORAGE_BUFFER, 4 * sizeof(float) * maxNParticles(), nullptr, GL_DYNAMIC_COPY);
     }
 
+    for(std::size_t t = 0; t < this->entries.nParticlesPerFrame.size(); ++t) {
+        for(std::size_t p = 0; p < this->entries.nParticlesPerFrame[t]; ++p) {
+            _min = glm::min(_min, glm::vec3(this->entries.posTypes[t * this->entries.maxNParticles + p]));
+            _max = glm::max(_max, glm::vec3(this->entries.posTypes[t * this->entries.maxNParticles + p]));
+        }
+    }
+
     setUpEdges();
     {
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, edgeBufferFrom);

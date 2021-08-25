@@ -64,6 +64,7 @@ struct TrajectoryConfiguration {
     glm::vec3 edgecolor = glm::vec3(.5, .5, .5);
     bool drawPeriodic = false;
     glm::vec3 boxSize = glm::vec3(0, 0, 0);
+    float intensity = 1.f;
 };
 
 class Trajectory {
